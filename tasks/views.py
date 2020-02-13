@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
@@ -25,6 +25,6 @@ def add_task(request):
             t.completed = False
             t.save()
             return HttpResponseRedirect(reverse('tasks:index'))
-        else:
-            form = TaskForm()
-        return render(request, 'tasks/index.html', {'form':form})
+    else:
+        form = TaskForm()
+    return render(request, 'tasks/add_task.html', {'form':form})

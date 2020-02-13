@@ -1,0 +1,10 @@
+<div>
+    <h1>Add a Task:</h1>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <form action="{% url 'tasks:add_task' %}" method='post'>
+    {% csrf_token %}
+        <button type="submit">
+            Submit
+        </button>
+    </form>
+</div>
