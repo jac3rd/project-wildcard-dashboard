@@ -100,12 +100,14 @@ WSGI_APPLICATION = 'dashboard.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'PORT': 5432,
-        'NAME': 'dashboard',
-        'USER': 'postgres',
-        'PASSWORD': '***',
-        'HOST':'',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),        
+		#'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        #'PORT': 5432,
+        #'NAME': 'dashboard',
+        #'USER': 'postgres',
+        #'PASSWORD': '***',
+        #'HOST':'',
     }
 }
 
@@ -147,3 +149,9 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+try:
+	import django_heroku
+	django_heroku.settings(locals())
+except ImportError:
+	pass
