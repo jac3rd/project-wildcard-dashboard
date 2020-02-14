@@ -14,8 +14,10 @@ class TaskListView(generic.ListView):
         return Task.objects.order_by('start_time')
 
 def add_task(request):
+    print(request.method)
     if request.method == 'POST':
         form = TaskForm(request.POST)
+        print(form.is_valid())
         if form.is_valid():
             t = Task()
             t.task_name = request.POST['task_name']
