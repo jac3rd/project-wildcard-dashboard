@@ -40,7 +40,6 @@ AUTHENTICATION_BACKENDS = (
 
 INSTALLED_APPS = [
     'tasks.apps.TasksConfig',
-    'dash.apps.DashConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
