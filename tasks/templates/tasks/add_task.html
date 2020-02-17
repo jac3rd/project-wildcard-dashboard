@@ -1,0 +1,18 @@
+<div>
+    <h1>Add a Task:</h1>
+    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    <form action="{% url 'tasks:add_task' %}" method='post'>
+    {% csrf_token %}
+        <label for="task_name">Task Name</label>
+        <input type="text" id="task_name" name="task_name">
+        <label for="task_desc">Task Desc</label>
+        <input type="text" id="task_desc" name="task_desc">
+        <label for="start_time">Start Time</label>
+        <input type="datetime-local" id="start_time" name="start_time">
+        <label for="end_time">End Time</label>
+        <input type="datetime-local" id="end_time" name="end_time"> 
+        <button type="submit">
+            Submit
+        </button>
+    </form>
+</div>
