@@ -1,3 +1,5 @@
+{% extends 'base.html' %}
+{% block content %}
 <div>
     <h1>Add a Task:</h1>
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
@@ -16,3 +18,4 @@
         </button>
     </form>
 </div>
+{% endblock %}
