@@ -10,10 +10,10 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">Dashboard</a> <!--Change href to base page or something-->
+        <a class="navbar-brand" href="{% url 'tasks:index' %}">Dashboard</a> <!--Change href to base page or something-->
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
-            <a class="nav-item nav-link" href="#>test1<span class="sr-only"></span></a> <!--change all hrefs-->
+            <a class="nav-item nav-link" href="{% url 'tasks:add_task' %}">Add Task<span class="sr-only"></span></a> <!--change all hrefs-->
             <a class="nav-item nav-link" href="#">test2</a>
             <a class="nav-item nav-link" href="#">test3</a>
             </div>

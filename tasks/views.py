@@ -2,6 +2,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
+import datetime
 from .forms import TaskForm
 from .models import Task
 
@@ -14,19 +15,19 @@ class TaskListView(generic.ListView):
         return Task.objects.order_by('start_time')
 
 def add_task(request):
-    print(request.method)
     if request.method == 'POST':
         form = TaskForm(request.POST)
-        print(form.is_valid())
         if form.is_valid():
             t = Task()
             t.task_name = request.POST['task_name']
             t.task_desc = request.POST['task_desc']
             t.start_time = request.POST['start_time']
             t.end_time = request.POST['end_time']
-            t.completed = False
-            t.save()
-            return HttpResponseRedirect(reverse('tasks:index'))
+            # Ensure that the start dates are correct
+            if t.start_time < t.end_time:
+                t.completed = False
+                t.save()
+                return HttpResponseRedirect(reverse('tasks:index'))
     else:
         form = TaskForm()
     return render(request, 'tasks/add_task.html', {'form':form})
