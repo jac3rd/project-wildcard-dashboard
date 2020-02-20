@@ -1,7 +1,5 @@
 from django import forms
-from django.core.exceptions import ValidationError
-from django.forms import ModelForm
-from . import models
+from .models import Task
 
 class TaskForm(forms.Form):
     #Reformats the html input to work with the django datetime field
@@ -19,3 +17,5 @@ class TaskForm(forms.Form):
     task_desc = forms.CharField(label='Task Description', max_length=200)
     start_time = forms.DateTimeField(label='Start Time', input_formats=attempt)
     end_time = forms.DateTimeField(label='End Time', input_formats=attempt)
+
+

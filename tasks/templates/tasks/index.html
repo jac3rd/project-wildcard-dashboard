@@ -5,11 +5,30 @@
     <ul>
         {% for task in task_list %}
         <li>
+            {% if not task.completed %}
+            <div class="form-check">
+                <form action="{% url 'tasks:check_off' %}" method='post' id="check">
+                    {% csrf_token %}
+                    <input type="hidden" name="task_id" value='{{task.id}}'>
+                    <input class="form-check-input" type="checkbox" onclick="document.getElementById('check').submit();">
+                </form>
+                <label class="form-check-label" for="defaultCheck1">
+                    Completed?
+                </label>
+            </div>
+            {% else %}
+            <div class="form-check">
+                <input class="form-check-input" type="checkbox" value="" id="defaultCheck2" disabled checked>
+                <label class="form-check-label" for="defaultCheck2">
+                    Completed!!!
+                </label>
+            </div>
+            {% endif %}
             <b>{{ task.task_name }}</b></br>
-            <p1>{{ task.task_desc }}</p1></br>
+            <p1>{{ task.task_desc }}</p1>
+            </br>
             Start time: {{ task.start_time }}</br>
             End time: {{ task.end_time }}</br>
-            Completed: {{ task.completed }}
         </li>
         {% endfor %}
     </ul>
