@@ -40,5 +40,8 @@
     {% else %}
     <p>You have no tasks!</p>
     {% endif %}
+    <a href="{% url 'tasks:add_task' %}"><button class="btn-primary">
+        Add Task
+    </button></a>
 </div>
 {% endblock %}

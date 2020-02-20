@@ -7,13 +7,16 @@
     {% csrf_token %}
         <label for="task_name">Task Name</label>
         <input type="text" id="task_name" name="task_name">
+        <br>
         <label for="task_desc">Task Desc</label>
         <input type="text" id="task_desc" name="task_desc">
         <br>
         <label for="start_time">Start Time</label>
         <input type="datetime-local" id="start_time" name="start_time">
+        <br>
         <label for="end_time">End Time</label>
         <input type="datetime-local" id="end_time" name="end_time">
+        <br>
         <button type="submit">
             Submit
         </button>
