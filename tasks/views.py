@@ -45,8 +45,12 @@ def add_task(request):
 
 
 def check_off(request):
+    """
+    Update task to completed in database
+    :param request: A click on a checkbox of a task and the hidden input of a primary key
+    :return: A redirect to the tasks list
+    """
     if request.method == 'POST':
-        print(request.POST)
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
         task.completed = True
