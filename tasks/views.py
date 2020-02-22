@@ -56,3 +56,11 @@ def check_off(request):
         task.completed = True
         task.save()
     return HttpResponseRedirect(reverse('tasks:index'))
+
+def index(request):
+    context = {
+        'tasks': Task.objects.order_by('-date')
+        if request.user.is_authenticated else []
+    }
+
+    return render(request, 'tasks/index.html', context)
