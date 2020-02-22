@@ -17,12 +17,19 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.urls import include, path
 from django.contrib.auth import views as auth_views
+from .import views
+from django.conf import settings
+
 
 urlpatterns = [
-    path('tasks/', include('tasks.urls')),
+    path('tasks/', views.TaskListView.as_view(), name='index'),
+    #path('tasks/', include('tasks.urls')),
     path('admin/', admin.site.urls),
     # path('dash/', include('dash.urls')),
+    path('', include('social_django.urls', namespace='social')),
+    url('', include('social_django.urls', namespace='social')), 
     url('login/', auth_views.LoginView.as_view(), name='login'),
     url('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    url('', include('social_django.urls', namespace='social'))
+    path('add_task/', views.add_task, name='add_task'),
+    
 ]
