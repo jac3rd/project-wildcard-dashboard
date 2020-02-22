@@ -25,6 +25,14 @@ SECRET_KEY = 'a)7d@=xx$5lbmd308_pd=bhlh(hilkk5i3yo^!46e1cs$l(ikx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+#Authentication Information for Google Login
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '759306476125-hi014lcvnmlmirv0pt9hka0k5og0eji3.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'ENufVEyUrFwKJ7jPP_USNn0n'
+
+LOGIN_URL = '/auth/login/google-oauth2/'
+LOGIN_REDIRECT_URL = 'tasks/'
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
 #Allows project to run on heroku
 ALLOWED_HOSTS = ['wildcard-boiz.herokuapp.com']
 
@@ -33,8 +41,6 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOpenId',
     'social_core.backends.google.GoogleOAuth2',
     'social_core.backends.google.GoogleOAuth',
-    'social_core.backends.facebook.FacebookOAuth',
-    'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 # Application definition
@@ -47,6 +53,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'tasks', 
     'social_django',
 ]
 # Social auth settings
