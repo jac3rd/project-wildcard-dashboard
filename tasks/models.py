@@ -18,7 +18,7 @@ class Task(models.Model):
     task_desc = models.CharField(max_length=400)
     start_time = models.DateTimeField('start time')
     end_time = models.DateTimeField('end time')
-    completed = models.BooleanField('completed',null=True,blank=True)
+    completed = models.BooleanField('completed')
 
     def __str__(self):
         return self.task_name

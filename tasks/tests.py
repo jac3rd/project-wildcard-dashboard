@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import datetime
 from django.test import TestCase, Client
 from django.utils import timezone
@@ -35,8 +34,3 @@ class TestCheck(TestCase):
         task.save()
         resp = self.client.post('/tasks/check_off', {'task_id': task.id})
         self.assertEqual(resp.status_code, 301)
-=======
-from django.test import TestCase
-
-# Create your tests here.
->>>>>>> parent of 9de0eff... added tests and ci stuff
