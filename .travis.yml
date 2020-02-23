@@ -4,7 +4,7 @@ install:
 # command to run tests
 # for running your unittests please add the line -python -m unittest tests.py
 script:
-  - python manage.py test tasks.test
+  - python manage.py test dashboard.tasks.test
 deploy:
   provider: heroku
   api_key: 43a09b31-4bbf-44f4-8ddb-6be954d7fbba
