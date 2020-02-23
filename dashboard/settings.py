@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import psycopg2
+import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -100,17 +101,18 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        # 'PORT': 5432,
-        # 'NAME': 'dashboard',
-        # 'USER': 'postgres',
-        # 'PASSWORD': '***',
-        # 'HOST':'',
-    }
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    #     # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     # 'PORT': 5432,
+    #     # 'NAME': 'dashboard',
+    #     # 'USER': 'postgres',
+    #     # 'PASSWORD': '***',
+    #     # 'HOST':'',
+    # }
 }
+DATABASES['default'] = dj_database_url.config()
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
