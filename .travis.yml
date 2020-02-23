@@ -8,6 +8,6 @@ script:
 deploy:
   provider: heroku
   api_key: 43a09b31-4bbf-44f4-8ddb-6be954d7fbba
-  app: wildcard-boiz
+  app: dashboard
   on:
     repo: uva-cs3240-s20/project-wildcard
