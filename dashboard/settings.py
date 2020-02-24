@@ -25,8 +25,8 @@ SECRET_KEY = 'a)7d@=xx$5lbmd308_pd=bhlh(hilkk5i3yo^!46e1cs$l(ikx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-ALLOWED_HOSTS = []
+#Allows project to run on heroku
+ALLOWED_HOSTS = ['wildcard-boiz.herokuapp.com']
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.open_id.OpenIdAuth',
@@ -101,18 +101,18 @@ TEMPLATES = [
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-     'default': {
-          'ENGINE': 'django.db.backends.postgresql_psycopg2',
-          'PORT': '5432',
-          'NAME': 'dashboard',
-          'USER': 'dashboard_user',
-          'PASSWORD': '123',
-          'HOST':'localhost',
-          'TEST': {
-              'NAME': 'dashboard_user'
-          }
-     }
+    'default': {
+        #'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'PORT': '5432',
+        'NAME': 'dashboard',
+        'USER': 'dashboard_user',
+        'PASSWORD': '123',
+        'HOST': '',
+    }   
 }
+#DATABASES['default'] = dj_database_url.config()
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
