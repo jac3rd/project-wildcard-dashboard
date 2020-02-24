@@ -25,6 +25,28 @@ class TaskModelTests(TestCase):
         # get list of tasks
         list_of_tasks = views.TaskListView.get_queryset(self)
         self.assertIs(list_of_tasks.filter(id=task.id).exists(), True)
+
+    # unit test for adding task but with time format YYYY/MM/DD HH:MM
+    def test_add_task_invalid_time_format(self):
+        # create task
+        task_name = "test_add_task_invalid_time_format"
+        task_desc = "test_add_task_invalid_time_format description"
+        start_time = "1111/11/11 11:11"
+        end_time = "1111/11/11 11:22"
+        task = views.Task(
+            id=0,
+            task_name=task_name,
+            task_desc=task_desc,
+            start_time=start_time,
+            end_time=end_time,
+            completed=False)
+        # try saving task with invalid date format
+        try:
+            task.save()
+        # should throw an exception
+        except:
+            self.assertTrue(True)
+        
     
     # unit test for checking off task, marking a task as completed
     def test_check_off(self):
