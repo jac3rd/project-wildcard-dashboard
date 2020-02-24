@@ -4,10 +4,10 @@ install:
 # command to run tests
 # for running your unittests please add the line -python -m unittest tests.py
 script:
-  - python manage.py test dashboard.tasks.test
+  - python manage.py test tasks.tests
 deploy:
   provider: heroku
   api_key: 43a09b31-4bbf-44f4-8ddb-6be954d7fbba
-  app: dashboard
+  app: wildcard-boiz
   on:
     repo: uva-cs3240-s20/project-wildcard
