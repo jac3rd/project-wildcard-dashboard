@@ -2,9 +2,9 @@
 {% block content %}
 <div>
     {% if task_list %}
-    <ul>
+    <ul class="list-group">
         {% for task in task_list %}
-        <li>
+        <li class="list-group-item">
             {% if not task.completed %}
             <div class="form-check">
                 <form action="{% url 'tasks:check_off' %}" method='post' id="check">
@@ -22,7 +22,7 @@
             End time: {{ task.end_time }}</br>
             </div>
             {% else %}
-                <label class="form-check-label" for="defaultCheck2">
+                <label class="form-check-label" for="defaultCheck2" style="color:green">
                     Completed!!!
                 </label>
             <br>
@@ -40,5 +40,8 @@
     {% else %}
     <p>You have no tasks!</p>
     {% endif %}
+    <a href="{% url 'tasks:add_task' %}"><button class="btn-primary">
+        Add Task
+    </button></a>
 </div>
 {% endblock %}
