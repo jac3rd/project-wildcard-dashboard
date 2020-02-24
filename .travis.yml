@@ -2,12 +2,7 @@ language: python
 install:
   - pip install -r requirements.txt
 # command to run tests
-# for running your unittests please add the line -python -m unittest tests.py
+# for running your unittests please add the line -python -m unittest unit_tests.py
 script:
-  - python manage.py test tasks.tests
-deploy:
-  provider: heroku
-  api_key: 43a09b31-4bbf-44f4-8ddb-6be954d7fbba
-  app: wildcard-boiz
-  on:
-    repo: uva-cs3240-s20/project-wildcard
+  - python -m unittest unit_tests.py
+
