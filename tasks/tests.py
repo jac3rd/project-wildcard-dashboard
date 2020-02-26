@@ -30,8 +30,8 @@ class TaskModelTests(TestCase):
         # create task
         task_name = "test_add_task_start_after_end"
         task_desc = "test_add_task_start_after_end description"
-        start_time = "1111-11-11 11:22"
-        end_time = "1111-11-11 11:11"
+        start_time = timezone.now()
+        end_time = start_time - datetime.timedelta(days=3)
         task = views.Task(
             id=2,
             task_name=task_name,
@@ -92,7 +92,7 @@ class TaskModelTests(TestCase):
         start_time = timezone.now()
         end_time = start_time + datetime.timedelta(days=3)
         task = views.Task(
-            id=4,
+            id=5,
             task_name=task_name,
             task_desc=task_desc,
             start_time=start_time,
