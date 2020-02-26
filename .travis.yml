@@ -5,4 +5,13 @@ install:
 # for running your unittests please add the line -python -m unittest unit_tests.py
 script:
   - python -m unittest unit_tests.py
+  - python manage.py test
+deploy:
+  provider: heroku
+  api_key:
+    secure: 
+  app: project-wildcard
+  on:
+    repo: uva-cs3240-s20/project-wildcard
+
 

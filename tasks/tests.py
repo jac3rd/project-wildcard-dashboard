@@ -68,7 +68,6 @@ class TaskModelTests(TestCase):
             self.assertTrue(False)
         # get list of tasks
         list_of_tasks = views.TaskListView.get_queryset(self)
-        print(list_of_tasks.filter(id=task.id))
         self.assertIs(list_of_tasks.filter(id=task.id).exists(), True)
 
     # unit test for checking off task, marking a task as completed
@@ -88,3 +87,38 @@ class TaskModelTests(TestCase):
         task.save()
         resp = self.client.post('/tasks/check_off',{'task_id':task.id})
         self.assertEqual(resp.status_code,301)
+
+    def test_delete_task(self):
+        # create task
+        task_name = "test_delete_task"
+        task_desc = "test_delete_task description"
+        start_time = timezone.now()
+        end_time = start_time + datetime.timedelta(days=3)
+        task = views.Task(
+            id=4,
+            task_name=task_name,
+            task_desc=task_desc,
+            start_time=start_time,
+            end_time=end_time,
+            completed=False)
+        task.save()
+        self.client.post('/tasks/delete_task',{'task_id':task.id})
+        list_of_tasks = views.TaskListView.get_queryset(self)
+        self.assertFalse(list_of_tasks.filter(id=task.id).exists())
+
+    def test_delete_task_redirect(self):
+        # create task
+        task_name = "test_delete_task"
+        task_desc = "test_delete_task description"
+        start_time = timezone.now()
+        end_time = start_time + datetime.timedelta(days=3)
+        task = views.Task(
+            id=4,
+            task_name=task_name,
+            task_desc=task_desc,
+            start_time=start_time,
+            end_time=end_time,
+            completed=False)
+        task.save()
+        resp = self.client.post('/tasks/delete_task',{'task_id':task.id})
+        self.assertEqual(resp.status_code,302)
