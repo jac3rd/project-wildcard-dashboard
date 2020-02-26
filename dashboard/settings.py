@@ -109,10 +109,10 @@ DATABASES = {
         #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'PORT': '5432',
-        'NAME': 'dashboard',
-        'USER': 'dashboard_user',
-        'PASSWORD': '123',
-        'HOST': '',
+        'NAME': 'd9l5v9m155lk4a',
+        'USER': 'nlskuuynqlnaud',
+        'PASSWORD': 'd07fa4d4ad4d3d45dd8a0f23956bdbda40a00159bc05050ce3812bea63e33f28',
+        'HOST': 'ec2-184-72-236-57.compute-1.amazonaws.com',
     }   
 }
 #DATABASES['default'] = dj_database_url.config()
