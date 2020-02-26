@@ -26,7 +26,10 @@ SECRET_KEY = 'a)7d@=xx$5lbmd308_pd=bhlh(hilkk5i3yo^!46e1cs$l(ikx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 #Allows project to run on heroku
-ALLOWED_HOSTS = ['wildcard-boiz.herokuapp.com']
+ALLOWED_HOSTS = [
+    'wildcard-boiz.herokuapp.com',
+    '127.0.0.1',
+]
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.open_id.OpenIdAuth',

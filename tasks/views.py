@@ -52,3 +52,10 @@ def check_off(request):
         task.completed = True
         task.save()
     return HttpResponseRedirect(reverse('tasks:index'))
+
+def delete_task(request):
+    if request.method == 'POST':
+        task_id = request.POST['task_id']
+        task = Task.objects.get(pk=task_id)
+        task.delete()
+    return HttpResponseRedirect(reverse('tasks:index'))
