@@ -22,7 +22,7 @@ from django.conf import settings
 
 
 urlpatterns = [
-    path('tasks/', views.TaskListView.as_view(), name='index'),
+    path('complete/google-oauth2/tasks/', views.TaskListView.as_view(), name='index'), 
     #path('tasks/', include('tasks.urls')),
     path('admin/', admin.site.urls),
     #path('dash/', include('dash.urls')),
