@@ -1,17 +1,13 @@
 language: python
 install:
-  - pip install -r requirements.txt
-# command to run tests
-# for running your unittests please add the line -python -m unittest unit_tests.py
+- pip install -r requirements.txt
 script:
-  - python -m unittest unit_tests.py
-  - python manage.py test
+- python -m unittest unit_tests.py
+- python manage.py test
 deploy:
   provider: heroku
   api_key:
-    secure: 
+    secure: jih0icTOSzIHy259k0uMwsUDCjbI1uLOELvWHHkFCtkwTWDlFIEExCyVmZrsL6uQ98pEoPZ4w3ltWky436X2Y/oSRqig10cdve3m8e1/bx2XVg5A6mBEOyTw81GyS6Q8uGWqLDELtiVH6lZuPRJLqpCpCyWpH1dcRQnGcL7oYv/OQLpJmq5zcJU3lrxMjexv0rJ6e6B5kZZSMN4NqjSGjw+T4sg4PISkUq6YH/PNaB4XNJdMOgesdmUn1dp3Csf6ND+wKroaCl9mFP4As7G4Dn0BGS24xVombMGpv0+nRUd2ijaECqXEsloTFDb93aXlkIuCM8ppeNYV1CxsRzCmYzTPVsncEFQTT4fPR8kyqSjg0a4UezowHArfJQ5cVUuuvl+PsaQaQhH5xBoV65CAPD2ivoFHnDHIz6bEbq41wJLVvneUBYvvTg2ORmocS8tbAO56YkeSTbD3O8RgV+GbeORAhvLZv+hEG5I3VNGpDDe8XbKNUi0LRLYNPjPWSl+Eld9SZs5RjoOQRPi2GaiuIKbhK7vgOrpSSbIxt7+18HXECi0caNkLVYGljDrQR1lsZRe8+rl0iyOyMUokKlYpJ6dUYaCJbrebTX1GHkeaatbe/7LAORMVHV/6kYpsp+XlIVSYiH0syQIqnwGSmQOhas6p+vsil0VNMlQdDWR795M=
   app: project-wildcard
   on:
     repo: uva-cs3240-s20/project-wildcard
-
-
