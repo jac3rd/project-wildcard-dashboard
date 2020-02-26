@@ -35,7 +35,7 @@ LOGIN_URL = '/auth/login/google-oauth2/'
 LOGIN_REDIRECT_URL = 'tasks/'
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 #Allows project to run on heroku
-ALLOWED_HOSTS = ['wildcard-boiz.herokuapp.com']
+ALLOWED_HOSTS = ['wildcard-boiz.herokuapp.com', '127.0.0.1']
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.open_id.OpenIdAuth',
