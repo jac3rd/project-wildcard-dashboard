@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+# EDIT THIS COMMENT TO PERFORM REDUNDANT COMMIT FOR TRIGGERING TRAVIS
+
 import os
 import sys
 import psycopg2
