@@ -118,12 +118,12 @@ DATABASES = {
         'HOST': 'ec2-184-72-236-57.compute-1.amazonaws.com',
         'TEST': {
             'NAME': 'd59hqltef3chro',
-        }
+        },
     }   
 }
 
 db_from_env = dj_database_url.config()
-DATABASES['default']=db_from_env
+DATABASES['default'].update(db_from_env)
 #DATABASES['default'] = dj_database_url.config()
 
 # Password validation
