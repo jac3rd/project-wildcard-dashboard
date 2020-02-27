@@ -118,8 +118,9 @@ DATABASES = {
         'HOST': 'ec2-184-72-236-57.compute-1.amazonaws.com',
     }   
 }
-if 'test' in sys.argv:
-    DATABASES['default'] = {'ENGINE': 'django.db.backends.sqlite3'}
+
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 #DATABASES['default'] = dj_database_url.config()
 
 # Password validation
