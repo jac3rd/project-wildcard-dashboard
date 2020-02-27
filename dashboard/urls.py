@@ -19,6 +19,7 @@ from django.urls import include, path
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
+    path('/', include('tasks.urls')), # temporary homepage so '/' doesn't result in error
     path('tasks/', include('tasks.urls')),
     path('admin/', admin.site.urls),
     # path('dash/', include('dash.urls')),
