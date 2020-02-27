@@ -116,6 +116,9 @@ DATABASES = {
         'USER': 'nlskuuynqlnaud',
         'PASSWORD': 'd07fa4d4ad4d3d45dd8a0f23956bdbda40a00159bc05050ce3812bea63e33f28',
         'HOST': 'ec2-184-72-236-57.compute-1.amazonaws.com',
+        'TEST': {
+            'NAME': 'd59hqltef3chro',
+        }
     }   
 }
 
