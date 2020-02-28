@@ -1,6 +1,11 @@
 language: python
 install:
 - pip install -r requirements.txt
+services:
+- postgresql
+before_script:
+- psql -c 'create database travis_ci_test;' -U postgres
+- cp dashboard/travissettings.py dashboard/settings.py
 script:
 - python -m unittest unit_tests.py
 - DATABASE_URL="postgres://bwcihcahguhjgi:cc405f73aa39a65617517dc5077cb7fa597679c8a435849ba6e39437607a1333@ec2-34-235-108-68.compute-1.amazonaws.com:5432/d59hqltef3chro" python manage.py test --keepdb
