@@ -2,7 +2,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
-import datetime
 from .forms import TaskForm
 from .models import Task
 
@@ -45,11 +44,29 @@ def add_task(request):
 
 
 def check_off(request):
+    """
+    This allows you to check off a completed task.
+    :param request: A request that contains a primary key for the task being completed.
+    :return: A redirect to our index page for tasks.
+    """
     if request.method == 'POST':
-        print(request.POST)
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
         task.completed = True
+        task.save()
+    return HttpResponseRedirect(reverse('tasks:index'))
+
+
+def uncheck(request):
+    """
+    This allows a mistakenly checked off task to be marked as uncompleted.
+    :param request: A request that contains a primary key for the task being unmarked.
+    :return: A redirect to our index page for tasks.
+    """
+    if request.method == 'POST':
+        task_id = request.POST['task_id']
+        task = Task.objects.get(pk=task_id)
+        task.completed = False
         task.save()
     return HttpResponseRedirect(reverse('tasks:index'))
 

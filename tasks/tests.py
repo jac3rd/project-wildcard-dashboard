@@ -67,6 +67,27 @@ class TaskModelTests(TestCase):
         resp = self.client.post('/tasks/check_off',{'task_id':task.id})
         self.assertEqual(resp.status_code,301)
 
+
+    def test_uncheck(self):
+        # create task
+        task_name = "test_checked"
+        task_desc = "test_checked description"
+        start_time  = timezone.now()
+        end_time = start_time + datetime.timedelta(days=3)
+        task = views.Task(
+            id=3,
+            task_name=task_name,
+            task_desc=task_desc,
+            start_time=start_time,
+            end_time=end_time,
+            completed=False)
+        task.save()
+        resp = self.client.post('/tasks/uncheck',{'task_id':task.id})
+        self.assertEqual(resp.status_code,301)
+        list_of_tasks = views.TaskListView.get_queryset(self)
+        # Check to make sure it is not set to completed
+        self.assertIs(list_of_tasks.filter(id=task.id, completed=True).exists(), False)
+
     def test_delete_task(self):
         # create task
         task_name = "test_delete_task"
