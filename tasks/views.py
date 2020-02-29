@@ -2,7 +2,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
-import datetime
 from .forms import TaskForm
 from .models import Task
 
@@ -69,4 +68,11 @@ def uncheck(request):
         task = Task.objects.get(pk=task_id)
         task.completed = False
         task.save()
+    return HttpResponseRedirect(reverse('tasks:index'))
+
+def delete_task(request):
+    if request.method == 'POST':
+        task_id = request.POST['task_id']
+        task = Task.objects.get(pk=task_id)
+        task.delete()
     return HttpResponseRedirect(reverse('tasks:index'))
