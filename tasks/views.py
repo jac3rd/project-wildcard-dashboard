@@ -29,7 +29,6 @@ def add_task(request):
         form = TaskForm(request.POST)
         if form.is_valid():
             t = Task()
-            print(request)
             t.task_name = request.POST['task_name']
             t.task_desc = request.POST['task_desc']
             t.start_time = request.POST['start_time']
