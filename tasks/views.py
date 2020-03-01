@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.views import generic
 from .forms import TaskForm
 from .models import Task
+import datetime
 
 
 # Create your views here.
@@ -38,6 +39,41 @@ def add_task(request):
             if t.start_time < t.end_time:
                 t.completed = False
                 t.save()
+                if request.POST['repeat'] == 'weekly':
+                    for i in range(1, 52):
+                        curr_t = Task()
+                        curr_t.task_name = request.POST['task_name']
+                        curr_t.task_desc = request.POST['task_desc']
+                        curr_t.start_time = datetime.datetime.strptime(t.start_time,
+                                                                       '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                            weeks=i)
+                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                            weeks=i)
+                        curr_t.completed = False
+                        t.link = request.POST.get('link', "")
+                elif request.POST['repeat'] == 'monthly':
+                    for i in range(1, 12):
+                        curr_t = Task()
+                        curr_t.task_name = request.POST['task_name']
+                        curr_t.task_desc = request.POST['task_desc']
+                        curr_t.start_time = datetime.datetime.strptime(t.start_time, '%Y-%m-%dT%H:%M')  + datetime.timedelta(weeks=4*i)
+                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(weeks=4*i)
+                        curr_t.link = request.POST.get('link', "")
+                        curr_t.completed = False
+                        curr_t.save()
+                elif request.POST['repeat'] == 'annually':
+                    for i in range(1, 5):
+                        curr_t = Task()
+                        curr_t.task_name = request.POST['task_name']
+                        curr_t.task_desc = request.POST['task_desc']
+                        curr_t.start_time = datetime.datetime.strptime(t.start_time,
+                                                                       '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                            weeks=52 * i)
+                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                            weeks=52 * i)
+                        curr_t.link = request.POST.get('link', "")
+                        curr_t.completed = False
+                        curr_t.save()
                 return HttpResponseRedirect(reverse('tasks:index'))
     else:
         form = TaskForm()
