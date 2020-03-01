@@ -14,8 +14,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import sys
-import psycopg2
-import dj_database_url
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,8 +23,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'a)7d@=xx$5lbmd308_pd=bhlh(hilkk5i3yo^!46e1cs$l(ikx'
-#SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 759306476125-hi014lcvnmlmirv0pt9hka0k5og0eji3.apps.googleusercontent.com
-#SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ENufVEyUrFwKJ7jPP_USNn0n
+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -35,7 +32,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '759306476125-hi014lcvnmlmirv0pt9hka0k5og0eji3.a
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'ENufVEyUrFwKJ7jPP_USNn0n'
 
 LOGIN_URL = '/auth/login/google-oauth2/'
-LOGIN_REDIRECT_URL = 'tasks/'
+LOGIN_REDIRECT_URL = '/tasks/'
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 #Allows project to run on heroku
 ALLOWED_HOSTS = [
@@ -115,8 +112,6 @@ TEMPLATES = [
 
 DATABASES = {
     'default': {
-        #'ENGINE': 'django.db.backends.sqlite3',
-        #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'PORT': '5432',
         'NAME': 'dashboard',
@@ -124,9 +119,7 @@ DATABASES = {
         'PASSWORD': '123',
         'HOST': 'localhost',
     }   
-db_from_env = dj_database_url.config(conn_max_age=600)
-DATABASES['default'].update(db_from_env)
-
+}
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
 
@@ -178,7 +171,6 @@ STATICFILES_DIRS = (
 )
 try:
     import django_heroku
-
     django_heroku.settings(locals())
 except ImportError:
     pass
