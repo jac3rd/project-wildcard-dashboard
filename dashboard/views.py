@@ -7,9 +7,5 @@ import datetime
 
 # Create your views here.
 
-class HomeView(generic.ListView):
-    """
-    Used to display the current tasks the user has assigned
-    """
-    template_name = 'home.html'
-    #context_object_name = 'home'
+def home(request):
+    return render(request, 'home.html', {})

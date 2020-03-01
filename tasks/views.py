@@ -38,7 +38,7 @@ def add_task(request):
             if t.start_time < t.end_time:
                 t.completed = False
                 t.save()
-                return HttpResponseRedirect(reverse('tasks:index'))
+                return HttpResponseRedirect(reverse('tasks:list'))
     else:
         form = TaskForm()
     return render(request, 'tasks/add_task.html', {'form': form})
@@ -55,4 +55,4 @@ def check_off(request):
         task = Task.objects.get(pk=task_id)
         task.completed = True
         task.save()
-    return HttpResponseRedirect(reverse('tasks:index'))
+    return HttpResponseRedirect(reverse('tasks:list'))
