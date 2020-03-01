@@ -29,10 +29,12 @@ def add_task(request):
         form = TaskForm(request.POST)
         if form.is_valid():
             t = Task()
+            print(request)
             t.task_name = request.POST['task_name']
             t.task_desc = request.POST['task_desc']
             t.start_time = request.POST['start_time']
             t.end_time = request.POST['end_time']
+            t.link = request.POST.get('link', "")
             # Ensure that the start dates are correct
             if t.start_time < t.end_time:
                 t.completed = False
