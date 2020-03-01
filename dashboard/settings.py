@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 # EDIT THIS COMMENT TO PERFORM REDUNDANT COMMIT FOR TRIGGERING TRAVIS
-
+import psycopg2
+import dj_database_url
 import os
 import sys
 
@@ -121,8 +122,8 @@ DATABASES = {
     }   
 }
 
-DATABASES['default'] = dj_database_url.config(conn_max_age=600, ssl_require=True)
-
+db_from_env = dj_database_url.config()
+DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.0/ref/settings/#auth-password-validators
