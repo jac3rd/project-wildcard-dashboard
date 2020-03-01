@@ -22,7 +22,7 @@ from django.conf import settings
 from . import views
 
 urlpatterns = [
-    #path('complete/google-oauth2/tasks/', views.TaskListView.as_view(), name='index'),
+    # path('complete/google-oauth2/tasks/', views.TaskListView.as_view(), name='index'),
     path('complete/google-oauth2/tasks/', include('tasks.urls'), name='index'),
     path('', views.home, name='index'),
     path('tasks/', include('tasks.urls')),
@@ -32,6 +32,7 @@ urlpatterns = [
     url('', include('social_django.urls', namespace='social')), 
     url('login/', auth_views.LoginView.as_view(), name='login'),
     url('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    path('add_task/', views.add_task, name='add_task'),
+    # path('add_task/', views.add_task, name='add_task'),
+    path('add_task/', include('tasks.urls'), name='add_task'),
     # url('', include('social_django.urls', namespace='social'))
 ]
