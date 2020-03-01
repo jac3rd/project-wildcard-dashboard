@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container-md">
+<div class="container-md" >
     {% if task_list %}
     <ul class="list-group">
         {% for task in task_list %}
@@ -16,7 +16,12 @@
                 <label class="form-check-label badge badge-secondary">
                     Completed?
                 </label>
-            <h5>{{ task.task_name }}</h5>
+                {% if task.link != "" %}
+                <h5><a href="{{task.link}}"
+                >{{ task.task_name }}</a></h5>
+                {% else %}
+                <h5>{{ task.task_name }}</h5>
+                {% endif %}
             <p1 class="text-justify">{{ task.task_desc }}</p1>
             </br>
             Start time: {{ task.start_time }}</br>
@@ -61,7 +66,7 @@
     <p>You have no tasks!</p>
     {% endif %}
 </div>
-<a href="{% url 'tasks:add_task' %}"><button class="btn-primary">
+<a href="{% url 'tasks:add_task' %}"><button class="btn-primary" id="add_button">
     Add Task
 </button></a>
 {% endblock %}

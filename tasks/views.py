@@ -33,6 +33,7 @@ def add_task(request):
             t.task_desc = request.POST['task_desc']
             t.start_time = request.POST['start_time']
             t.end_time = request.POST['end_time']
+            t.link = request.POST.get('link', "")
             # Ensure that the start dates are correct
             if t.start_time < t.end_time:
                 t.completed = False
