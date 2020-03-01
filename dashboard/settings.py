@@ -25,13 +25,23 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'a)7d@=xx$5lbmd308_pd=bhlh(hilkk5i3yo^!46e1cs$l(ikx'
-
+#SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = 759306476125-hi014lcvnmlmirv0pt9hka0k5og0eji3.apps.googleusercontent.com
+#SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = ENufVEyUrFwKJ7jPP_USNn0n
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+#Authentication Information for Google Login
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '759306476125-hi014lcvnmlmirv0pt9hka0k5og0eji3.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'ENufVEyUrFwKJ7jPP_USNn0n'
+
+LOGIN_URL = '/auth/login/google-oauth2/'
+LOGIN_REDIRECT_URL = 'tasks/'
+SOCIAL_AUTH_URL_NAMESPACE = 'social'
 #Allows project to run on heroku
 ALLOWED_HOSTS = [
     'wildcard-boiz.herokuapp.com',
     '127.0.0.1',
+    'localhost',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -39,8 +49,6 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.google.GoogleOpenId',
     'social_core.backends.google.GoogleOAuth2',
     'social_core.backends.google.GoogleOAuth',
-    'social_core.backends.facebook.FacebookOAuth',
-    'social_core.backends.facebook.FacebookOAuth2',
     'django.contrib.auth.backends.ModelBackend',
 )
 # Application definition
@@ -107,17 +115,16 @@ TEMPLATES = [
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        # 'PORT': '5432',
-        # 'NAME': 'dashboard',
-        # 'USER': 'dashboard_user',
-        # 'PASSWORD': '123',
-        # 'HOST': 'localhost',
+        #'ENGINE': 'django.db.backends.sqlite3',
+        #'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'PORT': '5432',
+        'NAME': 'dashboard',
+        'USER': 'dashboard_user',
+        'PASSWORD': '123',
+        'HOST': 'localhost',
     }   
-}
-db_from_env = dj_database_url.config()
+db_from_env = dj_database_url.config(conn_max_age=600)
 DATABASES['default'].update(db_from_env)
 
 # Password validation

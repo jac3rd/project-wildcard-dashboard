@@ -77,3 +77,11 @@ def delete_task(request):
         task = Task.objects.get(pk=task_id)
         task.delete()
     return HttpResponseRedirect(reverse('tasks:index'))
+
+def index(request):
+    context = {
+        'tasks': Task.objects.order_by('-date')
+        if request.user.is_authenticated else []
+    }
+
+    return render(request, 'tasks/index.html', context)
