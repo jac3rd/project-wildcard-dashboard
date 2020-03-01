@@ -19,10 +19,11 @@ from django.urls import include, path
 from django.contrib.auth import views as auth_views
 from tasks import views
 from django.conf import settings
-
+from . import views
 
 urlpatterns = [
     path('complete/google-oauth2/tasks/', views.TaskListView.as_view(), name='index'), 
+    path('', views.home, name='index'),
     path('tasks/', include('tasks.urls')),
     path('admin/', admin.site.urls),
     #path('dash/', include('dash.urls')),
@@ -31,4 +32,5 @@ urlpatterns = [
     url('login/', auth_views.LoginView.as_view(), name='login'),
     url('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('add_task/', views.add_task, name='add_task'),
+    # url('', include('social_django.urls', namespace='social'))
 ]
