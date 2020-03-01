@@ -7,6 +7,8 @@ before_script:
 - psql -c 'create database travis_ci_test;' -U postgres
 - cp dashboard/travissettings.py dashboard/settings.py
 script:
+- python manage.py makemigrations
+- python manage.py migrate
 - python -m unittest unit_tests.py
 - python manage.py test
 deploy:
