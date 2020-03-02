@@ -1,9 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
+{% if request.user.is_authenticated %}
+<h1>Hello, {{user.username}} {{user.id}}! Good to see you :)</h1>
 <div class="container-md" >
     {% if task_list %}
     <ul class="list-group">
         {% for task in task_list %}
+        {% if task.user == user.id %}
         <br class="list-group-item">
             {% if not task.completed %}
             <div class="form-check">
@@ -60,6 +63,7 @@
             </strike>
             {% endif %}
         </li>
+            {% endif %}
         {% endfor %}
     </ul>
     {% else %}
@@ -69,4 +73,7 @@
 <a href="{% url 'tasks:add_task' %}"><button class="btn-primary" id="add_button">
     Add Task
 </button></a>
+{% else %}
+<label>Please login.</label>
+{% endif %}
 {% endblock %}

@@ -5,6 +5,7 @@
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
     <form action="{% url 'tasks:add_task' %}" method='post'>
     {% csrf_token %}
+        <input type="hidden" value="{{request.user.id}}" id="user" name="user">
         <div class="form-group">
             <label for="task_name">Task Name</label>
             <input class="form-control" type="text" id="task_name" name="task_name">
