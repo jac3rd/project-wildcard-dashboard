@@ -84,12 +84,11 @@ def index(request):
         if request.user.is_authenticated else []
     }
 
-    return render(request, 'tasks/index.html', context)
+    return render(request, 'tasks/task_list.html', context)
 
 def sort_tasks(request):
     if(request.method == 'GET'):
         sort_key = request.GET["sort_by"]
-        print('sorting by: ', sort_key.strip())
         #context = {
         #    'tasks': Task.objects.order_by('-'+sort_key)
         #}
