@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 {% if request.user.is_authenticated %}
-<h1>Hello, {{user.username}} {{user.id}}! Good to see you :)</h1>
+<h1>Hello, {{user.username}}! Good to see you :)</h1>
 <div class="container-md" >
     {% if task_list %}
     <ul class="list-group">

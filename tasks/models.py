@@ -4,6 +4,7 @@ from social_django import models as oauth_models
 # Create your models here.
 
 
+
 class Task(models.Model):
     # These are the date formats that we attempt to parse
     attempt = ['%Y-%m-%d %H:%M:%S',  # '2006-10-25 14:30:59'
