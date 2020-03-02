@@ -13,7 +13,7 @@ class TaskListView(generic.ListView):
     """
     Used to display the current tasks the user has assigned
     """
-    template_name = 'tasks/index.html'
+    template_name = 'tasks/task_list.html'
     context_object_name = 'task_list'
 
     def get_queryset(self):
@@ -74,7 +74,7 @@ def add_task(request):
                         curr_t.link = request.POST.get('link', "")
                         curr_t.completed = False
                         curr_t.save()
-                return HttpResponseRedirect(reverse('tasks:index'))
+                return HttpResponseRedirect(reverse('tasks:list'))
     else:
         form = TaskForm()
     return render(request, 'tasks/add_task.html', {'form': form})
@@ -91,7 +91,7 @@ def check_off(request):
         task = Task.objects.get(pk=task_id)
         task.completed = True
         task.save()
-    return HttpResponseRedirect(reverse('tasks:index'))
+    return HttpResponseRedirect(reverse('tasks:list'))
 
 
 def uncheck(request):
