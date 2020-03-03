@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -7,7 +8,6 @@ from .models import Task
 
 
 # Create your views here.
-
 class TaskListView(generic.ListView):
     """
     Used to display the current tasks the user has assigned
@@ -18,7 +18,7 @@ class TaskListView(generic.ListView):
     def get_queryset(self):
         return Task.objects.order_by('start_time')
 
-
+@login_required
 def add_task(request):
     """
     Used to add a task to the personal dashboard
@@ -29,6 +29,8 @@ def add_task(request):
         form = TaskForm(request.POST)
         if form.is_valid():
             t = Task()
+            t.user = request.POST['user']
+            print(request.POST['user'])
             t.task_name = request.POST['task_name']
             t.task_desc = request.POST['task_desc']
             t.start_time = request.POST['start_time']
@@ -42,7 +44,6 @@ def add_task(request):
     else:
         form = TaskForm()
     return render(request, 'tasks/add_task.html', {'form': form})
-
 
 def check_off(request):
     """
@@ -71,6 +72,7 @@ def uncheck(request):
         task.save()
     return HttpResponseRedirect(reverse('tasks:index'))
 
+
 def delete_task(request):
     if request.method == 'POST':
         task_id = request.POST['task_id']
@@ -78,6 +80,7 @@ def delete_task(request):
         task.delete()
     return HttpResponseRedirect(reverse('tasks:index'))
 
+@login_required
 def index(request):
     context = {
         'tasks': Task.objects.order_by('-date')
