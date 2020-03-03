@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.views import generic
 import datetime
 from .forms import TaskForm
-from .models import Task
+from .models import Task, Category
 
 
 # Create your views here.
@@ -60,3 +60,10 @@ def delete_task(request):
         task = Task.objects.get(pk=task_id)
         task.delete()
     return HttpResponseRedirect(reverse('tasks:index'))
+
+def add_category(request):
+    if request.method == 'POST':
+        category = Category()
+        category_name = request.POST['category']
+        user_id = request.POST['user_id']
+        category.save()

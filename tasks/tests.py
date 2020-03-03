@@ -101,3 +101,16 @@ class TaskModelTests(TestCase):
         task.save()
         resp = self.client.post('/tasks/delete_task',{'task_id':task.id})
         self.assertEqual(resp.status_code,302)
+
+    def test_add_task_category(self):
+        # create task
+        resp = self.client.post('/task/add_task', {
+            'task_name': 'test_add_task_category',
+            'task_desc': 'test_add_task_category description',
+            'start_time': timezone.now(),
+            'end_time': timezone.now() + datetime.timedelta(days=3),
+            'category': 'hw',
+        })
+        taskList = models.Task.objects.all
+        # TEST NOT FINISHED
+        self.assertTrue(True)

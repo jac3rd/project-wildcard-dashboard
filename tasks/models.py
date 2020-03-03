@@ -40,3 +40,7 @@ class Task(models.Model):
 
 	def __str__(self):
 		return self.task_name
+
+class Category(models.Model):
+	category_name = models.CharField(max_length=32)
+	user_id = models.IntegerField()
