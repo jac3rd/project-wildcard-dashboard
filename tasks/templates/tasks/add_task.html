@@ -5,25 +5,26 @@
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
     <form action="{% url 'tasks:add_task' %}" method='post'>
     {% csrf_token %}
+        <input type="hidden" value="{{user.id}}" id="user" name="user">
         <div class="form-group">
             <label for="task_name">Task Name</label>
-            <input class="form-control" type="text" id="task_name" name="task_name">
+            <input class="form-control" type="text" id="task_name" name="task_name" required>
         </div>
         <div class="form-group">
             <label for="task_desc">Task Desc</label>
-            <input class="form-control" type="text" id="task_desc" name="task_desc">
+            <input class="form-control" type="text" id="task_desc" name="task_desc" required>
         </div>
         <div class="form-group">
-            <label for="link">Link</label>
-            <input class="form-control" type="url" id="link" name="link" value="Optional">
+            <label for="link">Link (Optional)</label>
+            <input class="form-control" type="url" id="link" name="link" value="">
         </div>
         <div class="form-group">
             <label for="start_time">Start Time</label>    
-            <input class="form-control" type="datetime-local" id="start_time" name="start_time">
+            <input class="form-control" type="datetime-local" id="start_time" name="start_time" required>
         </div>
         <div class="form-group">
             <label for="end_time">End Time</label>
-            <input class="form-control" type="datetime-local" id="end_time" name="end_time">
+            <input class="form-control" type="datetime-local" id="end_time" name="end_time" required>
         </div>
         <button class="btn-primary" type="submit">
             Submit
@@ -34,6 +35,7 @@
             <option value="monthly">Add Monthly</option>
             <option value="annually">Add Annually</option>
         </select>
+        Repeat <input type="number" min="1" name="times" id="times" required> </input> times.
         {% if form.errors %}
         {% for field in form %}
         {% for error in field.errors %}

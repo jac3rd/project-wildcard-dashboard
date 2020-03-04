@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -8,7 +9,6 @@ import datetime
 
 
 # Create your views here.
-
 class TaskListView(generic.ListView):
     """
     Used to display the current tasks the user has assigned
@@ -20,6 +20,7 @@ class TaskListView(generic.ListView):
         return Task.objects.order_by('start_time')
 
 
+@login_required
 def add_task(request):
     """
     Used to add a task to the personal dashboard
@@ -30,6 +31,8 @@ def add_task(request):
         form = TaskForm(request.POST)
         if form.is_valid():
             t = Task()
+            t.user = request.POST['user']
+            print(request.POST['user'])
             t.task_name = request.POST['task_name']
             t.task_desc = request.POST['task_desc']
             t.start_time = request.POST['start_time']
@@ -40,7 +43,7 @@ def add_task(request):
                 t.completed = False
                 t.save()
                 if request.POST['repeat'] == 'weekly':
-                    for i in range(1, 52):
+                    for i in range(1, int(request.POST['times']) + 1):
                         curr_t = Task()
                         curr_t.task_name = request.POST['task_name']
                         curr_t.task_desc = request.POST['task_desc']
@@ -49,20 +52,26 @@ def add_task(request):
                             weeks=i)
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=i)
+                        curr_t.user = request.POST['user']
                         curr_t.completed = False
-                        t.link = request.POST.get('link', "")
+                        curr_t.link = request.POST.get('link', "")
+                        curr_t.save()
                 elif request.POST['repeat'] == 'monthly':
-                    for i in range(1, 12):
+                    for i in range(1, int(request.POST['times']) + 1):
                         curr_t = Task()
                         curr_t.task_name = request.POST['task_name']
                         curr_t.task_desc = request.POST['task_desc']
-                        curr_t.start_time = datetime.datetime.strptime(t.start_time, '%Y-%m-%dT%H:%M')  + datetime.timedelta(weeks=4*i)
-                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(weeks=4*i)
+                        curr_t.start_time = datetime.datetime.strptime(t.start_time,
+                                                                       '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                            weeks=4 * i)
+                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                            weeks=4 * i)
                         curr_t.link = request.POST.get('link', "")
                         curr_t.completed = False
+                        curr_t.user = request.POST['user']
                         curr_t.save()
                 elif request.POST['repeat'] == 'annually':
-                    for i in range(1, 5):
+                    for i in range(1, int(request.POST['times']) + 1):
                         curr_t = Task()
                         curr_t.task_name = request.POST['task_name']
                         curr_t.task_desc = request.POST['task_desc']
@@ -73,6 +82,7 @@ def add_task(request):
                             weeks=52 * i)
                         curr_t.link = request.POST.get('link', "")
                         curr_t.completed = False
+                        curr_t.user = request.POST['user']
                         curr_t.save()
                 return HttpResponseRedirect(reverse('tasks:list'))
     else:
@@ -107,9 +117,20 @@ def uncheck(request):
         task.save()
     return HttpResponseRedirect(reverse('tasks:index'))
 
+
 def delete_task(request):
     if request.method == 'POST':
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
         task.delete()
     return HttpResponseRedirect(reverse('tasks:index'))
+
+
+@login_required
+def index(request):
+    context = {
+        'tasks': Task.objects.order_by('-date')
+        if request.user.is_authenticated else []
+    }
+
+    return render(request, 'tasks/index.html', context)
