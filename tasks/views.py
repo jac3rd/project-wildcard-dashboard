@@ -7,7 +7,6 @@ from .forms import TaskForm
 from .models import Task
 import datetime
 
-
 # Create your views here.
 class TaskListView(generic.ListView):
     """
@@ -32,7 +31,6 @@ def add_task(request):
         if form.is_valid():
             t = Task()
             t.user = request.POST['user']
-            print(request.POST['user'])
             t.task_name = request.POST['task_name']
             t.task_desc = request.POST['task_desc']
             t.start_time = request.POST['start_time']
