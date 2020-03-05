@@ -1,7 +1,10 @@
 from django.db import models
-
+from social_django import models as oauth_models
 
 # Create your models here.
+
+
+
 class Task(models.Model):
     # These are the date formats that we attempt to parse
     attempt = ['%Y-%m-%d %H:%M:%S',  # '2006-10-25 14:30:59'
@@ -14,6 +17,8 @@ class Task(models.Model):
                '%m/%d/%y %H:%M',  # '10/25/06 14:30'
                '%m/%d/%y',
                '%Y-%m-%dT%H:%M']  # '10/25/06'
+    # id = models.ForeignKey(oauth_models.uid, on_delete=models.CASCADE)
+    user = models.IntegerField(default=-1)
     task_name = models.CharField(max_length=200)
     task_desc = models.CharField(max_length=400)
     start_time = models.DateTimeField('start time')
