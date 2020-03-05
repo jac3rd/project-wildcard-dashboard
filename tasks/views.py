@@ -5,7 +5,7 @@ from django.urls import reverse
 from django.views import generic
 from .forms import TaskForm
 from .models import Task
-
+import datetime
 
 # Create your views here.
 class TaskListView(generic.ListView):
@@ -17,6 +17,7 @@ class TaskListView(generic.ListView):
 
     def get_queryset(self):
         return Task.objects.order_by('start_time')
+
 
 @login_required
 def add_task(request):
@@ -30,7 +31,6 @@ def add_task(request):
         if form.is_valid():
             t = Task()
             t.user = request.POST['user']
-            print(request.POST['user'])
             t.task_name = request.POST['task_name']
             t.task_desc = request.POST['task_desc']
             t.start_time = request.POST['start_time']
@@ -40,10 +40,53 @@ def add_task(request):
             if t.start_time < t.end_time:
                 t.completed = False
                 t.save()
+                if request.POST['repeat'] == 'weekly':
+                    for i in range(1, int(request.POST['times']) + 1):
+                        curr_t = Task()
+                        curr_t.task_name = request.POST['task_name']
+                        curr_t.task_desc = request.POST['task_desc']
+                        curr_t.start_time = datetime.datetime.strptime(t.start_time,
+                                                                       '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                            weeks=i)
+                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                            weeks=i)
+                        curr_t.user = request.POST['user']
+                        curr_t.completed = False
+                        curr_t.link = request.POST.get('link', "")
+                        curr_t.save()
+                elif request.POST['repeat'] == 'monthly':
+                    for i in range(1, int(request.POST['times']) + 1):
+                        curr_t = Task()
+                        curr_t.task_name = request.POST['task_name']
+                        curr_t.task_desc = request.POST['task_desc']
+                        curr_t.start_time = datetime.datetime.strptime(t.start_time,
+                                                                       '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                            weeks=4 * i)
+                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                            weeks=4 * i)
+                        curr_t.link = request.POST.get('link', "")
+                        curr_t.completed = False
+                        curr_t.user = request.POST['user']
+                        curr_t.save()
+                elif request.POST['repeat'] == 'annually':
+                    for i in range(1, int(request.POST['times']) + 1):
+                        curr_t = Task()
+                        curr_t.task_name = request.POST['task_name']
+                        curr_t.task_desc = request.POST['task_desc']
+                        curr_t.start_time = datetime.datetime.strptime(t.start_time,
+                                                                       '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                            weeks=52 * i)
+                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                            weeks=52 * i)
+                        curr_t.link = request.POST.get('link', "")
+                        curr_t.completed = False
+                        curr_t.user = request.POST['user']
+                        curr_t.save()
                 return HttpResponseRedirect(reverse('tasks:list'))
     else:
         form = TaskForm()
     return render(request, 'tasks/add_task.html', {'form': form})
+
 
 def check_off(request):
     """
@@ -79,6 +122,7 @@ def delete_task(request):
         task = Task.objects.get(pk=task_id)
         task.delete()
     return HttpResponseRedirect(reverse('tasks:index'))
+
 
 @login_required
 def index(request):
