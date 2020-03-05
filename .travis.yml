@@ -8,7 +8,6 @@ before_script:
 - psql -c 'create user dashboard_user with password ''123'';' -U postgres
 #- cp dashboard/travissettings.py dashboard/settings.py
 script:
-- python -m unittest unit_tests.py
 - python manage.py test
 deploy:
   provider: heroku

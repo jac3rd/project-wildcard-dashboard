@@ -29,6 +29,13 @@
         <button class="btn-primary" type="submit">
             Submit
         </button>
+        <select id="repeat" name="repeat">
+            <option value="once">Add Once</option>
+            <option value="weekly">Add Weekly</option>
+            <option value="monthly">Add Monthly</option>
+            <option value="annually">Add Annually</option>
+        </select>
+        Repeat <input type="number" min="1" name="times" id="times" required> </input> times.
         {% if form.errors %}
         {% for field in form %}
         {% for error in field.errors %}
