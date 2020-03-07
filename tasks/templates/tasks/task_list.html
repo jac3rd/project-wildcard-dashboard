@@ -1,52 +1,70 @@
 {% extends 'base.html' %}
 {% block content %}
+
 {% if request.user.is_authenticated %}
 
 <h1>Hello, {{user.username}}! Good to see you :)</h1>
-<div class="container-md" >
-    {% if task_list %}
-    <ul class="list-group">
-        {% for task in task_list %}
-        {% if task.user == user.id %}
-        <br class="list-group-item">
-            {% if not task.completed %}
-            <div class="form-check">
-                <form action="{% url 'tasks:check_off' %}" method='post' id="check">
+
+<div class="container container table">
+    <div class = "header">
+        <style>
+           .header
+           {
+            text-decoration: underline;
+            padding: 60 px; 
+            text-align: center;
+            color: black ; 
+            font-size: 30 px; 
+           } 
+        </style>
+        <h2>Task List</h2>
+
+    </div>
+    
+    <div class="row justify-content-center">
+        {% if task_list %}
+        <div class="row vertical-center-row" >
+            <ul class="list-group">
+                {% for task in task_list %}
+               {% if task.user == user.id %}
+                <br class="list-group-item">
+                {% if not task.completed %}
+                <div class="form-check">
+                    <form action="{% url 'tasks:check_off' %}" method='post' id="check">
+                        {% csrf_token %}
+                        <input type="hidden" name="task_id" value='{{task.id}}'>
+                        <input class="form-check-input" type="checkbox"
+                            onclick="document.getElementById('check').submit();">
+                    </form>
+                    <label class="form-check-label badge badge-secondary">
+                        Completed?
+                    </label>
+                    {% if task.link != "" %}
+                    <h5><a href="{{task.link}}">{{ task.task_name }}</a></h5>
+                    {% else %}
+                    <h5>{{ task.task_name }}</h5>
+                    {% endif %}
+                    <p1 class="text-justify">{{ task.task_desc }}</p1>
+                    </br>
+                    Start time: {{ task.start_time }}</br>
+                    End time: {{ task.end_time }}
+                </div>
+                {% else %}
+                <form action="{% url 'tasks:uncheck' %}" method='post' id="uncheck">
                     {% csrf_token %}
                     <input type="hidden" name="task_id" value='{{task.id}}'>
-                    <input class="form-check-input" type="checkbox"
-                           onclick="document.getElementById('check').submit();">
+                    <label onmouseover="undoButton(this)" id="{{task.id}}" onmouseout="normalButton(this)"
+                        onclick="document.getElementById('uncheck').submit();" class="form-check-label badge"
+                        style="color:green">
+                        Completed!
+                    </label>
                 </form>
-                <label class="form-check-label badge badge-secondary">
-                    Completed?
-                </label>
-                {% if task.link != "" %}
-                <h5><a href="{{task.link}}"
-                >{{ task.task_name }}</a></h5>
-                {% else %}
-                <h5>{{ task.task_name }}</h5>
-                {% endif %}
-            <p1 class="text-justify">{{ task.task_desc }}</p1>
-            </br>
-            Start time: {{ task.start_time }}</br>
-            End time: {{ task.end_time }}
-            </div>
-            {% else %}
-                <form action="{% url 'tasks:uncheck' %}" method='post' id="uncheck">
-                {% csrf_token %}
-                <input type="hidden" name="task_id" value='{{task.id}}'>
-                <label onmouseover="undoButton(this)" id="{{task.id}}" onmouseout="normalButton(this)"
-                       onclick="document.getElementById('uncheck').submit();"
-                       class="form-check-label badge" style="color:green">
-                    Completed!
-                </label>
-            </form>
                 <script>
-            function undoButton(button) {
+                    function undoButton(button) {
                         document.getElementById(button.id).innerHTML = "Undo?";
                         document.getElementById(button.id).style = "color:red";
                     }
-            function normalButton(button) {
+                    function normalButton(button) {
                         document.getElementById(button.id).innerHTML = "Completed!";
                         document.getElementById(button.id).style = "color:green";
                     }
@@ -56,6 +74,7 @@
                     <input type="hidden" name="task_id" value="{{task.id}}">
                     <button class="btn btn-danger" onclick="document.getElementId('delete').submit();">Delete</button>
                 </form>
+
             <strike>
             {% if task.link != "" %}
                 <h5><a href="{{task.link}}"
@@ -68,6 +87,7 @@
             End time: {{ task.end_time }} </br>
             </strike>
             {% endif %}
+
         </li>
             {% endif %}
         {% endfor %}
@@ -82,4 +102,5 @@
 {% else %}
 <label>Please login.</label>
 {% endif %}
+
 {% endblock %}
