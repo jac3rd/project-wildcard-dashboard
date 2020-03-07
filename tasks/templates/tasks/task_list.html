@@ -74,19 +74,18 @@
                     <input type="hidden" name="task_id" value="{{task.id}}">
                     <button class="btn btn-danger" onclick="document.getElementId('delete').submit();">Delete</button>
                 </form>
-                <strike>
-                    <h5>{{ task.task_name }}</h5>
-                    <p1 class="text-justify">{{ task.task_desc }}</p1>
-                    Start time: {{ task.start_time }}</br>
-                    End time: {{ task.end_time }} </br>
-                </strike>
-                {% endif %}
-                </li>
-                {% endfor %}
-            </ul>
 
-            {% else %}
-            <p>You have no tasks!</p>
+            <strike>
+            {% if task.link != "" %}
+                <h5><a href="{{task.link}}"
+                >{{ task.task_name }}</a></h5>
+                {% else %}
+                <h5>{{ task.task_name }}</h5>
+                {% endif %}
+                <p1 class="text-justify">{{ task.task_desc }}</p1>
+            Start time: {{ task.start_time }}</br>
+            End time: {{ task.end_time }} </br>
+            </strike>
             {% endif %}
 
         </li>
