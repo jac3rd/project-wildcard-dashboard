@@ -101,6 +101,5 @@ class TaskModelTests(TestCase):
         category = "Homework"
         task = create_task(task_name=task_name, task_desc=task_desc, category=category)
         task.save()
-        # TEST NOT FINISHED
         list_of_tasks = views.TaskListView.get_queryset(self)
         self.assertIs(list_of_tasks.get(id=task.id).category == category, True)
