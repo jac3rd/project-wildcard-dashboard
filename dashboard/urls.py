@@ -17,13 +17,18 @@ from django.conf.urls import url
 from django.contrib import admin
 from django.urls import include, path
 from django.contrib.auth import views as auth_views
+from tasks import views as task_views
+from django.conf import settings
+from dashboard import views
 
 urlpatterns = [
-    path('', include('tasks.urls')), # temporary homepage so '/' doesn't result in error
     path('tasks/', include('tasks.urls')),
     path('admin/', admin.site.urls),
-    # path('dash/', include('dash.urls')),
+    path('social/', include('social_django.urls', namespace='social')),
+    # url('', include('social_django.urls', namespace='social')), 
     url('login/', auth_views.LoginView.as_view(), name='login'),
     url('logout/', auth_views.LogoutView.as_view(), name='logout'),
-    url('', include('social_django.urls', namespace='social'))
+    path('add_task/', task_views.add_task, name='add_task'),
+    # url('', include('social_django.urls', namespace='social'))
+    path('', views.home, name='index'),
 ]
