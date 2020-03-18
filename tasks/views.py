@@ -17,7 +17,7 @@ class TaskListView(generic.ListView):
     context_object_name = 'task_list'
 
     def get_queryset(self):
-        return Task.objects.filter(user=self.request.user.id).order_by('-end_time')
+        return Task.objects.filter(user=self.request.user.id).order_by('-start_time')
 
 
 @login_required
