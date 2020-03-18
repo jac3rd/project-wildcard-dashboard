@@ -89,6 +89,10 @@ def add_task(request):
     return render(request, 'tasks/add_task.html', {'form': form})
 
 
+def calendar(request):
+    return render(request, 'tasks/calendar.html')
+
+
 def check_off(request):
     """
     This allows you to check off a completed task.
