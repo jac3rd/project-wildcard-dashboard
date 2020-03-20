@@ -46,5 +46,5 @@ class Task(models.Model):
 	)
 
 class Category(models.Model):
-	category_name = models.CharField(max_length=32)
+	name = models.CharField(max_length=32)
 	user = models.IntegerField()
