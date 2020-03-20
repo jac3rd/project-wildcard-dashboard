@@ -127,8 +127,8 @@ def delete_task(request):
 def add_category(request):
     if request.method == 'POST':
         category = Category()
-        category_name = request.POST['category']
-        user_id = request.POST['user_id']
+        category.category_name = request.POST['category_name']
+        category.user = request.POST['user']
         category.save()
 
 @login_required
