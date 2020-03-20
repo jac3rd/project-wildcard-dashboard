@@ -132,6 +132,13 @@ def add_category(request):
         category.save()
     return HttpResponse("add_category")
 
+def delete_category(request):
+    if request.method == 'POST':
+        id = request.POST['id']
+        category = Category.objects.get(pk=id)
+        category.delete()
+    return HttpResponse("delete_category")
+
 @login_required
 def index(request):
     context = {

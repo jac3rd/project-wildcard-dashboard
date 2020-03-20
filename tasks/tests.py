@@ -134,3 +134,17 @@ class CategoryModelTests(TestCase):
         user = 0
         name = "test_add_category_response"
         self.assertIsInstance(self.client.post(reverse('tasks:add_category'), {'user': user, 'name': name}), HttpResponse)
+
+    # unit test asserting that delete_category can delete Categories from database
+    def test_delete_category(self):
+        name = "test_delete_category"
+        category = create_category(name=name)
+        self.client.post(reverse('tasks:delete_category'), {'id': category.id})
+        list_of_categories = models.Category.objects
+        self.assertFalse(list_of_categories.filter(id=category.id).exists())
+
+    # unit test asserting that add_category returns an HttpResponse
+    def test_delete_category_response(self):
+        name = "test_delete_category_response"
+        category = create_category(name=name)
+        self.assertIsInstance(self.client.post(reverse('tasks:delete_category'), {'id': category.id}), HttpResponse)
