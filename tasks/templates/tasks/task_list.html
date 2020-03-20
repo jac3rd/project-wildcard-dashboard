@@ -37,7 +37,6 @@
         <div class="row vertical-center-row" >
             <ul class="list-group">
                 {% for task in task_list %}
-               {% if task.user == user.id %}
                 <br class="list-group-item">
                 {% if not task.completed %}
                 <div class="form-check">
@@ -100,7 +99,6 @@
             {% endif %}
 
         </li>
-            {% endif %}
         {% endfor %}
     </ul>
     {% else %}
