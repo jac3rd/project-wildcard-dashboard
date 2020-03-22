@@ -7,6 +7,7 @@ from .forms import TaskForm
 from .models import Task
 import datetime
 
+
 # Create your views here.
 class TaskListView(generic.ListView):
     """
@@ -98,10 +99,6 @@ def add_task(request):
     else:
         form = TaskForm()
     return render(request, 'tasks/add_task.html', {'form': form})
-
-
-def calendar(request):
-    return render(request, 'tasks/calendar.html')
 
 
 def check_off(request):
