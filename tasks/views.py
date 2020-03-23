@@ -7,7 +7,6 @@ from .forms import TaskForm
 from .models import Task
 import datetime
 
-
 # Create your views here.
 class TaskListView(generic.ListView):
     """
@@ -17,7 +16,7 @@ class TaskListView(generic.ListView):
     context_object_name = 'task_list'
 
     def get_queryset(self):
-        return Task.objects.filter(user=self.request.user.id).order_by('-start_time')
+        return Task.objects.order_by('start_time')
 
 
 @login_required
