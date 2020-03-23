@@ -4,9 +4,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
 from .forms import TaskForm
-from .models import Task, Category
+from .models import Task
 import datetime
-
 
 # Create your views here.
 class TaskListView(generic.ListView):
@@ -17,7 +16,7 @@ class TaskListView(generic.ListView):
     context_object_name = 'task_list'
 
     def get_queryset(self):
-        return Task.objects.filter(user=self.request.user.id).order_by('-start_time')
+        return Task.objects.order_by('start_time')
 
 
 @login_required
@@ -36,7 +35,6 @@ def add_task(request):
             t.task_desc = request.POST['task_desc']
             t.start_time = request.POST['start_time']
             t.end_time = request.POST['end_time']
-            t.category = request.POST['category']
             t.link = request.POST.get('link', "")
             # Ensure that the start dates are correct
             if t.start_time < t.end_time:
@@ -125,12 +123,6 @@ def delete_task(request):
         task.delete()
     return HttpResponseRedirect(reverse('tasks:index'))
 
-def add_category(request):
-    if request.method == 'POST':
-        category = Category()
-        category_name = request.POST['category']
-        user_id = request.POST['user_id']
-        category.save()
 
 @login_required
 def index(request):
