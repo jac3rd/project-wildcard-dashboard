@@ -17,7 +17,7 @@ class Task(models.Model):
                '%m/%d/%y %H:%M',  # '10/25/06 14:30'
                '%m/%d/%y',
                '%Y-%m-%dT%H:%M']  # '10/25/06'
-    # id = models.ForeignKey(oauth_models.uid, on_delete=models.CASCADE)
+    #id = models.ForeignKey(oauth_models.uid, on_delete=models.CASCADE)
     user = models.IntegerField(default=-1)
     task_name = models.CharField(max_length=200)
     task_desc = models.CharField(max_length=400)

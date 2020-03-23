@@ -13,7 +13,7 @@ class TaskListView(generic.ListView):
     """
     Used to display the current tasks the user has assigned
     """
-    template_name = 'tasks/task_list.html'
+    template_name = 'tasks/new_task_list2.html'
     context_object_name = 'task_list'
 
     def get_queryset(self):

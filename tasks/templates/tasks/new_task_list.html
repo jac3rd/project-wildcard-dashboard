@@ -26,9 +26,13 @@
                                                 <div class="custom-checkbox custom-control"> <input class="custom-control-input" id="exampleCustomCheckbox12" type="checkbox"><label class="custom-control-label" for="exampleCustomCheckbox12">&nbsp;</label> </div>
                                             </div>
                                             <div class="widget-content-left">
-                                                <div class="widget-heading">Call Sam For payments <div class="badge badge-danger ml-2">Rejected</div>
+                                                <div class="widget-heading">{{ task.task_name }} <div class="badge badge-danger ml-2">Rejected</div>
                                                 </div>
-                                                <div class="widget-subheading"><i>By Bob</i></div>
+                                                <div class="widget-subheading"><i>{{ task.task_desc }}</i></div>
+                                            </div>
+                                            <div class="widget-content-right">
+                                                <div class="widget-content-right"><i>{{ task.start_time }}</i></div>
+                                                <div class="widget-heading"><b>{{ task.end_time }}</b></div>
                                             </div>
                                             <div class="widget-content-right"> <button class="border-0 btn-transition btn btn-outline-success"> <i class="fa fa-check"></i></button> <button class="border-0 btn-transition btn btn-outline-danger"> <i class="fa fa-trash"></i> </button> </div>
                                         </div>
@@ -42,7 +46,10 @@
                     </div>
                 </perfect-scrollbar>
             </div>
-            <div class="d-block text-right card-footer"><button class="mr-2 btn btn-link btn-sm">Cancel</button><button class="btn btn-primary">Add Task</button></div>
+            <div class="d-block text-right card-footer">
+                <button class="btn btn-primary">Add Task</button>
+                <button class="btn btn-danger">Delete Finished <style></style></button>
+            </div>
         </div>
     </div>
 </div>
