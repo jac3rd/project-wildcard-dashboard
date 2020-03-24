@@ -7,35 +7,44 @@
     {% csrf_token %}
         <input type="hidden" value="{{user.id}}" id="user" name="user">
         <div class="form-group">
-            <label for="task_name">Task Name</label>
-            <input class="form-control" type="text" id="task_name" name="task_name" required>
+            <label for="{{ form.task_name.name }}">Task Name</label>
+            <input class="form-control" type="text" id="{{ form.task_name.name }}" name="{{ form.task_name.name }}">
         </div>
         <div class="form-group">
-            <label for="task_desc">Task Desc</label>
-            <input class="form-control" type="text" id="task_desc" name="task_desc" required>
+            <label for="{{ form.task_desc.name }}">Task Desc</label>
+            <input class="form-control" type="text" id="{{ form.task_desc.name }}" name="{{ form.task_desc.name }}">
         </div>
         <div class="form-group">
             <label for="link">Link (Optional)</label>
             <input class="form-control" type="url" id="link" name="link" value="">
         </div>
         <div class="form-group">
-            <label for="start_time">Start Time</label>    
-            <input class="form-control" type="datetime-local" id="start_time" name="start_time" required>
+            <label for="{{ form.start_time.name }}">Start Time</label>    
+            <input class="form-control" type="datetime-local" id="{{ form.start_time.name }}" name="{{ form.start_time.name }}">
         </div>
         <div class="form-group">
-            <label for="end_time">End Time</label>
-            <input class="form-control" type="datetime-local" id="end_time" name="end_time" required>
+            <label for="{{ form.end_time.name }}">End Time</label>
+            <input class="form-control" type="datetime-local" id="{{ form.end_time.name }}" name="{{ form.end_time.name }}">
+        </div>
+        <div class="form-group">
+            <label for="{{ form.category.name }}">Category</label>
+            <select name="{{ form.category.name }} " id="{{ form.category.name }}" class="custom-select">
+            {% for choice in form.category.choices %}
+                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+            {% endfor %}
+            </select>
+
         </div>
         <button class="btn-primary" type="submit">
             Submit
         </button>
         <select id="repeat" name="repeat">
-            <option value="once">Add Once</option>
-            <option value="weekly">Add Weekly</option>
-            <option value="monthly">Add Monthly</option>
-            <option value="annually">Add Annually</option>
+            <option value="once">Add Task</option>
+            <option value="weekly">Add Task Weekly</option>
+            <option value="monthly">Add Task Monthly</option>
+            <option value="annually">Add Task Annually</option>
         </select>
-        Repeat <input type="number" min="1" name="times" id="times" required> </input> times.
+        Repeat <input type="number" min="0" value="0" name="times" id="times" required> </input> times.
         {% if form.errors %}
         {% for field in form %}
         {% for error in field.errors %}
