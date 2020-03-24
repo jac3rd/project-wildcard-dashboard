@@ -15,7 +15,9 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
             {% if request.user.is_authenticated %}
+
              <a class="nav-item nav-link" href="{% url 'dashboard' %}">Home</a>
+
              <a class="nav-item nav-link" href="{% url 'tasks:index' %}">Personal Task List</a>
              <a class="nav-item nav-link" href="{% url 'tasks:add_task' %}">Add Task<span class="sr-only"></span></a> <!--change all hrefs-->
              <a class="nav-item nav-link" href="https://calendar.google.com/calendar/?src={{user.email}}&ctz=America%2FNew_York">Google Calendar</a>
