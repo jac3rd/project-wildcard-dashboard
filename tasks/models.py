@@ -3,22 +3,7 @@ from social_django import models as oauth_models
 
 # Create your models here.
 
-
-
 class Task(models.Model):
-	attempt = ['%Y-%m-%d %H:%M:%S',  # '2006-10-25 14:30:59'
-			'%Y-%m-%d %H:%M',  # '2006-10-25 14:30'
-			'%Y-%m-%d',  # '2006-10-25'
-			'%m/%d/%Y %H:%M:%S',  # '10/25/2006 14:30:59'
-			'%m/%d/%Y %H:%M',  # '10/25/2006 14:30'
-			'%m/%d/%Y',  # '10/25/2006'
-			'%m/%d/%y %H:%M:%S',  # '10/25/06 14:30:59'
-			'%m/%d/%y %H:%M',  # '10/25/06 14:30'
-			'%m/%d/%y',
-			'%Y-%m-%dT%H:%M'  # '10/25/06'
-	]
-	# id = models.ForeignKey(oauth_models.uid, on_delete=models.CASCADE)
-
 	user = models.IntegerField(default=-1)
 	task_name = models.CharField(max_length=200)
 	task_desc = models.CharField(max_length=400)
@@ -46,5 +31,5 @@ class Task(models.Model):
 	)
 
 class Category(models.Model):
-	category_name = models.CharField(max_length=32)
-	user_id = models.IntegerField()
+	name = models.CharField(max_length=32)
+	user = models.IntegerField()

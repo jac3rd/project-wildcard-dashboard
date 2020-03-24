@@ -4,21 +4,18 @@ from django.utils import timezone
 from django.urls import reverse
 from . import models, views
 from django.contrib.auth.models import User
+from django.http import HttpResponse, HttpResponseRedirect
 
-task_id = 0
 def create_task(user=0, task_name="generic test", task_desc="generic test description", start_time=timezone.now(), end_time=timezone.now() +  datetime.timedelta(days=1), completed=False, category=""):
-    global task_id
-    task = views.Task(
-        id=task_id,
-        user=user,
-        task_name=task_name,
-        task_desc=task_desc,
-        start_time=start_time,
-        end_time=end_time,
-        completed=completed,
-        category=category)
+    task = models.Task()
+    task.user=user
+    task.task_name=task_name
+    task.task_desc=task_desc
+    task.start_time=start_time
+    task.end_time=end_time
+    task.completed=completed
+    task.category=category
     task.save()
-    task_id += 1
     return task
 
 # Create your tests here.
@@ -31,7 +28,7 @@ class TaskModelTests(TestCase):
         task_desc = "test_add_task description"
         task = create_task(user=1, task_name=task_name, task_desc=task_desc)
         # get list of tasks
-        list_of_tasks = views.TaskListView.get_queryset(self)
+        list_of_tasks = models.Task.objects
         self.assertIs(list_of_tasks.filter(id=task.id).exists(), True)
 
         # unit test for successfully adding generic task
@@ -50,7 +47,7 @@ class TaskModelTests(TestCase):
         except:
             self.assertTrue(False)
         # get list of tasks
-        list_of_tasks = views.TaskListView.get_queryset(self)
+        list_of_tasks = models.Task.objects
         self.assertIs(list_of_tasks.filter(id=task.id).exists(), True)
 
     # unit test for checking off task, marking a task as completed
@@ -60,40 +57,44 @@ class TaskModelTests(TestCase):
         task_desc = "test_check_off description"
         task = create_task(user=4, task_name=task_name, task_desc=task_desc)
         task.save()
-        resp = self.client.post('/tasks/check_off', {'task_id': task.id})
-        self.assertEqual(resp.status_code, 301)
+        resp = self.client.post(reverse('tasks:check_off'), {'task_id': task.id})
+        self.assertEqual(resp.status_code, 302)
 
+    # unit test asserting that uncheck marks task as not completed
     def test_uncheck(self):
         # create task
         task_name = "test_checked"
         task_desc = "test_checked description"
         task = create_task(user=2, task_name=task_name, task_desc=task_desc)
         task.save()
-        resp = self.client.post('/tasks/uncheck', {'task_id': task.id})
-        self.assertEqual(resp.status_code, 301)
-        list_of_tasks = views.TaskListView.get_queryset(self)
+        resp = self.client.post(reverse('tasks:uncheck'), {'task_id': task.id})
+        self.assertEqual(resp.status_code, 302)
+        list_of_tasks = models.Task.objects
         # Check to make sure it is not set to completed
         self.assertIs(list_of_tasks.filter(id=task.id, completed=True).exists(), False)
 
+    # unit test asserting that delete_task removes task from database
     def test_delete_task(self):
         # create task
         task_name = "test_delete_task"
         task_desc = "test_delete_task description"
         task = create_task(user=10, task_name=task_name, task_desc=task_desc)
         task.save()
-        self.client.post('/tasks/delete_task', {'task_id': task.id})
-        list_of_tasks = views.TaskListView.get_queryset(self)
+        self.client.post(reverse('tasks:delete_task'), {'task_id': task.id})
+        list_of_tasks = models.Task.objects
         self.assertFalse(list_of_tasks.filter(id=task.id).exists())
 
+    # unit test asserting that delete_task redirects the user
     def test_delete_task_redirect(self):
         # create task
-        task_name = "test_delete_task"
-        task_desc = "test_delete_task description"
+        task_name = "test_delete_task_redirect"
+        task_desc = "test_delete_task_redirect description"
         task = create_task(user=8, task_name=task_name, task_desc=task_desc)
         task.save()
-        resp = self.client.post('/tasks/delete_task',{'task_id':task.id})
+        resp = self.client.post(reverse('tasks:delete_task'),{'task_id':task.id})
         self.assertEqual(resp.status_code,302)
 
+    # unit test asserting that add_task_category saves the category field to a task
     def test_add_task_category(self):
         # create task
         task_name = "test_add_task_category"
@@ -101,5 +102,49 @@ class TaskModelTests(TestCase):
         category = "Homework"
         task = create_task(task_name=task_name, task_desc=task_desc, category=category)
         task.save()
-        list_of_tasks = views.TaskListView.get_queryset(self)
+        list_of_tasks = models.Task.objects
         self.assertIs(list_of_tasks.get(id=task.id).category == category, True)
+    
+def create_category(user=0, name="generic category"):
+    category = models.Category()
+    category.user = user
+    category.name = name
+    category.save()
+    return category
+
+class CategoryModelTests(TestCase):
+
+    # unit test asserting that Categories can be saved to database
+    def test_save_category(self):
+        name = "test_save_category"
+        category = create_category(name=name)
+        list_of_categories = models.Category.objects
+        self.assertTrue(list_of_categories.filter(id=category.id).exists())
+
+    # unit test asserting that add_category can save Categories to database
+    def test_add_category(self):
+        user = 0
+        name = "test_add_category"
+        self.client.post(reverse('tasks:add_category'), {'user': user, 'name': name})
+        list_of_categories = models.Category.objects
+        self.assertTrue(list_of_categories.filter(name=name).exists())
+
+    # unit test asserting that add_category returns an HttpResponse
+    def test_add_category_response(self):
+        user = 0
+        name = "test_add_category_response"
+        self.assertIsInstance(self.client.post(reverse('tasks:add_category'), {'user': user, 'name': name}), HttpResponse)
+
+    # unit test asserting that delete_category can delete Categories from database
+    def test_delete_category(self):
+        name = "test_delete_category"
+        category = create_category(name=name)
+        self.client.post(reverse('tasks:delete_category'), {'id': category.id})
+        list_of_categories = models.Category.objects
+        self.assertFalse(list_of_categories.filter(id=category.id).exists())
+
+    # unit test asserting that add_category returns an HttpResponse
+    def test_delete_category_response(self):
+        name = "test_delete_category_response"
+        category = create_category(name=name)
+        self.assertIsInstance(self.client.post(reverse('tasks:delete_category'), {'id': category.id}), HttpResponse)
