@@ -2,7 +2,7 @@ import datetime
 from django.test import TestCase, RequestFactory, Client
 from django.utils import timezone
 from django.urls import reverse
-from . import models, views
+import models, views
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 
@@ -104,6 +104,7 @@ class TaskModelTests(TestCase):
         task.save()
         list_of_tasks = models.Task.objects
         self.assertIs(list_of_tasks.get(id=task.id).category == category, True)
+
     
 def create_category(user=0, name="generic category"):
     category = models.Category()

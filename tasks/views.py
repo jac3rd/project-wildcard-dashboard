@@ -16,8 +16,17 @@ class TaskListView(generic.ListView):
     template_name = 'tasks/task_list.html'
     context_object_name = 'task_list'
 
+
     def get_queryset(self):
         return Task.objects.order_by('start_time')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['fields'] = [field.name for field in Task._meta.get_fields()]
+        #context['fields'] = ['asdfasdf', 'sadfasfasd', 'asdfasf']
+        #print(context)
+        return context
+
 
 
 @login_required
@@ -31,48 +40,48 @@ def add_task(request):
         form = TaskForm(request.POST)
         if form.is_valid():
             t = Task()
-            t.user = request.POST['user']
-            t.task_name = request.POST['task_name']
-            t.task_desc = request.POST['task_desc']
-            t.start_time = request.POST['start_time']
-            t.end_time = request.POST['end_time']
-            t.category = request.POST['category']
+            t.user = request.POST.get('user')
+            t.task_name = request.POST.get('task_name')
+            t.task_desc = request.POST.get('task_desc')
+            t.start_time = request.POST.get('start_time')
+            t.end_time = request.POST.get('end_time')
+            t.category = request.POST.get('category')
             t.link = request.POST.get('link', "")
             # Ensure that the start dates are correct
             if t.start_time < t.end_time:
                 t.completed = False
                 t.save()
-                if request.POST['repeat'] == 'once':
+                if request.POST.get('repeat') == 'once':
                     for i in range(1, int(request.POST['times']) + 1):
                         curr_t = Task()
-                        curr_t.task_name = request.POST['task_name']
-                        curr_t.task_desc = request.POST['task_desc']
+                        curr_t.task_name = request.POST.get('task_name')
+                        curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.start_time = datetime.datetime.strptime(t.start_time,
                                                                        '%Y-%m-%dT%H:%M')
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M')
-                        curr_t.user = request.POST['user']
+                        curr_t.user = request.POST.get('user')
                         curr_t.completed = False
                         curr_t.link = request.POST.get('link', "")
                         curr_t.save()
-                if request.POST['repeat'] == 'weekly':
-                    for i in range(1, int(request.POST['times']) + 1):
+                if request.POST.get('repeat') == 'weekly':
+                    for i in range(1, int(request.POST.get('times')) + 1):
                         curr_t = Task()
-                        curr_t.task_name = request.POST['task_name']
-                        curr_t.task_desc = request.POST['task_desc']
+                        curr_t.task_name = request.POST.get('task_name')
+                        curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.start_time = datetime.datetime.strptime(t.start_time,
                                                                        '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=i)
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=i)
-                        curr_t.user = request.POST['user']
+                        curr_t.user = request.POST.get('user')
                         curr_t.completed = False
                         curr_t.link = request.POST.get('link', "")
                         curr_t.save()
-                elif request.POST['repeat'] == 'monthly':
-                    for i in range(1, int(request.POST['times']) + 1):
+                elif request.POST.get('repeat') == 'monthly':
+                    for i in range(1, int(request.POST.get('times')) + 1):
                         curr_t = Task()
-                        curr_t.task_name = request.POST['task_name']
-                        curr_t.task_desc = request.POST['task_desc']
+                        curr_t.task_name = request.POST.get('task_name')
+                        curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.start_time = datetime.datetime.strptime(t.start_time,
                                                                        '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=4 * i)
@@ -80,13 +89,13 @@ def add_task(request):
                             weeks=4 * i)
                         curr_t.link = request.POST.get('link', "")
                         curr_t.completed = False
-                        curr_t.user = request.POST['user']
+                        curr_t.user = request.POST.get('user')
                         curr_t.save()
-                elif request.POST['repeat'] == 'annually':
-                    for i in range(1, int(request.POST['times']) + 1):
+                elif request.POST.get('repeat') == 'annually':
+                    for i in range(1, int(request.POST.get('times')) + 1):
                         curr_t = Task()
-                        curr_t.task_name = request.POST['task_name']
-                        curr_t.task_desc = request.POST['task_desc']
+                        curr_t.task_name = request.POST.get('task_name')
+                        curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.start_time = datetime.datetime.strptime(t.start_time,
                                                                        '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=52 * i)
@@ -94,7 +103,7 @@ def add_task(request):
                             weeks=52 * i)
                         curr_t.link = request.POST.get('link', "")
                         curr_t.completed = False
-                        curr_t.user = request.POST['user']
+                        curr_t.user = request.POST.get('user')
                         curr_t.save()
                 return HttpResponseRedirect(reverse('tasks:list'))
     else:
@@ -168,5 +177,31 @@ def sort_tasks(request):
         #    'tasks': Task.objects.order_by('-'+sort_key)
         #}
         ordered_tasks = Task.objects.all().order_by('-'+sort_key).reverse()
-        return render(request, 'tasks/task_list.html', {'task_list':ordered_tasks})
-    return render(request, 'tasks/index.html', context)
+        return render(request, 'tasks/task_list.html', {'task_list':ordered_tasks, 'fields':[field.name for field in Task._meta.get_fields()]})
+    return HttpResponseRedirect(reverse('tasks:index'))
+
+def filter_tasks(request):
+    if(request.method == 'POST'):
+        form = TaskForm(request.POST)
+        field_names = [field.name for field in Task._meta.get_fields()]
+        if form.is_valid():
+            check_values = request.POST.getlist('tag[]')
+            filter_key = request.POST['filter_key']
+            print('VALID', request.POST['filter_key'], check_values)
+
+            #return HttpResponseRedirect(reverse('tasks:list'))
+            return render(request, 'tasks/task_list.html', {'task_list':filtered_tasks, 'fields':field_names})
+        else:
+            check_values = request.POST.getlist('tag[]')
+            filter_key = request.POST['filter_key']
+            print('NOT VALID', request.POST['filter_key'], check_values)
+            
+            arg_dict = {}
+            filtered_tasks = Task.objects.all().filter()
+            for val in check_values:
+                arg_dict[field_names[int(val)]+'__icontains'] = filter_key
+                #filtered_tasks = Task.objects.all().filter(task_name__icontains=filter_key)
+            filtered_tasks = Task.objects.all().filter(**arg_dict)
+
+            #return HttpResponseRedirect(reverse('tasks:list'))
+            return render(request, 'tasks/task_list.html', {'task_list':filtered_tasks, 'fields':field_names})

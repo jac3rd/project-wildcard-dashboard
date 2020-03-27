@@ -1,16 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-<input class="form-control" type="text" placeholder="Filtered Input">
-<!-- Example single danger button -->
-<div class="btn-group">
-    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      Sort By
-    </button>
-    <div class="dropdown-menu">
-      <a class="dropdown-item" href="{% url 'tasks:sort_tasks' %}?sort_by=start_time">Start Time</a>
-      <a class="dropdown-item" href="{% url 'tasks:sort_tasks' %}?sort_by=task_name">Task Name</a>
-    </div>
-</div>
 
 {% if request.user.is_authenticated %}
 
@@ -28,6 +17,42 @@
 <style> .list-group-item{ padding: 12px; } </style>
 
 <h1 align="center">Hello, {{user.username}}! Good to see you :)</h1>
+
+<form action="{% url 'tasks:filter_tasks' %}" method='post'>
+    {% csrf_token %}
+    <input class="form-control" type="text" placeholder="Filtered Input" name="filter_key">
+    <div class="btn-group">
+        <button type="submit" class="btn btn-primary">
+            Action
+        </button>
+        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" type="button">Filter on the following:</button>
+          <div class="dropdown-divider"></div>
+            {% for name in fields %}
+                <div>
+                    <input type="checkbox" name="tag[]" value="{{ forloop.counter0 }}">{{ name }}
+                </div>
+            {% endfor %}
+        </div>
+      </div>
+</form>
+<!-- Example single danger button -->
+<center>
+    <div class="btn-group">
+        
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Sort By
+        </button>
+        <div class="dropdown-menu">
+        <a class="dropdown-item" href="{% url 'tasks:sort_tasks' %}?sort_by=start_time">Start Time</a>
+        <a class="dropdown-item" href="{% url 'tasks:sort_tasks' %}?sort_by=task_name">Task Name</a>
+        <a class="dropdown-item" href="{% url 'tasks:sort_tasks' %}?sort_by=end_time">Due Date</a>
+        </div>
+    </div>
+</center>
 
 <div class="row d-flex justify-content-center container">
     <div class="col-md-8">

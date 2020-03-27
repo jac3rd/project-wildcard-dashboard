@@ -14,4 +14,5 @@ urlpatterns = [
     path('delete_task/', views.delete_task, name='delete_task'),
     path('add_category/', views.add_category, name='add_category'),
     path('delete_category/', views.delete_category, name='delete_category'),
+    path('filter_tasks/', views.filter_tasks, name='filter_tasks'),
 ]
