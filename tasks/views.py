@@ -31,26 +31,26 @@ def add_task(request):
         form = TaskForm(request.POST)
         if form.is_valid():
             t = Task()
-            t.user = request.POST['user']
-            t.task_name = request.POST['task_name']
-            t.task_desc = request.POST['task_desc']
-            t.start_time = request.POST['start_time']
-            t.end_time = request.POST['end_time']
-            t.category = request.POST['category']
+            t.user = request.POST.get('user')
+            t.task_name = request.POST.get('task_name')
+            t.task_desc = request.POST.get('task_desc')
+            t.start_time = request.POST.get('start_time')
+            t.end_time = request.POST.get('end_time')
+            t.category = request.POST.get('category')
             t.link = request.POST.get('link', "")
             # Ensure that the start dates are correct
             if t.start_time < t.end_time:
                 t.completed = False
                 t.save()
-                if request.POST['repeat'] == 'once':
-                    for i in range(1, int(request.POST['times']) + 1):
+                if request.POST.get('repeat') == 'once':
+                    for i in range(1, int(request.POST('times')) + 1):
                         curr_t = Task()
-                        curr_t.task_name = request.POST['task_name']
-                        curr_t.task_desc = request.POST['task_desc']
+                        curr_t.task_name = request.POST.get('task_name')
+                        curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.start_time = datetime.datetime.strptime(t.start_time,
                                                                        '%Y-%m-%dT%H:%M')
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M')
-                        curr_t.user = request.POST['user']
+                        curr_t.user = request.POST.get('user')
                         curr_t.completed = False
                         curr_t.link = request.POST.get('link', "")
                         curr_t.save()

@@ -27,7 +27,7 @@ class Task(models.Model):
 		null=True,
 		blank=True,
 		choices=CATEGORIES,
-		max_length=20,
+		max_length=32,
 	)
 
 class Category(models.Model):
