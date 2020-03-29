@@ -15,6 +15,6 @@ class TaskForm(forms.Form):
                '%Y-%m-%dT%H:%M']  # '10/25/06'
     task_name = forms.CharField(label='Task Name', max_length=100)
     task_desc = forms.CharField(label='Task Description', max_length=200)
-    start_time = forms.DateTimeField(label='Start Time', input_formats=attempt)
-    end_time = forms.DateTimeField(label='End Time', input_formats=attempt)
+    due_date = forms.DateTimeField(label='Start Time', input_formats=attempt)
+    length = forms.DurationField(label='Estimated Length')
     category = forms.Select(choices= Task.CATEGORIES)

@@ -6,13 +6,13 @@ from . import models, views
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 
-def create_task(user=0, task_name="generic test", task_desc="generic test description", start_time=timezone.now(), end_time=timezone.now() +  datetime.timedelta(days=1), completed=False, category=""):
+def create_task(user=0, task_name="generic test", task_desc="generic test description", due_date=timezone.now(), length=datetime.timedelta(days=3) +  datetime.timedelta(days=1), completed=False, category=""):
     task = models.Task()
     task.user=user
     task.task_name=task_name
     task.task_desc=task_desc
-    task.start_time=start_time
-    task.end_time=end_time
+    task.due_date=due_date
+    task.length=length
     task.completed=completed
     task.category=category
     task.save()
@@ -37,9 +37,8 @@ class TaskModelTests(TestCase):
         # create task
         task_name = "test_add_task_start_after_end"
         task_desc = "test_add_task_start_after_end description"
-        start_time = timezone.now()
-        end_time = start_time - datetime.timedelta(days=3)
-        task = create_task(user=3, task_name=task_name, task_desc=task_desc, start_time=start_time, end_time=end_time)
+        due_date = timezone.now()
+        task = create_task(user=3, task_name=task_name, task_desc=task_desc, due_date=due_date)
         # try saving task with invalid dates, but directly to database, not from view
         try:
             task.save()

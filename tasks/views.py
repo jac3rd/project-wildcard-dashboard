@@ -17,7 +17,7 @@ class TaskListView(generic.ListView):
     context_object_name = 'task_list'
 
     def get_queryset(self):
-        return Task.objects.order_by('start_time')
+        return Task.objects.order_by('due_date')
 
 
 @login_required
@@ -34,12 +34,12 @@ def add_task(request):
             t.user = request.POST.get('user')
             t.task_name = request.POST.get('task_name')
             t.task_desc = request.POST.get('task_desc')
-            t.start_time = request.POST.get('start_time')
-            t.end_time = request.POST.get('end_time')
+            t.due_date = request.POST.get('due_date')
+            t.length = request.POST.get('length')
             t.category = request.POST.get('category')
             t.link = request.POST.get('link', "")
             # Ensure that the start dates are correct
-            if t.start_time < t.end_time:
+            if t.due_date < t.length:
                 t.completed = False
                 t.save()
                 if request.POST.get('repeat') == 'once':
@@ -47,9 +47,9 @@ def add_task(request):
                         curr_t = Task()
                         curr_t.task_name = request.POST.get('task_name')
                         curr_t.task_desc = request.POST.get('task_desc')
-                        curr_t.start_time = datetime.datetime.strptime(t.start_time,
+                        curr_t.due_date = datetime.datetime.strptime(t.due_date,
                                                                        '%Y-%m-%dT%H:%M')
-                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M')
+                        curr_t.length = t.length
                         curr_t.user = request.POST.get('user')
                         curr_t.completed = False
                         curr_t.link = request.POST.get('link', "")
@@ -59,11 +59,10 @@ def add_task(request):
                         curr_t = Task()
                         curr_t.task_name = request.POST['task_name']
                         curr_t.task_desc = request.POST['task_desc']
-                        curr_t.start_time = datetime.datetime.strptime(t.start_time,
+                        curr_t.due_date = datetime.datetime.strptime(t.due_date,
                                                                        '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=i)
-                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
-                            weeks=i)
+                        curr_t.length = t.length
                         curr_t.user = request.POST['user']
                         curr_t.completed = False
                         curr_t.link = request.POST.get('link', "")
@@ -73,11 +72,10 @@ def add_task(request):
                         curr_t = Task()
                         curr_t.task_name = request.POST['task_name']
                         curr_t.task_desc = request.POST['task_desc']
-                        curr_t.start_time = datetime.datetime.strptime(t.start_time,
+                        curr_t.due_date = datetime.datetime.strptime(t.due_date,
                                                                        '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=4 * i)
-                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
-                            weeks=4 * i)
+                        curr_t.length = t.length
                         curr_t.link = request.POST.get('link', "")
                         curr_t.completed = False
                         curr_t.user = request.POST['user']
@@ -87,11 +85,10 @@ def add_task(request):
                         curr_t = Task()
                         curr_t.task_name = request.POST['task_name']
                         curr_t.task_desc = request.POST['task_desc']
-                        curr_t.start_time = datetime.datetime.strptime(t.start_time,
+                        curr_t.due_date = datetime.datetime.strptime(t.due_date,
                                                                        '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=52 * i)
-                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
-                            weeks=52 * i)
+                        curr_t.length = t.length
                         curr_t.link = request.POST.get('link', "")
                         curr_t.completed = False
                         curr_t.user = request.POST['user']
