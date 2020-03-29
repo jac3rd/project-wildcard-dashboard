@@ -18,3 +18,4 @@ class TaskForm(forms.Form):
     start_time = forms.DateTimeField(label='Start Time', input_formats=attempt)
     end_time = forms.DateTimeField(label='End Time', input_formats=attempt)
     category = forms.Select(choices= Task.CATEGORIES)
+    #category = forms.ChoiceField(choices=Task.CATEGORIES)

@@ -27,8 +27,8 @@
             <input class="form-control" type="datetime-local" id="{{ form.end_time.name }}" name="{{ form.end_time.name }}">
         </div>
         <div class="form-group">
-            <label for="{{ form.category.name }}">Category</label>
-            <select name="{{ form.category.name }} " id="{{ form.category.name }}" class="custom-select">
+            <label for="category">Category</label>
+            <select name="category" id="category" class="custom-select">
             {% for choice in form.category.choices %}
                 <option value="{{ choice.0 }}">{{ choice.1 }}</option>
             {% endfor %}

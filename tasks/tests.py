@@ -148,3 +148,7 @@ class CategoryModelTests(TestCase):
         name = "test_delete_category_response"
         category = create_category(name=name)
         self.assertIsInstance(self.client.post(reverse('tasks:delete_category'), {'id': category.id}), HttpResponse)
+
+#class ListViewTests(TestCase):
+
+    # unit test asserting that stuff h
