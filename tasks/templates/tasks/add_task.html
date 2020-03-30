@@ -44,9 +44,7 @@
             <option value="monthly">Add Task Monthly</option>
             <option value="annually">Add Task Annually</option>
         </select>
-        <div class="form-group">
-            Repeat <input class="form-control" type="number" min="0" value="0" name="times" id="times" required> </input> times.
-        </div>
+        Repeat <input type="number" min="0" value="0" name="times" id="times" required> </input> times.
         {% if form.errors %}
         {% for field in form %}
         {% for error in field.errors %}
