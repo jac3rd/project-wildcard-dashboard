@@ -28,6 +28,5 @@ urlpatterns = [
     url('login/', auth_views.LoginView.as_view(), name='login'),
     url('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('add_task/', task_views.add_task, name='add_task'),
-    path('dashboard/', views.dashboard, name = 'dashboard'),
     path('', views.home, name='index'),
 ]
