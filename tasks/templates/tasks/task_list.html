@@ -170,15 +170,7 @@
             </div>
             <div class="d-block text-right card-footer">
                 <a href="{% url 'tasks:add_task' %}"><button class="btn btn-primary" id="add_button">Add Task</button></a>
-                <form action="{% url 'tasks:delete_finished' %}" method="post">
-                    {% csrf_token %}
-                <button class="btn btn-danger" id="del_all_button">Delete Finished</button>
-                </form>
-                <!--{% for task in task_list %}
-                    {% if task.completed %}
-                        <form action="{% url 'tasks:delete_task' %}" method='post' id="looped_delete_{{ task.id }}"></form>
-                    {% endif %}
-                {% endfor %} -->
+                <a href="{% url 'tasks:delete_finished' %}"><button class="btn btn-danger" id="del_all_button">Delete Finished</button></a>
             </div>
         </div>
     </div>
