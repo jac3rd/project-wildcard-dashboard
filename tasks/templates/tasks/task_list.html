@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+
 {% if request.user.is_authenticated %}
 
 <style>
@@ -16,6 +17,43 @@
 <style> .list-group-item{ padding: 12px; } </style>
 
 <h1 align="center">Hello, {{user.username}}! Good to see you :)</h1>
+
+<form action="{% url 'tasks:filter_tasks' %}" method='post'>
+    {% csrf_token %}
+    <input class="form-control" type="text" placeholder="Filtered Input" name="filter_key">
+    <div class="btn-group">
+        <button type="submit" class="btn btn-primary">
+            Filter
+        </button>
+        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <span class="sr-only">Toggle Dropdown</span>
+        </button>
+        <div class="dropdown-menu">
+          <button class="dropdown-item" type="button">Filter on the following:</button>
+          <div class="dropdown-divider"></div>
+            {% for name, real_value in fields %}
+                <div>
+                    <input type="checkbox" name="tag[]" value="{{ forloop.counter0 }}">{{ name }}
+                </div>
+            {% endfor %}
+        </div>
+      </div>
+</form>
+<!-- Example single danger button -->
+<center>
+    <form action="{% url 'tasks:index' %}" method="get">
+    <div class="btn-group">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Sort By
+        </button>
+        <div class="dropdown-menu">
+            <button type="submit" class="dropdown-item" name="sort_by" value="start_time">Start Time</button>
+            <button type="submit" class="dropdown-item" name="sort_by" value="task_name">Task Name</button>
+            <button type="submit" class="dropdown-item" name="sort_by" value="end_time">Due Date</button>
+        </div>
+    </div>
+    </form>
+</center>
 
 <div class="row d-flex justify-content-center container">
     <div class="col-md-8">

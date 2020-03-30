@@ -18,3 +18,5 @@ class TaskForm(forms.Form):
     due_date = forms.DateTimeField(label='Start Time', input_formats=attempt)
     length = forms.DurationField(label='Estimated Length')
     category = forms.Select(choices= Task.CATEGORIES)
+class FilterForm(forms.Form):
+    filter_key = forms.CharField(label='Filter Key', max_length=100)
