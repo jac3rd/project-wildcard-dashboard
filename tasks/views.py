@@ -20,9 +20,17 @@ class TaskListView(generic.ListView):
     def get_queryset(self):
         print('GET REQUEST: ', self.request.GET)
         sort_key = self.request.GET.get('sort_by', 'give-default-value')
-        if(sort_key == 'give-default-value'):
-            return Task.objects.order_by('start_time')
-        return Task.objects.order_by('-'+sort_key).reverse()
+
+        '''
+        filter_key = self.request.GET.get('filter_key', 'default')
+        filter_attr = self.request.GET.get('tag[]', 'default')
+        if(filter_key != 'default'):
+            pass
+        '''
+
+        if(sort_key != 'give-default-value'):
+            return Task.objects.order_by('-'+sort_key).reverse()
+        return Task.objects.order_by('start_time')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
