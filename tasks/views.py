@@ -28,8 +28,8 @@ class TaskListView(generic.ListView):
         '''
 
         if (sort_key != 'give-default-value'):
-            return Task.objects.filter(user=self.request.user.id).order_by('-' + sort_key).reverse()
-        return Task.objects.filter(user=self.request.user.id).order_by('start_time')
+            return Task.objects.order_by('-' + sort_key).reverse()
+        return Task.objects.order_by('start_time')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -219,9 +219,8 @@ def filter_tasks(request):
         if form.is_valid():
             check_values = request.POST.getlist('tag[]')
             filter_key = request.POST['filter_key']
-            # print('NOT VALID', request.POST['filter_key'], check_values)
-            if (filter_key.strip() == ''):
-                return render(request, 'tasks/task_list.html', {'task_list': Task.objects.all(), 'fields': field_names})
+            if(filter_key.strip() == ''):
+                return render(request, 'tasks/task_list.html', {'task_list':Task.objects.all(), 'fields':field_names})
             else:
                 arg_dict = {}
                 filtered_tasks = Task.objects.none()
@@ -230,13 +229,14 @@ def filter_tasks(request):
                     arg_dict = {field_names[int(val)][1] + '__icontains': filter_key}
                     # print(arg_dict)
                     filtered_tasks = filtered_tasks | Task.objects.all().filter(**arg_dict)
-                # filtered_tasks = Task.objects.all().filter(**arg_dict)
-                # return HttpResponseRedirect(reverse('tasks:list'))
-                return render(request, 'tasks/task_list.html', {'task_list': filtered_tasks, 'fields': field_names})
+                #filtered_tasks = Task.objects.all().filter(**arg_dict)
+                #return HttpResponseRedirect(reverse('tasks:list'))
+                return render(request, 'tasks/task_list.html', {'task_list':filtered_tasks, 'fields':field_names})
         else:
+            print('nothing to ernder')
             return HttpResponseRedirect(reverse('tasks:list'))
-
-
+          
+          
 def delete_finished(request):
     if request.user.is_authenticated:
         Task.objects.filter(user=request.user.id, completed=True).delete()
