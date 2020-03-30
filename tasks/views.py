@@ -3,7 +3,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
-from .forms import TaskForm
+from .forms import TaskForm, FilterForm
 from .models import Task, Category
 import datetime
 
@@ -194,26 +194,27 @@ def sort_tasks(request):
 
 def filter_tasks(request):
     if(request.method == 'POST'):
-        form = TaskForm(request.POST)
+        form = FilterForm(request.POST)
         field_names = [field.name for field in Task._meta.get_fields()]
+        print(request.POST, form.errors)
         if form.is_valid():
+            print('filter form valid')
             check_values = request.POST.getlist('tag[]')
             filter_key = request.POST['filter_key']
-            print('VALID', request.POST['filter_key'], check_values)
+            #print('NOT VALID', request.POST['filter_key'], check_values)
+            if(filter_key.strip() == ''):
+                return render(request, 'tasks/task_list.html', {'task_list':Task.objects.all(), 'fields':field_names})
+            else:
+                arg_dict = {}
+                filtered_tasks = Task.objects.none()
+                for val in check_values:
+                    #arg_dict[field_names[int(val)]+'__icontains'] = filter_key
+                    arg_dict = {field_names[int(val)]+'__icontains':filter_key}
+                    #print(arg_dict)
+                    filtered_tasks = filtered_tasks | Task.objects.all().filter(**arg_dict)
+                #filtered_tasks = Task.objects.all().filter(**arg_dict)
 
-            #return HttpResponseRedirect(reverse('tasks:list'))
-            return render(request, 'tasks/task_list.html', {'task_list':filtered_tasks, 'fields':field_names})
+                #return HttpResponseRedirect(reverse('tasks:list'))
+                return render(request, 'tasks/task_list.html', {'task_list':filtered_tasks, 'fields':field_names})
         else:
-            check_values = request.POST.getlist('tag[]')
-            filter_key = request.POST['filter_key']
-            print('NOT VALID', request.POST['filter_key'], check_values)
-            
-            arg_dict = {}
-            filtered_tasks = Task.objects.all().filter()
-            for val in check_values:
-                arg_dict[field_names[int(val)]+'__icontains'] = filter_key
-                #filtered_tasks = Task.objects.all().filter(task_name__icontains=filter_key)
-            filtered_tasks = Task.objects.all().filter(**arg_dict)
-
-            #return HttpResponseRedirect(reverse('tasks:list'))
-            return render(request, 'tasks/task_list.html', {'task_list':filtered_tasks, 'fields':field_names})
+            return HttpResponseRedirect(reverse('tasks:index'))
