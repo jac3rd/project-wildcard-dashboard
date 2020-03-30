@@ -41,7 +41,7 @@
 </form>
 <!-- Example single danger button -->
 <center>
-    <form action="{% url 'tasks:index' %}" method="get">
+    <form action="{% url 'tasks:list' %}" method="get">
     <div class="btn-group">
         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Sort By
@@ -50,6 +50,7 @@
             <button type="submit" class="dropdown-item" name="sort_by" value="start_time">Start Time</button>
             <button type="submit" class="dropdown-item" name="sort_by" value="task_name">Task Name</button>
             <button type="submit" class="dropdown-item" name="sort_by" value="end_time">Due Date</button>
+            <button type="submit" class="dropdown-item" name="sort_by" value="category">Category</button>
         </div>
     </div>
     </form>
@@ -85,7 +86,7 @@
                                                     <label class="custom-control-label" for="_{{ task.id }}">
                                                         {% if task.category == 'Homework' %}
                                                             <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-primary ml-2">{{ task.category }}</div></h5>
-                                                        {% elif task.category == 'Chores' %}
+                                                        {% elif task.category == 'Chore' %}
                                                             <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-warning ml-2">{{ task.category }}</div></h5>
                                                         {% elif task.category == 'Work' %}
                                                             <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-danger ml-2">{{ task.category }}</div></h5>
@@ -112,7 +113,7 @@
                                                     <label class="custom-control-label" for="__{{ task.id }}">
                                                         {% if task.category == 'Homework' %}
                                                             <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-primary ml-2">{{ task.category }}</div></h5>
-                                                        {% elif task.category == 'Chores' %}
+                                                        {% elif task.category == 'Chore' %}
                                                             <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-warning ml-2">{{ task.category }}</div></h5>
                                                         {% elif task.category == 'Work' %}
                                                             <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-danger ml-2">{{ task.category }}</div></h5>

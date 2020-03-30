@@ -17,7 +17,7 @@ class TaskListView(generic.ListView):
     context_object_name = 'task_list'
 
     def get_queryset(self):
-        print('GET REQUEST: ', self.request.GET)
+        #print('GET REQUEST: ', self.request.GET)
         sort_key = self.request.GET.get('sort_by', 'give-default-value')
 
         '''
@@ -218,12 +218,10 @@ def filter_tasks(request):
                 field_names.append((val, val))
 
         if form.is_valid():
-            print('filter form valid')
             check_values = request.POST.getlist('tag[]')
             filter_key = request.POST['filter_key']
-            # print('NOT VALID', request.POST['filter_key'], check_values)
-            if (filter_key.strip() == ''):
-                return render(request, 'tasks/task_list.html', {'task_list': Task.objects.all(), 'fields': field_names})
+            if(filter_key.strip() == ''):
+                return render(request, 'tasks/task_list.html', {'task_list':Task.objects.all(), 'fields':field_names})
             else:
                 arg_dict = {}
                 filtered_tasks = Task.objects.none()
@@ -232,14 +230,14 @@ def filter_tasks(request):
                     arg_dict = {field_names[int(val)][1] + '__icontains': filter_key}
                     # print(arg_dict)
                     filtered_tasks = filtered_tasks | Task.objects.all().filter(**arg_dict)
-                # filtered_tasks = Task.objects.all().filter(**arg_dict)
-
-                # return HttpResponseRedirect(reverse('tasks:list'))
-                return render(request, 'tasks/task_list.html', {'task_list': filtered_tasks, 'fields': field_names})
+                #filtered_tasks = Task.objects.all().filter(**arg_dict)
+                #return HttpResponseRedirect(reverse('tasks:list'))
+                return render(request, 'tasks/task_list.html', {'task_list':filtered_tasks, 'fields':field_names})
         else:
-            return HttpResponseRedirect(reverse('tasks:index'))
-
-
+            print('nothing to ernder')
+            return HttpResponseRedirect(reverse('tasks:list'))
+          
+          
 def delete_finished(request):
     if request.user.is_authenticated:
         Task.objects.filter(user=request.user.id, completed=True).delete()
