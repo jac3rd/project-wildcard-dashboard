@@ -81,6 +81,7 @@ def add_task(request):
                         curr_t.user = request.POST.get('user')
                         curr_t.completed = False
                         curr_t.link = request.POST.get('link', "")
+                        curr_t.category = request.POST.get('category')
                         curr_t.save()
                 if request.POST.get('repeat') == 'weekly':
                     for i in range(1, int(request.POST.get('times')) + 1):
