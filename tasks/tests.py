@@ -104,7 +104,10 @@ class TaskModelTests(TestCase):
         task.save()
         list_of_tasks = models.Task.objects
         self.assertIs(list_of_tasks.get(id=task.id).category == category, True)
+
     
+
+
 def create_category(user=0, name="generic category"):
     category = models.Category()
     category.user = user
