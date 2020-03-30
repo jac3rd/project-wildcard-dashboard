@@ -34,9 +34,16 @@ class TaskListView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['fields'] = [field.name for field in Task._meta.get_fields()]
-        #context['fields'] = ['asdfasdf', 'sadfasfasd', 'asdfasf']
-        #print(context)
+        context['fields'] = []
+        for field in Task._meta.get_fields():
+            val = field.name
+            if(val == 'id' or val == 'user'):
+                continue
+            elif('_' in val):
+                context['fields'].append((val.replace('_', ' '), val))
+                continue
+            else:
+                context['fields'].append((val, val))
         return context
 
 
@@ -195,8 +202,17 @@ def sort_tasks(request):
 def filter_tasks(request):
     if(request.method == 'POST'):
         form = FilterForm(request.POST)
-        field_names = [field.name for field in Task._meta.get_fields()]
-        print(request.POST, form.errors)
+        field_names = []
+        for field in Task._meta.get_fields():
+            val = field.name
+            if(val == 'id' or val == 'user'):
+                continue
+            elif('_' in val):
+                field_names.append((val.replace('_', ' '), val))
+                continue
+            else:
+                field_names.append((val, val))
+
         if form.is_valid():
             print('filter form valid')
             check_values = request.POST.getlist('tag[]')
@@ -209,7 +225,7 @@ def filter_tasks(request):
                 filtered_tasks = Task.objects.none()
                 for val in check_values:
                     #arg_dict[field_names[int(val)]+'__icontains'] = filter_key
-                    arg_dict = {field_names[int(val)]+'__icontains':filter_key}
+                    arg_dict = {field_names[int(val)][1]+'__icontains':filter_key}
                     #print(arg_dict)
                     filtered_tasks = filtered_tasks | Task.objects.all().filter(**arg_dict)
                 #filtered_tasks = Task.objects.all().filter(**arg_dict)

@@ -31,7 +31,7 @@
         <div class="dropdown-menu">
           <button class="dropdown-item" type="button">Filter on the following:</button>
           <div class="dropdown-divider"></div>
-            {% for name in fields %}
+            {% for name, real_value in fields %}
                 <div>
                     <input type="checkbox" name="tag[]" value="{{ forloop.counter0 }}">{{ name }}
                 </div>
