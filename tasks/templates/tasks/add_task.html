@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="container-md">
+<div class="container-fluid">
     <h3>Add a Task:</h3>
     {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
     <form action="{% url 'tasks:add_task' %}" method='post'>
     {% csrf_token %}
-        <input type="hidden" value="{{user.id}}" id="user" name="user">
+        <input type="hidden" value="{{ user.id }}" id="user" name="user">
         <div class="form-group">
             <label for="{{ form.task_name.name }}">Task Name</label>
             <input class="form-control" type="text" id="{{ form.task_name.name }}" name="{{ form.task_name.name }}">
@@ -35,16 +35,18 @@
             </select>
 
         </div>
-        <button class="btn-primary" type="submit">
+        <button class="btn btn-primary" type="submit">
             Submit
         </button>
-        <select id="repeat" name="repeat">
+        <select class="custom-select" id="repeat" name="repeat">
             <option value="once">Add Task</option>
             <option value="weekly">Add Task Weekly</option>
             <option value="monthly">Add Task Monthly</option>
             <option value="annually">Add Task Annually</option>
         </select>
-        Repeat <input type="number" min="0" value="0" name="times" id="times" required> </input> times.
+        <div class="form-group">
+            Repeat <input class="form-control" type="number" min="0" value="0" name="times" id="times" required> </input> times.
+        </div>
         {% if form.errors %}
         {% for field in form %}
         {% for error in field.errors %}
