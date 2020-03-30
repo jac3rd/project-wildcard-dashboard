@@ -46,8 +46,6 @@ class TaskListView(generic.ListView):
                 context['fields'].append((val, val))
         return context
 
-
-
 @login_required
 def add_task(request):
     """
@@ -233,3 +231,9 @@ def filter_tasks(request):
         else:
             print('nothing to ernder')
             return HttpResponseRedirect(reverse('tasks:list'))
+
+# Function to remove all selected tasks in the task list view
+@login_required
+def delete_all_selected_tasks(request):
+    Task.objects.queryset(user=request.user.id, completed=True).delete();
+    return HttpResponseRedirect(reverse('tasks:list'))
