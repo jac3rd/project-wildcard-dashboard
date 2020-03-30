@@ -1,5 +1,5 @@
 from django import forms
-from .models import Task
+from .models import Task, Category
 
 class TaskForm(forms.Form):
     #Reformats the html input to work with the django datetime field

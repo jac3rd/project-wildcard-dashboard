@@ -64,7 +64,7 @@ def add_task(request):
                 t.completed = False
                 t.save()
                 if request.POST.get('repeat') == 'once':
-                    for i in range(1, int(request.POST['times']) + 1):
+                    for i in range(1, int(request.POST.get('times')) + 1):
                         curr_t = Task()
                         curr_t.task_name = request.POST.get('task_name')
                         curr_t.task_desc = request.POST.get('task_desc')

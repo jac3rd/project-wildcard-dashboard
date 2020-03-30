@@ -16,18 +16,20 @@ class Task(models.Model):
 	WORK = 'work'
 	ERRAND = 'errand'
 	LIFESTYLE = 'life'
+	OTHERS = 'others'
 	CATEGORIES = [
 		(HOMEWORK, 'Homework'),
 		(CHORE, 'Chore'),
 		(WORK, 'Work'),
 		(ERRAND, 'Errand'),
 		(LIFESTYLE, 'Lifestyle'),
+		(OTHERS, 'Others'),
 	]
 	category = models.CharField(
 		null=True,
 		blank=True,
 		choices=CATEGORIES,
-		max_length=20,
+		max_length=32,
 	)
 
 	
