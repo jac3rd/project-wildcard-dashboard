@@ -30,8 +30,6 @@ class Task(models.Model):
 		max_length=20,
 	)
 
-	def get_fields(self):
-		return [(field.name, field.value_to_string(self)) for field in Task._meta.fields]
 	
 
 class Category(models.Model):

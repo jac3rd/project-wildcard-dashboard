@@ -23,7 +23,7 @@
     <input class="form-control" type="text" placeholder="Filtered Input" name="filter_key">
     <div class="btn-group">
         <button type="submit" class="btn btn-primary">
-            Action
+            Filter
         </button>
         <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           <span class="sr-only">Toggle Dropdown</span>
@@ -41,17 +41,18 @@
 </form>
 <!-- Example single danger button -->
 <center>
+    <form action="{% url 'tasks:index' %}" method="get">
     <div class="btn-group">
-        
         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Sort By
         </button>
         <div class="dropdown-menu">
-        <a class="dropdown-item" href="{% url 'tasks:sort_tasks' %}?sort_by=start_time">Start Time</a>
-        <a class="dropdown-item" href="{% url 'tasks:sort_tasks' %}?sort_by=task_name">Task Name</a>
-        <a class="dropdown-item" href="{% url 'tasks:sort_tasks' %}?sort_by=end_time">Due Date</a>
+            <button type="submit" class="dropdown-item" name="sort_by" value="start_time">Start Time</button>
+            <button type="submit" class="dropdown-item" name="sort_by" value="task_name">Task Name</button>
+            <button type="submit" class="dropdown-item" name="sort_by" value="end_time">Due Date</button>
         </div>
     </div>
+    </form>
 </center>
 
 <div class="row d-flex justify-content-center container">

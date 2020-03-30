@@ -18,7 +18,11 @@ class TaskListView(generic.ListView):
 
 
     def get_queryset(self):
-        return Task.objects.order_by('start_time')
+        print('GET REQUEST: ', self.request.GET)
+        sort_key = self.request.GET.get('sort_by', 'give-default-value')
+        if(sort_key == 'give-default-value'):
+            return Task.objects.order_by('start_time')
+        return Task.objects.order_by('-'+sort_key).reverse()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -122,7 +126,7 @@ def check_off(request):
         task = Task.objects.get(pk=task_id)
         task.completed = True
         task.save()
-    return HttpResponseRedirect(reverse('tasks:list'))
+    return HttpResponseRedirect(reverse('tasks:index'))
 
 
 def uncheck(request):
@@ -170,15 +174,15 @@ def index(request):
 
     return render(request, 'tasks/task_list.html', context)
 
+'''
 def sort_tasks(request):
     if(request.method == 'GET'):
         sort_key = request.GET["sort_by"]
-        #context = {
-        #    'tasks': Task.objects.order_by('-'+sort_key)
-        #}
         ordered_tasks = Task.objects.all().order_by('-'+sort_key).reverse()
         return render(request, 'tasks/task_list.html', {'task_list':ordered_tasks, 'fields':[field.name for field in Task._meta.get_fields()]})
+        #return HttpResponseRedirect(reverse('tasks:index', kwargs={'task_list':ordered_tasks, 'fields':[field.name for field in Task._meta.get_fields()]}))
     return HttpResponseRedirect(reverse('tasks:index'))
+'''
 
 def filter_tasks(request):
     if(request.method == 'POST'):
