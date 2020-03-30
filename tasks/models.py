@@ -11,24 +11,28 @@ class Task(models.Model):
 	end_time = models.DateTimeField('end time')
 	completed = models.BooleanField('completed')
 	link = models.URLField(default="")
-	HOMEWORK = 'hw'
-	CHORE = 'chore'
-	WORK = 'work'
-	ERRAND = 'errand'
-	LIFESTYLE = 'life'
+	HOMEWORK = 'Homework'
+	CHORE = 'Chore'
+	WORK = 'Work'
+	ERRAND = 'Errand'
+	LIFESTYLE = 'Life'
+	OTHERS = 'Other'
 	CATEGORIES = [
 		(HOMEWORK, 'Homework'),
 		(CHORE, 'Chore'),
 		(WORK, 'Work'),
 		(ERRAND, 'Errand'),
 		(LIFESTYLE, 'Lifestyle'),
+		(OTHERS, 'Others'),
 	]
 	category = models.CharField(
 		null=True,
 		blank=True,
 		choices=CATEGORIES,
-		max_length=20,
+		max_length=32,
 	)
+
+	
 
 class Category(models.Model):
 	name = models.CharField(max_length=32)
