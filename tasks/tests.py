@@ -105,7 +105,33 @@ class TaskModelTests(TestCase):
         list_of_tasks = models.Task.objects
         self.assertIs(list_of_tasks.get(id=task.id).category == category, True)
 
-    
+    # unit test asserting that filtering posts a 200 status code 
+    def test_filter_tasks(self):
+        task_name = "task1"
+        task_desc = "no task in desc"
+        category = "Homework"
+        task = create_task(task_name=task_name, task_desc=task_desc, category=category)
+        task.save()
+        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]':['1','2','3'], 'filter_key':'task'})
+        self.assertEqual(resp.status_code, 200)
+
+
+    # unit test to test sorting, returns code 200 if successful
+    def test_sorting_tasks(self):
+        task_name = "task1"
+        task_desc = "2 earlier task name, later task desc"
+        category = "Homework"
+        task1 = create_task(task_name=task_name, task_desc=task_desc, category=category)
+        task1.save()
+        task_name = "task2"
+        task_desc = "1 later task name, earlier task desc"
+        category = "Homework"
+        task2 = create_task(task_name=task_name, task_desc=task_desc, category=category)
+        task2.save()
+
+        resp = self.client.get(reverse('tasks:index'), {'sort_by':'task_desc'})
+        self.assertEqual(resp.status_code, 200)
+
 
 
 def create_category(user=0, name="generic category"):

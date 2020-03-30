@@ -18,7 +18,7 @@ class TaskListView(generic.ListView):
 
 
     def get_queryset(self):
-        print('GET REQUEST: ', self.request.GET)
+        #print('GET REQUEST: ', self.request.GET)
         sort_key = self.request.GET.get('sort_by', 'give-default-value')
 
         '''
@@ -214,7 +214,7 @@ def filter_tasks(request):
                 field_names.append((val, val))
 
         if form.is_valid():
-            print('filter form valid')
+            #print('filter form valid')
             check_values = request.POST.getlist('tag[]')
             filter_key = request.POST['filter_key']
             #print('NOT VALID', request.POST['filter_key'], check_values)
@@ -229,7 +229,6 @@ def filter_tasks(request):
                     #print(arg_dict)
                     filtered_tasks = filtered_tasks | Task.objects.all().filter(**arg_dict)
                 #filtered_tasks = Task.objects.all().filter(**arg_dict)
-
                 #return HttpResponseRedirect(reverse('tasks:list'))
                 return render(request, 'tasks/task_list.html', {'task_list':filtered_tasks, 'fields':field_names})
         else:
