@@ -12,7 +12,7 @@ class Task(models.Model):
 	completed = models.BooleanField('completed')
 	link = models.URLField(default="")
 	HOMEWORK = 'Homework'
-	CHORE = 'Chores'
+	CHORE = 'Chore'
 	WORK = 'Work'
 	ERRAND = 'Errand'
 	LIFESTYLE = 'Life'

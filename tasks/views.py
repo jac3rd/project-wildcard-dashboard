@@ -232,4 +232,4 @@ def filter_tasks(request):
                 return render(request, 'tasks/task_list.html', {'task_list':filtered_tasks, 'fields':field_names})
         else:
             print('nothing to ernder')
-            return HttpResponseRedirect(reverse('tasks:index'))
+            return HttpResponseRedirect(reverse('tasks:list'))
