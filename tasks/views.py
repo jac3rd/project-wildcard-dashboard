@@ -214,10 +214,8 @@ def filter_tasks(request):
                 field_names.append((val, val))
 
         if form.is_valid():
-            #print('filter form valid')
             check_values = request.POST.getlist('tag[]')
             filter_key = request.POST['filter_key']
-            #print('NOT VALID', request.POST['filter_key'], check_values)
             if(filter_key.strip() == ''):
                 return render(request, 'tasks/task_list.html', {'task_list':Task.objects.all(), 'fields':field_names})
             else:
@@ -232,4 +230,5 @@ def filter_tasks(request):
                 #return HttpResponseRedirect(reverse('tasks:list'))
                 return render(request, 'tasks/task_list.html', {'task_list':filtered_tasks, 'fields':field_names})
         else:
+            print('nothing to ernder')
             return HttpResponseRedirect(reverse('tasks:index'))
