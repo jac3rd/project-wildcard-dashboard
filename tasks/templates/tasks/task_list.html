@@ -187,9 +187,10 @@
             </div>
             <div class="d-block text-right card-footer">
                 <a href="{% url 'tasks:add_task' %}"><button class="btn btn-primary" id="add_button">Add Task</button></a>
-                <form action=""
+                <form action="{% url 'tasks:delete_finished' %}" method="post">
+                    {% csrf_token %}
                 <button class="btn btn-danger" id="del_all_button">Delete Finished</button>
-
+                </form>
             </div>
         </div>
     </div>
