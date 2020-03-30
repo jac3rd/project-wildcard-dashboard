@@ -113,7 +113,7 @@
                                                     <label class="custom-control-label" for="__{{ task.id }}">
                                                         {% if task.category == 'Homework' %}
                                                             <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-primary ml-2">{{ task.category }}</div></h5>
-                                                        {% elif task.category == 'Chores' %}
+                                                        {% elif task.category == 'Chore' %}
                                                             <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-warning ml-2">{{ task.category }}</div></h5>
                                                         {% elif task.category == 'Work' %}
                                                             <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-danger ml-2">{{ task.category }}</div></h5>
