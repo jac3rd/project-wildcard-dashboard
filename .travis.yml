@@ -8,6 +8,8 @@ before_script:
 #- psql -c "create user dashboard_user with password '123';" -U postgres
 - cp dashboard/travissettings.py dashboard/settings.py
 script:
+- python manage.py makemigrations
+- python manage.py migrate
 - python manage.py test
 deploy:
   provider: heroku
