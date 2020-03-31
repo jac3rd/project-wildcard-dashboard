@@ -84,21 +84,29 @@
                                                     <input class="custom-control-input" type="checkbox" id="_{{ task.id }}"
                                                            onclick="document.getElementById('check_{{ task.id }}').submit();">
                                                     <label class="custom-control-label" for="_{{ task.id }}">
-                                                        {% if task.category == 'Homework' %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-primary ml-2">{{ task.category }}</div></h5>
-                                                        {% elif task.category == 'Chore' %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-warning ml-2">{{ task.category }}</div></h5>
-                                                        {% elif task.category == 'Work' %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-danger ml-2">{{ task.category }}</div></h5>
-                                                        {% elif task.category == 'Errand' %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-info ml-2">{{ task.category }}</div></h5>
-                                                        {% elif task.category == 'Life' %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-success ml-2">{{ task.category }}</div></h5>
-                                                        {% elif task.category == 'Other' %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-secondary ml-2">{{ task.category }}</div></h5>
+                                                        <h5 class="widget-heading">
+                                                        {% if task.link == '' %}
+                                                            {{ task.task_name }}
                                                         {% else %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-light ml-2">Category</div></h5>
+                                                            <a href="{{ task.link }}">{{ task.task_name }}</a>
                                                         {% endif %}
+
+                                                        {% if task.category == 'Homework' %}
+                                                            <div class="badge badge-primary ml-2">{{ task.category }}</div>
+                                                        {% elif task.category == 'Chores' %}
+                                                            <div class="badge badge-warning ml-2">{{ task.category }}</div>
+                                                        {% elif task.category == 'Work' %}
+                                                            <div class="badge badge-danger ml-2">{{ task.category }}</div>
+                                                        {% elif task.category == 'Errand' %}
+                                                           <div class="badge badge-info ml-2">{{ task.category }}</div>
+                                                        {% elif task.category == 'Life' %}
+                                                            <div class="badge badge-success ml-2">{{ task.category }}</div>
+                                                        {% elif task.category == 'Other' %}
+                                                            <div class="badge badge-secondary ml-2">{{ task.category }}</div>
+                                                        {% else %}
+                                                            <div class="badge badge-light ml-2">Category</div>
+                                                        {% endif %}
+                                                        </h5>
                                                     </label>
                                                 </div>
 
@@ -111,21 +119,29 @@
                                                     <input class="custom-control-input" type="checkbox" id="__{{ task.id }}"
                                                            onclick="document.getElementById('uncheck_{{ task.id }}').submit();" checked>
                                                     <label class="custom-control-label" for="__{{ task.id }}">
-                                                        {% if task.category == 'Homework' %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-primary ml-2">{{ task.category }}</div></h5>
-                                                        {% elif task.category == 'Chore' %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-warning ml-2">{{ task.category }}</div></h5>
-                                                        {% elif task.category == 'Work' %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-danger ml-2">{{ task.category }}</div></h5>
-                                                        {% elif task.category == 'Errand' %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-info ml-2">{{ task.category }}</div></h5>
-                                                        {% elif task.category == 'Life' %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-success ml-2">{{ task.category }}</div></h5>
-                                                        {% elif task.category == 'Other' %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-secondary ml-2">{{ task.category }}</div></h5>
+                                                        <h5 class="widget-heading">
+                                                        {% if task.link == '' %}
+                                                            {{ task.task_name }}
                                                         {% else %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-light ml-2">Category</div></h5>
+                                                            <a href="{{ task.link }}">{{ task.task_name }}</a>
                                                         {% endif %}
+
+                                                        {% if task.category == 'Homework' %}
+                                                            <div class="badge badge-primary ml-2">{{ task.category }}</div>
+                                                        {% elif task.category == 'Chores' %}
+                                                            <div class="badge badge-warning ml-2">{{ task.category }}</div>
+                                                        {% elif task.category == 'Work' %}
+                                                            <div class="badge badge-danger ml-2">{{ task.category }}</div>
+                                                        {% elif task.category == 'Errand' %}
+                                                           <div class="badge badge-info ml-2">{{ task.category }}</div>
+                                                        {% elif task.category == 'Life' %}
+                                                            <div class="badge badge-success ml-2">{{ task.category }}</div>
+                                                        {% elif task.category == 'Other' %}
+                                                            <div class="badge badge-secondary ml-2">{{ task.category }}</div>
+                                                        {% else %}
+                                                            <div class="badge badge-light ml-2">Category</div>
+                                                        {% endif %}
+                                                        </h5>
                                                         <h5 class="widget-heading" style="color:green">COMPLETE!</h5>
                                                     </label>
                                                 </div>
@@ -171,7 +187,7 @@
             </div>
             <div class="d-block text-right card-footer">
                 <a href="{% url 'tasks:add_task' %}"><button class="btn btn-primary" id="add_button">Add Task</button></a>
-                <a href="{% url 'tasks:delete_finished' %}"><button class="btn btn-danger" id="del_all_button">Delete Finished</button></a>
+                <a href="{% url 'tasks:archive_finished' %}"><button class="btn btn-danger" id="del_all_button">Archive Finished</button></a>
             </div>
         </div>
     </div>
