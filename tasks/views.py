@@ -1,4 +1,6 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count
+from django.db.models.functions import Cast
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -6,6 +8,9 @@ from django.views import generic
 from .forms import TaskForm, FilterForm
 from .models import Task, Category
 import datetime
+from graphos.renderers.gchart import LineChart
+from graphos.sources.model import ModelDataSource, SimpleDataSource
+from django.db.models import DateField
 
 
 # Create your views here.
@@ -17,7 +22,7 @@ class TaskListView(generic.ListView):
     context_object_name = 'task_list'
 
     def get_queryset(self):
-        #print('GET REQUEST: ', self.request.GET)
+        # print('GET REQUEST: ', self.request.GET)
         sort_key = self.request.GET.get('sort_by', 'give-default-value')
 
         '''
@@ -44,6 +49,7 @@ class TaskListView(generic.ListView):
             else:
                 context['fields'].append((val, val))
         return context
+
 
 @login_required
 def add_task(request):
@@ -219,8 +225,8 @@ def filter_tasks(request):
         if form.is_valid():
             check_values = request.POST.getlist('tag[]')
             filter_key = request.POST['filter_key']
-            if(filter_key.strip() == ''):
-                return render(request, 'tasks/task_list.html', {'task_list':Task.objects.all(), 'fields':field_names})
+            if (filter_key.strip() == ''):
+                return render(request, 'tasks/task_list.html', {'task_list': Task.objects.all(), 'fields': field_names})
             else:
                 arg_dict = {}
                 filtered_tasks = Task.objects.none()
@@ -229,15 +235,34 @@ def filter_tasks(request):
                     arg_dict = {field_names[int(val)][1] + '__icontains': filter_key}
                     # print(arg_dict)
                     filtered_tasks = filtered_tasks | Task.objects.all().filter(**arg_dict)
-                #filtered_tasks = Task.objects.all().filter(**arg_dict)
-                #return HttpResponseRedirect(reverse('tasks:list'))
-                return render(request, 'tasks/task_list.html', {'task_list':filtered_tasks, 'fields':field_names})
+                # filtered_tasks = Task.objects.all().filter(**arg_dict)
+                # return HttpResponseRedirect(reverse('tasks:list'))
+                return render(request, 'tasks/task_list.html', {'task_list': filtered_tasks, 'fields': field_names})
         else:
             print('nothing to ernder')
             return HttpResponseRedirect(reverse('tasks:list'))
-          
-          
+
+
 def archive_finished(request):
     if request.user.is_authenticated:
         Task.objects.filter(user=request.user.id, completed=True).update(archived=True)
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@login_required
+def stats(request):
+    recentTasks = Task.objects.filter(user=request.user.id, completed=True,
+                                      end_time__gt=datetime.datetime.now() - datetime.timedelta(weeks=2)).annotate(
+        date_only=Cast('end_time', DateField())).values(
+        'date_only').annotate(total=Count('date_only')).order_by('date_only')
+    # recently_finished = ModelDataSource(recentTasks, fields=['total', 'end_time'])
+    data = [
+        ['Date', 'Total Completed']
+    ]
+    for dates in recentTasks:
+        data.append([dates['date_only'], dates['total']
+                     ])
+    recently_finished = SimpleDataSource(data)
+    recently_finished_chart = LineChart(recently_finished)
+    context = {'chart': recently_finished_chart}
+    return render(request, 'tasks/stats.html', context)

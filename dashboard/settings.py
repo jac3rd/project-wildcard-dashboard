@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'social_django',
+    'graphos',
 ]
 # Social auth settings
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
@@ -118,14 +119,14 @@ TEMPLATES = [
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'PORT': '5432',
-        'NAME': 'dashboard',
-        'USER': 'dashboard_user',
-        'PASSWORD': '123',
-        'HOST': 'localhost',
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        # 'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        # 'PORT': '5432',
+        # 'NAME': 'dashboard',
+        # 'USER': 'dashboard_user',
+        # 'PASSWORD': '123',
+        # 'HOST': 'localhost',
     }   
 }
 
