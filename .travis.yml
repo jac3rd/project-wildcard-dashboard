@@ -1,7 +1,6 @@
 language: python
 install:
 - pip install -r requirements.txt
-- pip install git+https://github.com/hcars/django-graphos.git@master
 services:
 - postgresql
 before_script:
