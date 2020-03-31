@@ -10,6 +10,7 @@ class Task(models.Model):
 	start_time = models.DateTimeField('start time')
 	end_time = models.DateTimeField('end time')
 	completed = models.BooleanField('completed')
+	archived = models.BooleanField('archived', default=False)
 	link = models.URLField(default="")
 	HOMEWORK = 'Homework'
 	CHORE = 'Chore'
