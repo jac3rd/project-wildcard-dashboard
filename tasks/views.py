@@ -16,7 +16,6 @@ class TaskListView(generic.ListView):
     template_name = 'tasks/task_list.html'
     context_object_name = 'task_list'
 
-
     def get_queryset(self):
         #print('GET REQUEST: ', self.request.GET)
         sort_key = self.request.GET.get('sort_by', 'give-default-value')
@@ -28,25 +27,23 @@ class TaskListView(generic.ListView):
             pass
         '''
 
-        if(sort_key != 'give-default-value'):
-            return Task.objects.order_by('-'+sort_key).reverse()
-        return Task.objects.order_by('start_time')
+        if (sort_key != 'give-default-value'):
+            return Task.objects.filter(user=self.request.user.id, archived=False).order_by('-' + sort_key).reverse()
+        return Task.objects.filter(user=self.request.user.id, archived=False).order_by('start_time')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['fields'] = []
         for field in Task._meta.get_fields():
             val = field.name
-            if(val == 'id' or val == 'user'):
+            if (val == 'id' or val == 'user'):
                 continue
-            elif('_' in val):
+            elif ('_' in val):
                 context['fields'].append((val.replace('_', ' '), val))
                 continue
             else:
                 context['fields'].append((val, val))
         return context
-
-
 
 @login_required
 def add_task(request):
@@ -166,6 +163,7 @@ def delete_task(request):
         task.delete()
     return HttpResponseRedirect(reverse('tasks:index'))
 
+
 def add_category(request):
     if request.method == 'POST':
         category = Category()
@@ -174,12 +172,14 @@ def add_category(request):
         category.save()
     return HttpResponse("add_category")
 
+
 def delete_category(request):
     if request.method == 'POST':
         id = request.POST['id']
         category = Category.objects.get(pk=id)
         category.delete()
     return HttpResponse("delete_category")
+
 
 @login_required
 def index(request):
@@ -189,6 +189,7 @@ def index(request):
     }
 
     return render(request, 'tasks/task_list.html', context)
+
 
 '''
 def sort_tasks(request):
@@ -200,15 +201,16 @@ def sort_tasks(request):
     return HttpResponseRedirect(reverse('tasks:index'))
 '''
 
+
 def filter_tasks(request):
-    if(request.method == 'POST'):
+    if (request.method == 'POST'):
         form = FilterForm(request.POST)
         field_names = []
         for field in Task._meta.get_fields():
             val = field.name
-            if(val == 'id' or val == 'user'):
+            if (val == 'id' or val == 'user'):
                 continue
-            elif('_' in val):
+            elif ('_' in val):
                 field_names.append((val.replace('_', ' '), val))
                 continue
             else:
@@ -223,9 +225,9 @@ def filter_tasks(request):
                 arg_dict = {}
                 filtered_tasks = Task.objects.none()
                 for val in check_values:
-                    #arg_dict[field_names[int(val)]+'__icontains'] = filter_key
-                    arg_dict = {field_names[int(val)][1]+'__icontains':filter_key}
-                    #print(arg_dict)
+                    # arg_dict[field_names[int(val)]+'__icontains'] = filter_key
+                    arg_dict = {field_names[int(val)][1] + '__icontains': filter_key}
+                    # print(arg_dict)
                     filtered_tasks = filtered_tasks | Task.objects.all().filter(**arg_dict)
                 #filtered_tasks = Task.objects.all().filter(**arg_dict)
                 #return HttpResponseRedirect(reverse('tasks:list'))
@@ -233,3 +235,9 @@ def filter_tasks(request):
         else:
             print('nothing to ernder')
             return HttpResponseRedirect(reverse('tasks:list'))
+          
+          
+def archive_finished(request):
+    if request.user.is_authenticated:
+        Task.objects.filter(user=request.user.id, completed=True).update(archived=True)
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))

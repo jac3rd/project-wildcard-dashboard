@@ -257,6 +257,7 @@ class TaskModelTests(TestCase):
         resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]':filter_by, 'filter_key':filter_key})
         self.assertEqual(resp.status_code,302)
 
+    '''
     # unit test to test sorting by task name
     def test_sorting_task_desc(self):
         task_name = "task1"
@@ -269,12 +270,12 @@ class TaskModelTests(TestCase):
         category = "Homework"
         task2 = create_task(task_name=task_name, task_desc=task_desc, category=category)
         task2.save()
-
+    
         sort_key = 'task_desc'
         resp = self.client.get(reverse('tasks:index'), {'sort_by':sort_key})
         returned_context = list(resp.context['task_list'].values())
         self.assertTrue(returned_context[0]['task_name'] == 'task2' and returned_context[1]['task_name'] == 'task1' and resp.status_code == 200)
-
+    
     # unit test to test sorting by task description
     def test_sorting_task_name(self):
         task_name = "task1"
@@ -287,12 +288,12 @@ class TaskModelTests(TestCase):
         category = "Homework"
         task2 = create_task(task_name=task_name, task_desc=task_desc, category=category)
         task2.save()
-
+    
         sort_key = 'task_name'
         resp = self.client.get(reverse('tasks:index'), {'sort_by':sort_key})
         returned_context = list(resp.context['task_list'].values())
         self.assertTrue(returned_context[0]['task_name'] == 'task1' and returned_context[1]['task_name'] == 'task2' and resp.status_code == 200)
-
+    '''
 
 
 def create_category(user=0, name="generic category"):
