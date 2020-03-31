@@ -17,7 +17,7 @@
 <style> .list-group-item{ padding: 12px; } </style>
 
 <h1 align="center">Hello, {{user.username}}! Good to see you :)</h1>
-
+<br> <h2><a class="nav-item nav-link" href="{% url 'tasks:stats' %}">View Stats</a></h2>
 <form action="{% url 'tasks:filter_tasks' %}" method='post'>
     {% csrf_token %}
     <input class="form-control" type="text" placeholder="Filtered Input" name="filter_key">
