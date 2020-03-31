@@ -6,12 +6,11 @@ from . import models, views
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 
-def create_task(user=0, task_name="generic test", task_desc="generic test description", start_time=timezone.now(), end_time=timezone.now() +  datetime.timedelta(days=1), completed=False, category=""):
+def create_task(user=0, task_name="generic test", task_desc="generic test description", end_time=timezone.now(), completed=False, category=""):
     task = models.Task()
     task.user=user
     task.task_name=task_name
     task.task_desc=task_desc
-    task.start_time=start_time
     task.end_time=end_time
     task.completed=completed
     task.category=category
@@ -37,9 +36,8 @@ class TaskModelTests(TestCase):
         # create task
         task_name = "test_add_task_start_after_end"
         task_desc = "test_add_task_start_after_end description"
-        start_time = timezone.now()
-        end_time = start_time - datetime.timedelta(days=3)
-        task = create_task(user=3, task_name=task_name, task_desc=task_desc, start_time=start_time, end_time=end_time)
+        end_time = timezone.now()
+        task = create_task(user=3, task_name=task_name, task_desc=task_desc, end_time=end_time)
         # try saving task with invalid dates, but directly to database, not from view
         try:
             task.save()
@@ -108,7 +106,6 @@ class TaskModelTests(TestCase):
     # unit test asserting that filtering works correctly when filtering by just task name and with filter key example 'task'
     # tag0 = task_name
     # tag1 = task_desc
-    # tag3 = start_time
     # tag4 = end_time
     def test_filter_task_name(self):
         task_name1 = "task in name but not desc"
@@ -139,7 +136,6 @@ class TaskModelTests(TestCase):
     # unit test asserting that filtering posts a 200 status code and works filtering against task_desc with keyword 'task'
     # tag0 = task_name
     # tag1 = task_desc
-    # tag3 = start_time
     # tag4 = end_time
     def test_filter_task_desc(self):
         task_name1 = "task in name but not desc"
@@ -170,7 +166,6 @@ class TaskModelTests(TestCase):
     # unit test asserting that filtering posts a 200 status code and works filtering against both task_name and desc with keyword task
     # tag0 = task_name
     # tag1 = task_desc
-    # tag3 = start_time
     # tag4 = end_time
     def test_filter_task_name_and_desc(self):
         task_name1 = "task in name but not desc"
@@ -201,7 +196,6 @@ class TaskModelTests(TestCase):
     # unit test asserting that filtering posts a 200 status code and works filtering against a totally arbitrary keyword
     # tag0 = task_name
     # tag1 = task_desc
-    # tag3 = start_time
     # tag4 = end_time
     def test_filter_task_arbitrary_keyword(self):
         task_name1 = "task in name but not desc"
@@ -231,7 +225,6 @@ class TaskModelTests(TestCase):
     # unit test asserting that filtering posts a 200 status code and filtering on no keyword returns original list
     # tag0 = task_name
     # tag1 = task_desc
-    # tag3 = start_time
     # tag4 = end_time
     def test_filter_task_nothing(self):
         task_name1 = "task in name but not desc"
