@@ -47,7 +47,6 @@
         Sort By
         </button>
         <div class="dropdown-menu">
-            <button type="submit" class="dropdown-item" name="sort_by" value="start_time">Start Time</button>
             <button type="submit" class="dropdown-item" name="sort_by" value="task_name">Task Name</button>
             <button type="submit" class="dropdown-item" name="sort_by" value="end_time">Due Date</button>
             <button type="submit" class="dropdown-item" name="sort_by" value="category">Category</button>
@@ -174,7 +173,7 @@
                                         </div>
                                     </div>
                                     <p class="mb-1">{{ task.task_desc }}</p>
-                                    <div class="widget-heading"><b>DUE DATE: {{ task.end_time }}</b></div>
+                                    <div class="widget-heading"><b>DUE: {{ task.end_time }}</b></div>
                                     <div class="todo-indicator bg-warning"></div>
                                 </div>
                                 {% endfor %}
