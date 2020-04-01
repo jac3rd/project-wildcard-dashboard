@@ -1,5 +1,5 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count
+from django.db.models import Count, F, Min
 from django.db.models.functions import Cast
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
@@ -9,7 +9,7 @@ from .forms import TaskForm, FilterForm
 from .models import Task, Category
 import datetime
 from graphos.renderers.gchart import LineChart
-from graphos.sources.model import ModelDataSource, SimpleDataSource
+from graphos.sources.model import SimpleDataSource
 from django.db.models import DateField
 
 
@@ -72,50 +72,50 @@ def add_task(request):
             t.completed = False
             t.save()
             if request.POST.get('repeat') == 'once':
-                    for i in range(1, int(request.POST.get('times')) + 1):
-                        curr_t = Task()
-                        curr_t.task_name = request.POST.get('task_name')
-                        curr_t.task_desc = request.POST.get('task_desc')
-                        curr_t.end_time = datetime.datetime.strptime(
-                            t.end_time, '%Y-%m-%dT%H:%M')
-                        curr_t.user = request.POST.get('user')
-                        curr_t.completed = False
-                        curr_t.link = request.POST.get('link', "")
-                        curr_t.category = request.POST.get('category')
-                        curr_t.save()
+                for i in range(1, int(request.POST.get('times')) + 1):
+                    curr_t = Task()
+                    curr_t.task_name = request.POST.get('task_name')
+                    curr_t.task_desc = request.POST.get('task_desc')
+                    curr_t.end_time = datetime.datetime.strptime(
+                        t.end_time, '%Y-%m-%dT%H:%M')
+                    curr_t.user = request.POST.get('user')
+                    curr_t.completed = False
+                    curr_t.link = request.POST.get('link', "")
+                    curr_t.category = request.POST.get('category')
+                    curr_t.save()
             if request.POST.get('repeat') == 'weekly':
-                    for i in range(1, int(request.POST.get('times')) + 1):
-                        curr_t = Task()
-                        curr_t.task_name = request.POST.get('task_name')
-                        curr_t.task_desc = request.POST.get('task_desc')
-                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
-                            weeks=i)
-                        curr_t.user = request.POST.get('user')
-                        curr_t.completed = False
-                        curr_t.link = request.POST.get('link', "")
-                        curr_t.save()
+                for i in range(1, int(request.POST.get('times')) + 1):
+                    curr_t = Task()
+                    curr_t.task_name = request.POST.get('task_name')
+                    curr_t.task_desc = request.POST.get('task_desc')
+                    curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                        weeks=i)
+                    curr_t.user = request.POST.get('user')
+                    curr_t.completed = False
+                    curr_t.link = request.POST.get('link', "")
+                    curr_t.save()
             elif request.POST.get('repeat') == 'monthly':
-                    for i in range(1, int(request.POST.get('times')) + 1):
-                        curr_t = Task()
-                        curr_t.task_name = request.POST.get('task_name')
-                        curr_t.task_desc = request.POST.get('task_desc')
-                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
-                            weeks=4 * i)
-                        curr_t.link = request.POST.get('link', "")
-                        curr_t.completed = False
-                        curr_t.user = request.POST.get('user')
-                        curr_t.save()
+                for i in range(1, int(request.POST.get('times')) + 1):
+                    curr_t = Task()
+                    curr_t.task_name = request.POST.get('task_name')
+                    curr_t.task_desc = request.POST.get('task_desc')
+                    curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                        weeks=4 * i)
+                    curr_t.link = request.POST.get('link', "")
+                    curr_t.completed = False
+                    curr_t.user = request.POST.get('user')
+                    curr_t.save()
             elif request.POST.get('repeat') == 'annually':
-                    for i in range(1, int(request.POST.get('times')) + 1):
-                        curr_t = Task()
-                        curr_t.task_name = request.POST.get('task_name')
-                        curr_t.task_desc = request.POST.get('task_desc')
-                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
-                            weeks=52 * i)
-                        curr_t.link = request.POST.get('link', "")
-                        curr_t.completed = False
-                        curr_t.user = request.POST.get('user')
-                        curr_t.save()
+                for i in range(1, int(request.POST.get('times')) + 1):
+                    curr_t = Task()
+                    curr_t.task_name = request.POST.get('task_name')
+                    curr_t.task_desc = request.POST.get('task_desc')
+                    curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                        weeks=52 * i)
+                    curr_t.link = request.POST.get('link', "")
+                    curr_t.completed = False
+                    curr_t.user = request.POST.get('user')
+                    curr_t.save()
             return HttpResponseRedirect(reverse('tasks:list'))
     else:
         form = TaskForm()
@@ -213,7 +213,7 @@ def filter_tasks(request):
         if form.is_valid():
             check_values = request.POST.getlist('tag[]')
             filter_key = request.POST['filter_key']
-            if(filter_key.strip() == ''):
+            if (filter_key.strip() == ''):
                 return render(request, 'tasks/task_list.html', {'task_list': Task.objects.all(), 'fields': field_names})
             else:
                 arg_dict = {}
@@ -235,15 +235,16 @@ def filter_tasks(request):
 def archive_finished(request):
     if request.user.is_authenticated:
         Task.objects.filter(user=request.user.id,
-                            completed=True).update(archived=True)
+                            completed=True).update(archived=True, date_completed=datetime.datetime.now())
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 @login_required
 def stats(request):
     recentTasks = Task.objects.filter(user=request.user.id, completed=True,
-                                      end_time__gt=datetime.datetime.now() - datetime.timedelta(weeks=2)).annotate(
-        date_only=Cast('end_time', DateField())).values(
+                                      date_completed__gt=datetime.datetime.now() - datetime.timedelta(
+                                          weeks=2)).annotate(
+        date_only=Cast('date_completed', DateField())).values(
         'date_only').annotate(total=Count('date_only')).order_by('date_only')
     # recently_finished = ModelDataSource(recentTasks, fields=['total', 'end_time'])
     data = [
@@ -253,6 +254,11 @@ def stats(request):
         data.append([dates['date_only'], dates['total']
                      ])
     recently_finished = SimpleDataSource(data)
-    recently_finished_chart = LineChart(recently_finished)
-    context = {'chart': recently_finished_chart}
+    recently_finished_chart = LineChart(recently_finished, options={'title': 'Task Completion Graph'})
+    completed = len(Task.objects.filter(user=request.user.id, completed=True))
+    late = len(Task.objects.filter(user=request.user.id, date_completed__gt=F('end_time')))
+    completed_late = len(Task.objects.filter(user=request.user.id, completed=True, date_completed__gt=F('end_time')))
+    ratio_on_time = ((completed-completed_late) * 100)/ late
+    beginning_of_time = (datetime.datetime.now().date() - Task.objects.all().aggregate(Min('date_completed'))['date_completed__min']).days
+    context = {'chart': recently_finished_chart, 'completed': completed, 'ratio_on_time': round(ratio_on_time, 3), 'avg':completed/max(beginning_of_time, 1)}
     return render(request, 'tasks/stats.html', context)

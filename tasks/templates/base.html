@@ -12,11 +12,11 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <a class="navbar-brand" href="{% url 'tasks:index' %}">Dashboard</a> <!--Change href to base page or something-->
+      <a class="nav-item nav-link" href="{% url 'tasks:stats' %}">View Stats</a>
       <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
         <div class="navbar-nav">
           <a class="nav-item nav-link" href="{% url 'tasks:add_task' %}">Add Task<span class="sr-only"></span></a> <!--change all hrefs-->
           <a class="nav-item nav-link" href="{% url 'tasks:list' %}">View Tasks</a>
-          <a class="nav-item nav-link" href="{% url 'tasks:stats' %}">View Stats</a>
           {% if request.user.is_authenticated %}
           <a class="nav-item nav-link" href="https://calendar.google.com/calendar/embed?src={{user.username}}%40gmail.com&ctz=America%2FNew_York">Google Calendar</a>
           {% endif %}
