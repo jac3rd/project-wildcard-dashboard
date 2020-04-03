@@ -9,7 +9,7 @@ class Task(models.Model):
 	user = models.IntegerField(default=-1)
 	task_name = models.CharField(max_length=200)
 	task_desc = models.CharField(max_length=400)
-	due_date = models.DateTimeField(default=timezone.now)
+	due_date = models.DateTimeField('due date', default=timezone.now)
 	length = models.DurationField(default=datetime.timedelta(days=3))
 	completed = models.BooleanField('completed')
 	archived = models.BooleanField('archived', default=False)
