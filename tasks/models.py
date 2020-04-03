@@ -31,7 +31,7 @@ class Task(models.Model):
 		choices=CATEGORIES,
 		max_length=32,
 	)
-
+	created_at = models.DateTimeField(auto_now_add=True)
 	
 
 class Category(models.Model):

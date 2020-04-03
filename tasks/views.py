@@ -28,15 +28,15 @@ class TaskListView(generic.ListView):
         '''
 
         if (sort_key != 'give-default-value'):
-            return Task.objects.filter(user=self.request.user.id, archived=False).order_by('-' + sort_key).reverse()
-        return Task.objects.filter(user=self.request.user.id, archived=False).order_by('end_time')
+            return Task.objects.filter(user=self.request.user.id, archived=False).order_by(sort_key)
+        return Task.objects.filter(user=self.request.user.id, archived=False).order_by('end_time', 'created_at')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['fields'] = []
         for field in Task._meta.get_fields():
             val = field.name
-            if (val == 'id' or val == 'user'):
+            if (val == 'id' or val == 'user' or val == 'created_at'):
                 continue
             elif ('_' in val):
                 context['fields'].append((val.replace('_', ' '), val))

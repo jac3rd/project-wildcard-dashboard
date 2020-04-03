@@ -92,7 +92,7 @@
 
                                                         {% if task.category == 'Homework' %}
                                                             <div class="badge badge-primary ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Chores' %}
+                                                        {% elif task.category == 'Chore' %}
                                                             <div class="badge badge-warning ml-2">{{ task.category }}</div>
                                                         {% elif task.category == 'Work' %}
                                                             <div class="badge badge-danger ml-2">{{ task.category }}</div>
@@ -126,15 +126,9 @@
                                                         {% endif %}
 
                                                         {% if task.category == 'Homework' %}
-<<<<<<< HEAD
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-primary ml-2">{{ task.category }}</div></h5>
-                                                        {% elif task.category == 'Chore' %}
-                                                            <h5 class="widget-heading">{{ task.task_name }}<div class="badge badge-warning ml-2">{{ task.category }}</div></h5>
-=======
                                                             <div class="badge badge-primary ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Chores' %}
+                                                        {% elif task.category == 'Chore' %}
                                                             <div class="badge badge-warning ml-2">{{ task.category }}</div>
->>>>>>> 8b172f001843105ae9049b5ca70333a3f77acfff
                                                         {% elif task.category == 'Work' %}
                                                             <div class="badge badge-danger ml-2">{{ task.category }}</div>
                                                         {% elif task.category == 'Errand' %}
