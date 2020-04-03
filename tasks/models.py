@@ -12,13 +12,14 @@ class Task(models.Model):
 	due_date = models.DateTimeField(default=timezone.now)
 	length = models.DurationField(default=datetime.timedelta(days=3))
 	completed = models.BooleanField('completed')
+	archived = models.BooleanField('archived', default=False)
 	link = models.URLField(default="")
-	HOMEWORK = 'hw'
-	CHORE = 'chore'
-	WORK = 'work'
-	ERRAND = 'errand'
-	LIFESTYLE = 'life'
-	OTHERS = 'others'
+	HOMEWORK = 'Homework'
+	CHORE = 'Chore'
+	WORK = 'Work'
+	ERRAND = 'Errand'
+	LIFESTYLE = 'Life'
+	OTHERS = 'Other'
 	CATEGORIES = [
 		(HOMEWORK, 'Homework'),
 		(CHORE, 'Chore'),
