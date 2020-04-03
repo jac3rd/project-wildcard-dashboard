@@ -107,7 +107,7 @@ class TaskModelTests(TestCase):
     # unit test asserting that filtering works correctly when filtering by just task name and with filter key example 'task'
     # tag0 = task_name
     # tag1 = task_desc
-    # tag4 = end_time
+    # tag4 = due_date
     def test_filter_task_name(self):
         task_name1 = "task in name but not desc"
         task_desc1 = "not in desc"
@@ -137,7 +137,7 @@ class TaskModelTests(TestCase):
     # unit test asserting that filtering posts a 200 status code and works filtering against task_desc with keyword 'task'
     # tag0 = task_name
     # tag1 = task_desc
-    # tag4 = end_time
+    # tag4 = due_date
     def test_filter_task_desc(self):
         task_name1 = "task in name but not desc"
         task_desc1 = "not in desc"
@@ -167,7 +167,7 @@ class TaskModelTests(TestCase):
     # unit test asserting that filtering posts a 200 status code and works filtering against both task_name and desc with keyword task
     # tag0 = task_name
     # tag1 = task_desc
-    # tag4 = end_time
+    # tag4 = due_date
     def test_filter_task_name_and_desc(self):
         task_name1 = "task in name but not desc"
         task_desc1 = "not in desc"
@@ -197,7 +197,7 @@ class TaskModelTests(TestCase):
     # unit test asserting that filtering posts a 200 status code and works filtering against a totally arbitrary keyword
     # tag0 = task_name
     # tag1 = task_desc
-    # tag4 = end_time
+    # tag4 = due_date
     def test_filter_task_arbitrary_keyword(self):
         task_name1 = "task in name but not desc"
         task_desc1 = "not in desc"
@@ -226,7 +226,7 @@ class TaskModelTests(TestCase):
     # unit test asserting that filtering posts a 200 status code and filtering on no keyword returns original list
     # tag0 = task_name
     # tag1 = task_desc
-    # tag4 = end_time
+    # tag4 = due_date
     def test_filter_task_nothing(self):
         task_name1 = "task in name but not desc"
         task_desc1 = "not in desc"

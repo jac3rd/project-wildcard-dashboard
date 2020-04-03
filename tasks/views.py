@@ -29,7 +29,7 @@ class TaskListView(generic.ListView):
 
         if (sort_key != 'give-default-value'):
             return Task.objects.filter(user=self.request.user.id, archived=False).order_by('-' + sort_key).reverse()
-        return Task.objects.filter(user=self.request.user.id, archived=False).order_by('end_time')
+        return Task.objects.filter(user=self.request.user.id, archived=False).order_by('due_date')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
