@@ -6,7 +6,7 @@ from . import models, views
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 
-def create_task(user=0, task_name="generic test", task_desc="generic test description", end_time=timezone.now(), completed=False, category=""):
+def create_task(user=0, task_name="generic test", task_desc="generic test description", end_time=timezone.now(),completed=False, category=""):
     task = models.Task()
     task.user=user
     task.task_name=task_name
