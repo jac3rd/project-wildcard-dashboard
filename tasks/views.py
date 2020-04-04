@@ -29,7 +29,7 @@ class TaskListView(generic.ListView):
 
         if (sort_key != 'give-default-value'):
             return Task.objects.filter(user=self.request.user.id, archived=False).order_by('-' + sort_key).reverse()
-        return Task.objects.filter(user=self.request.user.id, archived=False).order_by('due_date')
+        return Task.objects.filter(user=self.request.user.id, archived=False).order_by('end_time')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -60,64 +60,57 @@ def add_task(request):
             t.user = request.POST.get('user')
             t.task_name = request.POST.get('task_name')
             t.task_desc = request.POST.get('task_desc')
-            t.due_date = request.POST.get('due_date')
-            t.length = request.POST.get('length')
+            t.end_time = request.POST.get('end_time')
             t.category = request.POST.get('category')
             t.link = request.POST.get('link', "")
+            # Ensure that the start dates are correct
             t.completed = False
             t.save()
             if request.POST.get('repeat') == 'once':
-                for i in range(1, int(request.POST.get('times')) + 1):
-                    curr_t = Task()
-                    curr_t.task_name = request.POST.get('task_name')
-                    curr_t.task_desc = request.POST.get('task_desc')
-                    curr_t.due_date = datetime.datetime.strptime(t.due_date,
-                                                                    '%Y-%m-%dT%H:%M')
-                    curr_t.length = t.length
-                    curr_t.user = request.POST.get('user')
-                    curr_t.completed = False
-                    curr_t.link = request.POST.get('link', "")
-                    curr_t.category = request.POST.get('category')
-                    curr_t.save()
+                    for i in range(1, int(request.POST.get('times')) + 1):
+                        curr_t = Task()
+                        curr_t.task_name = request.POST.get('task_name')
+                        curr_t.task_desc = request.POST.get('task_desc')
+                        curr_t.end_time = datetime.datetime.strptime(
+                            t.end_time, '%Y-%m-%dT%H:%M')
+                        curr_t.user = request.POST.get('user')
+                        curr_t.completed = False
+                        curr_t.link = request.POST.get('link', "")
+                        curr_t.category = request.POST.get('category')
+                        curr_t.save()
             if request.POST.get('repeat') == 'weekly':
-                for i in range(1, int(request.POST.get('times')) + 1):
-                    curr_t = Task()
-                    curr_t.task_name = request.POST.get('task_name')
-                    curr_t.task_desc = request.POST.get('task_desc')
-                    curr_t.due_date = datetime.datetime.strptime(t.due_date,
-                                                                       '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                    for i in range(1, int(request.POST.get('times')) + 1):
+                        curr_t = Task()
+                        curr_t.task_name = request.POST.get('task_name')
+                        curr_t.task_desc = request.POST.get('task_desc')
+                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=i)
-                    curr_t.length = t.length
-                    curr_t.user = request.POST.get('user')
-                    curr_t.completed = False
-                    curr_t.link = request.POST.get('link', "")
-                    curr_t.save()
+                        curr_t.user = request.POST.get('user')
+                        curr_t.completed = False
+                        curr_t.link = request.POST.get('link', "")
+                        curr_t.save()
             elif request.POST.get('repeat') == 'monthly':
-                for i in range(1, int(request.POST.get('times')) + 1):
-                    curr_t = Task()
-                    curr_t.task_name = request.POST.get('task_name')
-                    curr_t.task_desc = request.POST.get('task_desc')
-                    curr_t.due_date = datetime.datetime.strptime(t.due_date,
-                                                                       '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                    for i in range(1, int(request.POST.get('times')) + 1):
+                        curr_t = Task()
+                        curr_t.task_name = request.POST.get('task_name')
+                        curr_t.task_desc = request.POST.get('task_desc')
+                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=4 * i)
-                    curr_t.length = t.length
-                    curr_t.link = request.POST.get('link', "")
-                    curr_t.completed = False
-                    curr_t.user = request.POST.get('user')
-                    curr_t.save()
+                        curr_t.link = request.POST.get('link', "")
+                        curr_t.completed = False
+                        curr_t.user = request.POST.get('user')
+                        curr_t.save()
             elif request.POST.get('repeat') == 'annually':
-                for i in range(1, int(request.POST.get('times')) + 1):
-                    curr_t = Task()
-                    curr_t.task_name = request.POST.get('task_name')
-                    curr_t.task_desc = request.POST.get('task_desc')
-                    curr_t.due_date = datetime.datetime.strptime(t.due_date,
-                                                                       '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                    for i in range(1, int(request.POST.get('times')) + 1):
+                        curr_t = Task()
+                        curr_t.task_name = request.POST.get('task_name')
+                        curr_t.task_desc = request.POST.get('task_desc')
+                        curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=52 * i)
-                    curr_t.length = t.length
-                    curr_t.link = request.POST.get('link', "")
-                    curr_t.completed = False
-                    curr_t.user = request.POST.get('user')
-                    curr_t.save()
+                        curr_t.link = request.POST.get('link', "")
+                        curr_t.completed = False
+                        curr_t.user = request.POST.get('user')
+                        curr_t.save()
             return HttpResponseRedirect(reverse('tasks:list'))
     else:
         form = TaskForm()

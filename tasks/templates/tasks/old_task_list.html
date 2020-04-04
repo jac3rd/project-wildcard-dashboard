@@ -46,7 +46,7 @@
                     {% endif %}
                     <p1 class="text-justify">{{ task.task_desc }}</p1>
                     </br>
-                    End time: {{ task.due_date }}
+                    End time: {{ task.end_time }}
                 </div>
                 {% else %}
                 <form action="{% url 'tasks:uncheck' %}" method='post' id="uncheck">
@@ -82,7 +82,7 @@
                 <h5>{{ task.task_name }}</h5>
                 {% endif %}
                 <p1 class="text-justify">{{ task.task_desc }}</p1>
-            End time: {{ task.due_date }} </br>
+            End time: {{ task.end_time }} </br>
             </strike>
             {% endif %}
 
