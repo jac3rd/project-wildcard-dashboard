@@ -10,6 +10,7 @@ class Task(models.Model):
 	task_desc = models.CharField(max_length=400)
 	end_time = models.DateTimeField('end time')
 	completed = models.BooleanField('completed')
+	date_completed = models.DateField('date_completed', null=True)
 	archived = models.BooleanField('archived', default=False)
 	link = models.URLField(default="")
 	HOMEWORK = 'Homework'
