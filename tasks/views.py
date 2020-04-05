@@ -13,6 +13,7 @@ import datetime
 from graphos.renderers.gchart import LineChart
 from graphos.sources.model import SimpleDataSource
 from django.db.models import DateField
+from django.utils import timezone
 
 
 # Create your views here.
@@ -26,7 +27,6 @@ class TaskListView(generic.ListView):
     def get_queryset(self):
 
         sort_key = self.request.GET.get('sort_by', 'give-default-value')
-        print(self.request.user, sort_key, self.request.user.id)
 
         if (sort_key != 'give-default-value'):
             return Task.objects.filter(user=self.request.user.id, archived=False).order_by(sort_key, 'created_at')
