@@ -1,11 +1,18 @@
 from django.contrib.auth.decorators import login_required
+from django.db.models import Count, F, Min
+from django.db.models.functions import Cast
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
+from django.views.generic import TemplateView
+
 from .forms import TaskForm, FilterForm
 from .models import Task, Category
 import datetime
+from graphos.renderers.gchart import LineChart
+from graphos.sources.model import SimpleDataSource
+from django.db.models import DateField
 
 
 # Create your views here.
@@ -63,7 +70,7 @@ def add_task(request):
             t.category = request.POST.get('category')
             t.link = request.POST.get('link', "")
             # Ensure that the start dates are correct
-            if t.end_time == t.end_time:
+            if t.end_time >= str(datetime.datetime.now()):
                 t.completed = False
                 t.save()
                 if request.POST.get('repeat') == 'once':
@@ -111,6 +118,8 @@ def add_task(request):
                         curr_t.user = request.POST.get('user')
                         curr_t.save()
                 return HttpResponseRedirect(reverse('tasks:list'))
+            else:
+                return render(request, 'tasks/add_task.html', {'error_message': "Due date must be later than current time.",})
     else:
         form = TaskForm()
     return render(request, 'tasks/add_task.html', {'form': form})
@@ -126,8 +135,9 @@ def check_off(request):
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
         task.completed = True
+        task.date_completed = datetime.datetime.now().date()
         task.save()
-    return HttpResponseRedirect(reverse('tasks:index'))
+    return HttpResponseRedirect(reverse('tasks:list'))
 
 
 def uncheck(request):
@@ -141,7 +151,7 @@ def uncheck(request):
         task = Task.objects.get(pk=task_id)
         task.completed = False
         task.save()
-    return HttpResponseRedirect(reverse('tasks:index'))
+    return HttpResponseRedirect(reverse('tasks:list'))
 
 
 def delete_task(request):
@@ -149,7 +159,7 @@ def delete_task(request):
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
         task.delete()
-    return HttpResponseRedirect(reverse('tasks:index'))
+    return HttpResponseRedirect(reverse('tasks:list'))
 
 
 def add_category(request):
@@ -207,8 +217,8 @@ def filter_tasks(request):
         if form.is_valid():
             check_values = request.POST.getlist('tag[]')
             filter_key = request.POST['filter_key']
-            if(filter_key.strip() == ''):
-                return render(request, 'tasks/task_list.html', {'task_list':Task.objects.all(), 'fields':field_names})
+            if (filter_key.strip() == ''):
+                return render(request, 'tasks/task_list.html', {'task_list': Task.objects.all(), 'fields': field_names})
             else:
                 arg_dict = {}
                 filtered_tasks = Task.objects.none()
@@ -223,9 +233,41 @@ def filter_tasks(request):
         else:
             print('nothing to ernder')
             return HttpResponseRedirect(reverse('tasks:list'))
-          
-          
+
+
 def archive_finished(request):
     if request.user.is_authenticated:
-        Task.objects.filter(user=request.user.id, completed=True).update(archived=True)
+        Task.objects.filter(user=request.user.id,
+                            completed=True).update(archived=True, date_completed=datetime.datetime.now())
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+class StatsView(TemplateView):
+    template_name = 'tasks/stats.html'
+
+    def get_context_data(self, **kwargs):
+        recentTasks = Task.objects.filter(user=self.request.user.id, completed=True,
+                                          date_completed__gt=datetime.datetime.now() - datetime.timedelta(
+                                              weeks=2)).annotate(
+            date_only=Cast('date_completed', DateField())).values(
+            'date_only').annotate(total=Count('date_only')).order_by('date_only')
+        data = [
+            ['Date', 'Total Completed']
+        ]
+        for dates in recentTasks:
+            data.append([dates['date_only'], dates['total']
+                         ])
+        recently_finished = SimpleDataSource(data)
+        recently_finished_chart = LineChart(recently_finished, options={'title': 'Task Completion Graph'})
+        completed = len(Task.objects.filter(user=self.request.user.id, completed=True))
+        late = len(Task.objects.filter(user=self.request.user.id, date_completed__gt=F('end_time'))
+                   | Task.objects.filter(user=self.request.user.id, end_time__lt=datetime.datetime.now(),
+                                         date_completed__isnull=True))
+        completed_late = len(
+            Task.objects.filter(user=self.request.user.id, completed=True, date_completed__gt=F('end_time')))
+        ratio_on_time = ((completed - completed_late) * 100) / max(late, 1)
+        beginning_of_time = (datetime.datetime.now().date() - Task.objects.all().aggregate(Min('end_time'))[
+            'end_time__min'].date()).days
+        context = {'chart': recently_finished_chart, 'completed': completed, 'ratio_on_time': round(ratio_on_time, 3),
+                   'avg': round(completed / max(beginning_of_time, 1), 3)}
+        return context

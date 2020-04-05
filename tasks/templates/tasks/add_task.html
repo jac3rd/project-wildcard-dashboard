@@ -2,7 +2,7 @@
 {% block content %}
 <div class="container-md">
     <h3>Add a Task:</h3>
-    {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+    {% if error_message %}<p><font color="red"><strong>{{ error_message }}</strong></font></p>{% endif %}
     <form action="{% url 'tasks:add_task' %}" method='post'>
     {% csrf_token %}
         <input type="hidden" value="{{user.id}}" id="user" name="user">
