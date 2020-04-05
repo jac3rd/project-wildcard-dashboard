@@ -18,15 +18,21 @@
 
 <h1 align="center">Hello, {{user.username}}! Good to see you :)</h1>
 
-<form action="{% url 'tasks:filter_tasks' %}" method='post'>
+<form action="{% url 'tasks:filter_tasks' %}" method="post" style="margin-bottom:10px">
     {% csrf_token %}
+    <div class="input-group">
+    <input type="hidden" value="{{user.id}}" id="user" name="user">
+    <button type="submit" class="btn btn-danger" name="reset-button" style="margin-right:10px">
+        Reset
+    </button>
     <input class="form-control" type="text" placeholder="Filtered Input" name="filter_key">
     <div class="btn-group">
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" style="margin-left:10px">
             Filter
         </button>
         <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span class="sr-only">Toggle Dropdown</span>
+          <!--<span class="sr-only">Toggle Dropdown</span>-->
+          <span class="fa fa-filter"></span>
         </button>
         <div class="dropdown-menu">
           <button class="dropdown-item" type="button">Filter on the following:</button>
@@ -38,13 +44,15 @@
             {% endfor %}
         </div>
       </div>
+    </div>
 </form>
 <!-- Example single danger button -->
 <center>
-    <form action="{% url 'tasks:list' %}" method="get">
+    <form action="{% url 'tasks:list' %}" method="get" style="margin-bottom:20px">
     <div class="btn-group">
         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Sort By
+        <!--<i class="fa fa-sort"style="margin-left:5px"></i>-->
         </button>
         <div class="dropdown-menu">
             <button type="submit" class="dropdown-item" name="sort_by" value="task_name">Task Name</button>
@@ -195,4 +203,14 @@
 {% else %}
 <label>Please login.</label>
 {% endif %}
+
+
+
+
+<select class="selectpicker" multiple>
+    <option>Mustard</option>
+    <option>Ketchup</option>
+    <option>Barbecue</option>
+</select>
+
 {% endblock %}

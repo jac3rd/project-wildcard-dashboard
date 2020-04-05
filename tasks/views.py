@@ -17,18 +17,12 @@ class TaskListView(generic.ListView):
     context_object_name = 'task_list'
 
     def get_queryset(self):
-        #print('GET REQUEST: ', self.request.GET)
-        sort_key = self.request.GET.get('sort_by', 'give-default-value')
 
-        '''
-        filter_key = self.request.GET.get('filter_key', 'default')
-        filter_attr = self.request.GET.get('tag[]', 'default')
-        if(filter_key != 'default'):
-            pass
-        '''
+        sort_key = self.request.GET.get('sort_by', 'give-default-value')
+        print(self.request.user, sort_key, self.request.user.id)
 
         if (sort_key != 'give-default-value'):
-            return Task.objects.filter(user=self.request.user.id, archived=False).order_by(sort_key)
+            return Task.objects.filter(user=self.request.user.id, archived=False).order_by(sort_key, 'created_at')
         return Task.objects.filter(user=self.request.user.id, archived=False).order_by('end_time', 'created_at')
 
     def get_context_data(self, **kwargs):
@@ -203,12 +197,13 @@ def filter_tasks(request):
                 continue
             else:
                 field_names.append((val, val))
-
         if form.is_valid():
+            #print('valid form')
+            user_id = request.POST['user']
             check_values = request.POST.getlist('tag[]')
             filter_key = request.POST['filter_key']
             if(filter_key.strip() == ''):
-                return render(request, 'tasks/task_list.html', {'task_list':Task.objects.all(), 'fields':field_names})
+                return render(request, 'tasks/task_list.html', {'task_list':Task.objects.filter(user=user_id, archived=False).all(), 'fields':field_names})
             else:
                 arg_dict = {}
                 filtered_tasks = Task.objects.none()
@@ -216,12 +211,15 @@ def filter_tasks(request):
                     # arg_dict[field_names[int(val)]+'__icontains'] = filter_key
                     arg_dict = {field_names[int(val)][1] + '__icontains': filter_key}
                     # print(arg_dict)
-                    filtered_tasks = filtered_tasks | Task.objects.all().filter(**arg_dict)
+                    filtered_tasks = filtered_tasks | Task.objects.filter(user=user_id, archived=False).all().filter(**arg_dict)
                 #filtered_tasks = Task.objects.all().filter(**arg_dict)
                 #return HttpResponseRedirect(reverse('tasks:list'))
                 return render(request, 'tasks/task_list.html', {'task_list':filtered_tasks, 'fields':field_names})
+        elif 'reset-button' in request.POST:
+            #print('reset filter')
+            return HttpResponseRedirect(reverse('tasks:list'))
         else:
-            print('nothing to ernder')
+            #print('invalid form')
             return HttpResponseRedirect(reverse('tasks:list'))
           
           
