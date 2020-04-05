@@ -7,9 +7,9 @@ class Task(models.Model):
 	user = models.IntegerField(default=-1)
 	task_name = models.CharField(max_length=200)
 	task_desc = models.CharField(max_length=400)
-	start_time = models.DateTimeField('start time')
 	end_time = models.DateTimeField('end time')
 	completed = models.BooleanField('completed')
+	archived = models.BooleanField('archived', default=False)
 	link = models.URLField(default="")
 	HOMEWORK = 'Homework'
 	CHORE = 'Chore'
