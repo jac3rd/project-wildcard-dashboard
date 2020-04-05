@@ -70,7 +70,7 @@ def add_task(request):
             t.category = request.POST.get('category')
             t.link = request.POST.get('link', "")
             # Ensure that the start dates are correct
-            if t.end_time >= datetime.datetime.now():
+            if t.end_time >= str(datetime.datetime.now()):
                 t.completed = False
                 t.save()
                 if request.POST.get('repeat') == 'once':
@@ -118,6 +118,8 @@ def add_task(request):
                         curr_t.user = request.POST.get('user')
                         curr_t.save()
                 return HttpResponseRedirect(reverse('tasks:list'))
+            else:
+                return render(request, 'tasks/add_task.html', {'error_message': "Due date must be later than current time.",})
     else:
         form = TaskForm()
     return render(request, 'tasks/add_task.html', {'form': form})
