@@ -20,6 +20,7 @@
 
              <a class="nav-item nav-link" href="{% url 'tasks:list' %}">Task List</a>
              <a class="nav-item nav-link" href="{% url 'tasks:add_task' %}">Add Task<span class="sr-only"></span></a> <!--change all hrefs-->
+             <a class="nav-item nav-link" href="{% url 'tasks:stats' %}">Statistics</a>
              <a class="nav-item nav-link" href="https://calendar.google.com/calendar/?src={{user.email}}&ctz=America%2FNew_York">Google Calendar</a>
             {% endif %}
             </div>
