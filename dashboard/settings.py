@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'social_django',
+    'graphos',
 ]
 # Social auth settings
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
