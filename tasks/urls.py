@@ -16,4 +16,6 @@ urlpatterns = [
     path('delete_category/', views.delete_category, name='delete_category'),
     path('filter_tasks/', views.filter_tasks, name='filter_tasks'),
     path('archive_finished/', views.archive_finished, name='archive_finished'),
+    path('stats/', views.StatsView.as_view(), name='stats'),
+
 ]

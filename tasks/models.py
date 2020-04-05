@@ -1,6 +1,7 @@
 from django.db import models
 from social_django import models as oauth_models
 
+
 # Create your models here.
 
 class Task(models.Model):
@@ -35,5 +36,11 @@ class Task(models.Model):
 	
 
 class Category(models.Model):
-	name = models.CharField(max_length=32)
-	user = models.IntegerField()
+    name = models.CharField(max_length=32)
+    user = models.IntegerField()
+
+
+# class Level(models.Model):
+# 	level = models.IntegerField(default=1)
+# 	xp = models.IntegerField(default=0)
+#     user = models.IntegerField(primary_key=True)
