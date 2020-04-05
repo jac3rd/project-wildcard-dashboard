@@ -5,6 +5,8 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
+from django.views.generic import TemplateView
+
 from .forms import TaskForm, FilterForm
 from .models import Task, Category
 import datetime
@@ -133,7 +135,7 @@ def check_off(request):
         task = Task.objects.get(pk=task_id)
         task.completed = True
         task.save()
-    return HttpResponseRedirect(reverse('tasks:index'))
+    return HttpResponseRedirect(reverse('tasks:list'))
 
 
 def uncheck(request):
@@ -147,7 +149,7 @@ def uncheck(request):
         task = Task.objects.get(pk=task_id)
         task.completed = False
         task.save()
-    return HttpResponseRedirect(reverse('tasks:index'))
+    return HttpResponseRedirect(reverse('tasks:list'))
 
 
 def delete_task(request):
@@ -155,7 +157,7 @@ def delete_task(request):
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
         task.delete()
-    return HttpResponseRedirect(reverse('tasks:index'))
+    return HttpResponseRedirect(reverse('tasks:list'))
 
 
 def add_category(request):
@@ -239,26 +241,33 @@ def archive_finished(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-@login_required
-def stats(request):
-    recentTasks = Task.objects.filter(user=request.user.id, completed=True,
-                                      date_completed__gt=datetime.datetime.now() - datetime.timedelta(
-                                          weeks=2)).annotate(
-        date_only=Cast('date_completed', DateField())).values(
-        'date_only').annotate(total=Count('date_only')).order_by('date_only')
-    # recently_finished = ModelDataSource(recentTasks, fields=['total', 'end_time'])
-    data = [
-        ['Date', 'Total Completed']
-    ]
-    for dates in recentTasks:
-        data.append([dates['date_only'], dates['total']
-                     ])
-    recently_finished = SimpleDataSource(data)
-    recently_finished_chart = LineChart(recently_finished, options={'title': 'Task Completion Graph'})
-    completed = len(Task.objects.filter(user=request.user.id, completed=True))
-    late = len(Task.objects.filter(user=request.user.id, date_completed__gt=F('end_time')))
-    completed_late = len(Task.objects.filter(user=request.user.id, completed=True, date_completed__gt=F('end_time')))
-    ratio_on_time = ((completed-completed_late) * 100)/ late
-    beginning_of_time = (datetime.datetime.now().date() - Task.objects.all().aggregate(Min('date_completed'))['date_completed__min']).days
-    context = {'chart': recently_finished_chart, 'completed': completed, 'ratio_on_time': round(ratio_on_time, 3), 'avg':completed/max(beginning_of_time, 1)}
-    return render(request, 'tasks/stats.html', context)
+class StatsView(TemplateView):
+    template_name = 'tasks/stats.html'
+
+    def get_context_data(self, **kwargs):
+        recentTasks = Task.objects.filter(user=self.request.user.id, completed=True,
+                                          date_completed__gt=datetime.datetime.now() - datetime.timedelta(
+                                              weeks=2)).annotate(
+            date_only=Cast('date_completed', DateField())).values(
+            'date_only').annotate(total=Count('date_only')).order_by('date_only')
+        # recently_finished = ModelDataSource(recentTasks, fields=['total', 'end_time'])
+        data = [
+            ['Date', 'Total Completed']
+        ]
+        for dates in recentTasks:
+            data.append([dates['date_only'], dates['total']
+                         ])
+        recently_finished = SimpleDataSource(data)
+        recently_finished_chart = LineChart(recently_finished, options={'title': 'Task Completion Graph'})
+        completed = len(Task.objects.filter(user=self.request.user.id, completed=True))
+        late = len(Task.objects.filter(user=self.request.user.id, date_completed__gt=F('end_time'))
+                   | Task.objects.filter(user=self.request.user.id, end_time__lt=datetime.datetime.now(),
+                                         date_completed__isnull=True))
+        completed_late = len(
+            Task.objects.filter(user=self.request.user.id, completed=True, date_completed__gt=F('end_time')))
+        ratio_on_time = ((completed - completed_late) * 100) / max(late, 1)
+        beginning_of_time = (datetime.datetime.now().date() - Task.objects.all().aggregate(Min('end_time'))[
+            'end_time__min'].date()).days
+        context = {'chart': recently_finished_chart, 'completed': completed, 'ratio_on_time': round(ratio_on_time, 3),
+                   'avg': completed / max(beginning_of_time, 1)}
+        return context
