@@ -133,6 +133,7 @@ def check_off(request):
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
         task.completed = True
+        task.date_completed = datetime.datetime.now().date()
         task.save()
     return HttpResponseRedirect(reverse('tasks:list'))
 
@@ -230,8 +231,8 @@ def filter_tasks(request):
         else:
             print('nothing to ernder')
             return HttpResponseRedirect(reverse('tasks:list'))
-          
-          
+
+
 def archive_finished(request):
     if request.user.is_authenticated:
         Task.objects.filter(user=request.user.id,
@@ -248,7 +249,6 @@ class StatsView(TemplateView):
                                               weeks=2)).annotate(
             date_only=Cast('date_completed', DateField())).values(
             'date_only').annotate(total=Count('date_only')).order_by('date_only')
-        # recently_finished = ModelDataSource(recentTasks, fields=['total', 'end_time'])
         data = [
             ['Date', 'Total Completed']
         ]
@@ -267,5 +267,5 @@ class StatsView(TemplateView):
         beginning_of_time = (datetime.datetime.now().date() - Task.objects.all().aggregate(Min('end_time'))[
             'end_time__min'].date()).days
         context = {'chart': recently_finished_chart, 'completed': completed, 'ratio_on_time': round(ratio_on_time, 3),
-                   'avg': completed / max(beginning_of_time, 1)}
+                   'avg': round(completed / max(beginning_of_time, 1), 3)}
         return context
