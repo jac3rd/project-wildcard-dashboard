@@ -169,7 +169,7 @@
                                             <!-- End of Henry's form -->
                                         </div>
                                         <div class="widget-content-right">
-                                            <small class="text-muted">(Task Estimated Time Here)</small>
+                                            <small class="text-muted">{{task.length}}</small>
                                         </div>
                                         <div class="widget-content-right">
                                             <form action="{% url 'tasks:delete_task' %}" method='post' id="delete_{{ task.id }}">
