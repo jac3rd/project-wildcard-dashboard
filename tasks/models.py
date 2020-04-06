@@ -9,6 +9,7 @@ class Task(models.Model):
 	task_name = models.CharField(max_length=200)
 	task_desc = models.CharField(max_length=400)
 	end_time = models.DateTimeField('end time')
+    length = models.DurationField('length')
 	completed = models.BooleanField('completed')
 	date_completed = models.DateField('date_completed', null=True)
 	archived = models.BooleanField('archived', default=False)
