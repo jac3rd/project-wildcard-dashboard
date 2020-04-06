@@ -17,6 +17,7 @@
 <style> .list-group-item{ padding: 12px; } </style>
 <hr>
 <h1 align="center">Hello {{user.username}}, Good to see you!</h1>
+{% if error_message %}<p><font color="red"><strong>{{ error_message }}</strong></font></p>{% endif %}
 <hr>
 <form action="{% url 'tasks:filter_tasks' %}" method="post" style="margin-bottom:10px">
     {% csrf_token %}
@@ -180,7 +181,7 @@
                                             </form>
                                         </div>
                                     </div>
-
+                                    <p class="mb-1">{{ task.task_desc }}</p>
                                     <div class="widget-heading"><b><i>DUE:</i> {{ task.end_time }}</b></div>
                                     <div class="todo-indicator bg-warning"></div>
                                 </li>
