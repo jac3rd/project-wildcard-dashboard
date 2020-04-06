@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+<div {{valid}}>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
     google.load("visualization", "1", {packages:["corechart"]});
@@ -10,4 +11,5 @@
 <br>
 <p>Average Tasks Per Day (Since First Completed Task): {{avg}}</p>
 {{ chart.as_html }}
+</div>
 {% endblock %}
