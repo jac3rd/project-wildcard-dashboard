@@ -15,9 +15,9 @@
     }
 </style>
 <style> .list-group-item{ padding: 12px; } </style>
-
-<h1 align="center">Hello, {{user.username}}! Good to see you :)</h1>
-
+<hr>
+<h1 align="center">Hello {{user.username}}, Good to see you!</h1>
+<hr>
 <form action="{% url 'tasks:filter_tasks' %}" method="post" style="margin-bottom:10px">
     {% csrf_token %}
     <div class="input-group">
@@ -62,23 +62,23 @@
     </div>
     </form>
 </center>
-
+<hr>
 <div class="row d-flex justify-content-center container">
-    <div class="col-md-8">
-        <div class="card-hover-shadow-2x mb-3 card">
-            <div class="card-header-tab card-header">
-                <div class="card-header-title font-size-lg text-capitalize font-weight-normal"><i class="fa fa-tasks"></i>&nbsp;Task Lists</div>
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-header-title lead"><i class="fa fa-tasks"></i>&nbsp;Tasks</div>
             </div>
             <div class="scroll-area-sm">
                 <perfect-scrollbar class="ps-show-limits">
                     <div style="position: static;" class="ps ps--active-y">
                         <div class="ps-content">
-                            <div class=" list-group list-group-flush">
+                            <div class="list-group list-group-flush">
 
                                 <!-- Individual Tasks -->
                                 {% for task in task_list %}
-                                <div class="list-group-item">
-                                    <div class="d-flex w-100 justify-content-between">
+                                <li class="list-group-item">
+                                    <div class="d-flex">
                                         <div class="widget-content-left">
                                             <!-- Checkbox form: Credit to Henry -->
                                             {% if not task.completed %}
@@ -180,10 +180,9 @@
                                             </form>
                                         </div>
                                     </div>
-                                    <p class="mb-1">{{ task.task_desc }}</p>
-                                    <div class="widget-heading"><b>DUE: {{ task.end_time }}</b></div>
+                                    <div class="widget-heading"><b><i>DUE:</i> {{ task.end_time }}</b></div>
                                     <div class="todo-indicator bg-warning"></div>
-                                </div>
+                                </li>
                                 {% endfor %}
                                 <!-- End task -->
 
@@ -192,14 +191,14 @@
                     </div>
                 </perfect-scrollbar>
             </div>
-            <div class="d-block text-right card-footer">
-                <a href="{% url 'tasks:add_task' %}"><button class="btn btn-primary" id="add_button">Add Task</button></a>
-                <a href="{% url 'tasks:archive_finished' %}"><button class="btn btn-danger" id="del_all_button">Archive Finished</button></a>
+            <div class="text-right card-footer">
+                <a href="{% url 'tasks:add_task' %}"><button class="btn btn-primary" id="add_button" role="button">Add Task</button></a>
+                <a href="{% url 'tasks:archive_finished' %}"><button class="btn btn-danger" id="del_all_button" role="button">Archive Finished</button></a>
             </div>
         </div>
     </div>
 </div>
-
+<hr>
 {% else %}
 <label>Please login.</label>
 {% endif %}
