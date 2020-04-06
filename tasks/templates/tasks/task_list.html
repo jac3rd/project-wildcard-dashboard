@@ -15,15 +15,9 @@
     }
 </style>
 <style> .list-group-item{ padding: 12px; } </style>
-<<<<<<< HEAD
-
-<h1 align="center">Hello, {{user.username}}! Good to see you :)</h1>
-
-=======
 <hr>
 <h1 align="center">Hello {{user.username}}, Good to see you!</h1>
 <hr>
->>>>>>> d50dace9793c5751b6f8045efa8186be172e5b9d
 <form action="{% url 'tasks:filter_tasks' %}" method="post" style="margin-bottom:10px">
     {% csrf_token %}
     <div class="input-group">
