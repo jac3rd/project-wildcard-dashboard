@@ -4,8 +4,9 @@ from django.utils import timezone
 from django.urls import reverse
 
 from . import models, views
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 from django.http import HttpResponse, HttpResponseRedirect
+from .views import TaskListView
 
 
 def create_task(user=0, task_name="generic test", task_desc="generic test description", date_completed=None,
@@ -190,8 +191,8 @@ class TaskModelTests(TestCase):
         task3.save()
 
         filter_key = 'task'
-        filter_by = ['0']  # just task name
-        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]': filter_by, 'filter_key': filter_key})
+        filter_by = ['0'] # just task name
+        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]':filter_by, 'filter_key':filter_key, 'user':'0'})
         filtered_context = list(resp.context['task_list'].values())
         self.assertTrue(len(filtered_context) == 1 and filtered_context[0]['task_name'] == task_name1)
 
@@ -219,8 +220,8 @@ class TaskModelTests(TestCase):
         task3.save()
 
         filter_key = 'task'
-        filter_by = ['1']  # just task name
-        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]': filter_by, 'filter_key': filter_key})
+        filter_by = ['1'] # just task name
+        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]':filter_by, 'filter_key':filter_key, 'user':'0'})
         filtered_context = list(resp.context['task_list'].values())
         self.assertTrue(len(filtered_context) == 1 and filtered_context[0]['task_name'] == task_name2)
 
@@ -248,8 +249,8 @@ class TaskModelTests(TestCase):
         task3.save()
 
         filter_key = 'task'
-        filter_by = ['0', '1']  # just task name
-        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]': filter_by, 'filter_key': filter_key})
+        filter_by = ['0', '1'] # just task name
+        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]':filter_by, 'filter_key':filter_key, 'user':'0'})
         filtered_context = list(resp.context['task_list'].values())
         self.assertTrue(len(filtered_context) == 2 and (
                 task_name3 not in filtered_context[0] and task_name3 not in filtered_context[1]))
@@ -278,8 +279,8 @@ class TaskModelTests(TestCase):
         task3.save()
 
         filter_key = 'asdfasdf'
-        filter_by = ['1']  # just task name
-        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]': filter_by, 'filter_key': filter_key})
+        filter_by = ['1'] # just task name
+        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]':filter_by, 'filter_key':filter_key, 'user':'0'})
         filtered_context = list(resp.context['task_list'].values())
         self.assertTrue(len(filtered_context) == 0)
 
@@ -307,46 +308,92 @@ class TaskModelTests(TestCase):
         task3.save()
 
         filter_key = ''
-        filter_by = []  # just task name
-        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]': filter_by, 'filter_key': filter_key})
-        self.assertEqual(resp.status_code, 302)
+        filter_by = [] # just task name
+        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]':filter_by, 'filter_key':filter_key, 'user':'0'})
+        self.assertEqual(resp.status_code,302)
+
+    # unit test asserting that filtering posts a 200 status code and filtering on no keyword returns original list
+    # tag0 = task_name
+    # tag1 = task_desc
+    # tag4 = end_time
+    def test_filter_task_diff_user(self):
+        task_name1 = "task in name but not desc"
+        task_desc1 = "not in desc"
+        category1 = "Homework"
+        task1 = create_task(user=1,task_name=task_name1, task_desc=task_desc1, category=category1)
+        task1.save()
+
+        task_name2 = "no keyword in name"
+        task_desc2 = "task in description but not name"
+        category2 = "Homework"
+        task2 = create_task(user=1,task_name=task_name2, task_desc=task_desc2, category=category2)
+        task2.save()
+
+        task_name3 = "random"
+        task_desc3 = "not in anything"
+        category3 = "Homework"
+        task3 = create_task(user=1,task_name=task_name3, task_desc=task_desc3, category=category3)
+        task3.save()
+
+        filter_key = 'a'
+        filter_by = ['0'] # just task name
+        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]':filter_by, 'filter_key':filter_key, 'user':'0'})
+        filtered_context = list(resp.context['task_list'].values())
+        self.assertTrue(resp.status_code == 200 and filtered_context == [])
 
     # unit test to test sorting by task name
-    # def test_sorting_task_desc(self):
-    #     task_name = "task1"
-    #     task_desc = "2 earlier task name, later task desc"
-    #     category = "Homework"
-    #     task1 = create_task(task_name=task_name, task_desc=task_desc, category=category)
-    #     task1.save()
-    #     task_name = "task2"
-    #     task_desc = "1 later task name, earlier task desc"
-    #     category = "Homework"
-    #     task2 = create_task(task_name=task_name, task_desc=task_desc, category=category)
-    #     task2.save()
-    #
-    #     sort_key = 'task_desc'
-    #     resp = self.client.get(reverse('tasks:index'), {'sort_by':sort_key})
-    #     returned_context = list(resp.context['task_list'].values())
-    #     self.assertTrue(returned_context[0]['task_name'] == 'task2' and returned_context[1]['task_name'] == 'task1' and resp.status_code == 200)
-    #
-    # # unit test to test sorting by task description
-    # def test_sorting_task_name(self):
-    #     task_name = "task1"
-    #     task_desc = "2 earlier task name, later task desc"
-    #     category = "Homework"
-    #     task1 = create_task(task_name=task_name, task_desc=task_desc, category=category)
-    #     task1.save()
-    #     task_name = "task2"
-    #     task_desc = "1 later task name, earlier task desc"
-    #     category = "Homework"
-    #     task2 = create_task(task_name=task_name, task_desc=task_desc, category=category)
-    #     task2.save()
-    #
-    #     sort_key = 'task_name'
-    #     resp = self.client.get(reverse('tasks:index'), {'sort_by':sort_key})
-    #     returned_context = list(resp.context['task_list'].values())
-    #     self.assertTrue(returned_context[0]['task_name'] == 'task1' and returned_context[1]['task_name'] == 'task2' and resp.status_code == 200)
+    def test_sorting_task_desc(self):
+        self.factory = RequestFactory()
+        self.user = AnonymousUser()
 
+        task_name = "task1"
+        task_desc = "2 earlier task name, later task desc"
+        category = "Homework"
+        task1 = create_task(task_name=task_name, task_desc=task_desc, category=category)
+        task1.save()
+        task_name = "task2"
+        task_desc = "1 later task name, earlier task desc"
+        category = "Homework"
+        task2 = create_task(task_name=task_name, task_desc=task_desc, category=category)
+        task2.save()
+
+        sort_key = 'task_desc'
+        #req = self.client.get(reverse('tasks:list'), {'sort_by':sort_key})
+        req = self.factory.get('tasks/list?sort_by='+sort_key)
+        req.user = self.user
+        resp = TaskListView.as_view()(req)
+
+        #returned_context = list(resp.context['task_list'].values())
+        #self.assertTrue(returned_context[0]['task_name'] == 'task2' and returned_context[1]['task_name'] == 'task1' and resp.status_code == 200)
+        self.assertTrue(resp.status_code == 200)
+    
+    # unit test to test sorting by task description
+    def test_sorting_task_name(self):
+
+        self.factory = RequestFactory()
+        self.user = AnonymousUser()
+
+        task_name = "task1"
+        task_desc = "2 earlier task name, later task desc"
+        category = "Homework"
+        task1 = create_task(task_name=task_name, task_desc=task_desc, category=category)
+        task1.save()
+        task_name = "task2"
+        task_desc = "1 later task name, earlier task desc"
+        category = "Homework"
+        task2 = create_task(task_name=task_name, task_desc=task_desc, category=category)
+        task2.save()
+    
+
+        sort_key = 'task_name'
+        #req = self.client.get(reverse('tasks:list'), {'sort_by':sort_key})
+        req = self.factory.get('tasks/list?sort_by='+sort_key)
+        req.user = self.user
+        resp = TaskListView.as_view()(req)
+
+        #returned_context = list(resp.context['task_list'].values())
+        #self.assertTrue(returned_context[0]['task_name'] == 'task1' and returned_context[1]['task_name'] == 'task2' and resp.status_code == 200)
+        self.assertTrue(resp.status_code == 200)
 
 def create_category(user=0, name="generic category"):
     category = models.Category()

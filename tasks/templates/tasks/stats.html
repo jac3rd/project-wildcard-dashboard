@@ -1,16 +1,25 @@
 {% extends 'base.html' %}
 {% block content %}
-<div {{valid}}>
 <script type="text/javascript" src="https://www.google.com/jsapi"></script>
 <script type="text/javascript">
     google.load("visualization", "1", {packages:["corechart"]});
 </script>
-<p>Tasks Completed Since the Beginning of Time: {{completed}}</p>
-<br>
-<p>Percent Tasks Completed On Time: {{ratio_on_time}} %</p>
-<br>
-<p>Average Tasks Per Day (Since First Completed Task): {{avg}}</p>
-{{ chart.as_html }}
+
+<div {{valid}}>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item lead">
+            Tasks Completed Since the Beginning of Time: <b>{{completed}}</b>
+        </li>
+        <li class="list-group-item lead">
+            Percent Tasks Completed On Time: <b>{{ratio_on_time}}%</b>
+        </li>
+        <li class="list-group-item lead">
+            Average Tasks Per Day (<i>Since First Completed Task</i>): <b>{{avg}}</b>
+        </li>
+    </ul>
+    <hr>
+    {{ chart.as_html }}
+    <hr>
 </div>
 <p {{show_bad_prompt}}>
     No tasks appear for you in the database.
