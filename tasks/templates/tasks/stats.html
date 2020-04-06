@@ -12,4 +12,7 @@
 <p>Average Tasks Per Day (Since First Completed Task): {{avg}}</p>
 {{ chart.as_html }}
 </div>
+<p {{show_bad_prompt}}>
+    No tasks appear for you in the database.
+</p>
 {% endblock %}

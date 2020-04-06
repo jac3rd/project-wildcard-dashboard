@@ -10,7 +10,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 def create_task(user=0, task_name="generic test", task_desc="generic test description", date_completed=None,
                 end_time=timezone.now(), completed=False, category=""):
-
     task = models.Task()
     task.user = user
     task.task_name = task_name
@@ -55,6 +54,30 @@ class StatsViewTests(TestCase):
         request.user = self.user
         response = views.StatsView.as_view()(request)
         self.assertAlmostEqual(response.context_data['avg'], 1)
+
+
+class StatsViewNullTests(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username='jacob', email='jacob@…', password='top_secret', id=4)
+        task_desc = "task_desc"
+        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+        current = datetime.datetime.now()
+        create_task(user=1, task_name="test1", task_desc=task_desc, date_completed=yesterday,
+                    end_time=current, completed=True)
+        create_task(user=1, task_name="test2", task_desc=task_desc,
+                    date_completed=yesterday, end_time=yesterday)
+        create_task(user=1, task_name="test2", task_desc=task_desc, end_time=current)
+        create_task(user=2, task_name="test1", task_desc=task_desc, end_time=current, date_completed=current,
+                    completed=True)
+
+    def testReturnsPage(self):
+        # Checks if it responds with the correct context when the page has no tasks to work with for the user
+        request = self.factory.get('/tasks/stats/')
+        request.user = self.user
+        response = views.StatsView.as_view()(request)
+        self.assertEqual(response.context_data['valid'], 'hidden')
 
 
 # Create your tests here.
