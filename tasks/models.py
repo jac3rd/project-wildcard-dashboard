@@ -1,15 +1,17 @@
 from django.db import models
 from social_django import models as oauth_models
 
+
 # Create your models here.
 
 class Task(models.Model):
 	user = models.IntegerField(default=-1)
 	task_name = models.CharField(max_length=200)
 	task_desc = models.CharField(max_length=400)
-	start_time = models.DateTimeField('start time')
 	end_time = models.DateTimeField('end time')
 	completed = models.BooleanField('completed')
+	date_completed = models.DateField('date_completed', null=True)
+	archived = models.BooleanField('archived', default=False)
 	link = models.URLField(default="")
 	HOMEWORK = 'Homework'
 	CHORE = 'Chore'
@@ -31,9 +33,15 @@ class Task(models.Model):
 		choices=CATEGORIES,
 		max_length=32,
 	)
-
+	created_at = models.DateTimeField(auto_now_add=True)
 	
 
 class Category(models.Model):
-	name = models.CharField(max_length=32)
-	user = models.IntegerField()
+    name = models.CharField(max_length=32)
+    user = models.IntegerField()
+
+
+# class Level(models.Model):
+# 	level = models.IntegerField(default=1)
+# 	xp = models.IntegerField(default=0)
+#     user = models.IntegerField(primary_key=True)

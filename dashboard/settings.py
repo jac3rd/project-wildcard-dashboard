@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'social_django',
+    'graphos',
 ]
 # Social auth settings
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
@@ -161,7 +162,8 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+# originally was TRUE
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)

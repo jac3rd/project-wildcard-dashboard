@@ -8,7 +8,6 @@ media
 
 # Backup files #
 *.bak
-
 # If you are using PyCharm #
 .idea/**/workspace.xml
 .idea/**/tasks.xml
@@ -113,3 +112,7 @@ GitHub.sublime-settings
 !.vscode/launch.json
 !.vscode/extensions.json
 .history
+
+
+# unused folder
+unused/
