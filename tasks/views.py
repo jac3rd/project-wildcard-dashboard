@@ -13,7 +13,21 @@ import datetime
 from graphos.renderers.gchart import LineChart
 from graphos.sources.model import SimpleDataSource
 from django.db.models import DateField
+from django.utils import timezone
 
+def remove_omitted_fields():
+    omitted_fields = set(['id', 'user', 'created_at', 'completed', 'archived'])
+    l = []
+    for field in Task._meta.get_fields():
+        val = field.name
+        if (val in omitted_fields):
+            continue
+        elif ('_' in val):
+            l.append((val.replace('_', ' '), val))
+            continue
+        else:
+            l.append((val, val))
+    return l
 
 # Create your views here.
 class TaskListView(generic.ListView):
@@ -24,32 +38,16 @@ class TaskListView(generic.ListView):
     context_object_name = 'task_list'
 
     def get_queryset(self):
-        #print('GET REQUEST: ', self.request.GET)
+
         sort_key = self.request.GET.get('sort_by', 'give-default-value')
 
-        '''
-        filter_key = self.request.GET.get('filter_key', 'default')
-        filter_attr = self.request.GET.get('tag[]', 'default')
-        if(filter_key != 'default'):
-            pass
-        '''
-
         if (sort_key != 'give-default-value'):
-            return Task.objects.filter(user=self.request.user.id, archived=False).order_by('-' + sort_key).reverse()
-        return Task.objects.filter(user=self.request.user.id, archived=False).order_by('end_time')
+            return Task.objects.filter(user=self.request.user.id, archived=False).order_by(sort_key, 'created_at')
+        return Task.objects.filter(user=self.request.user.id, archived=False).order_by('end_time', 'created_at')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['fields'] = []
-        for field in Task._meta.get_fields():
-            val = field.name
-            if (val == 'id' or val == 'user'):
-                continue
-            elif ('_' in val):
-                context['fields'].append((val.replace('_', ' '), val))
-                continue
-            else:
-                context['fields'].append((val, val))
+        context['fields'] = remove_omitted_fields()
         return context
 
 @login_required
@@ -203,22 +201,14 @@ def sort_tasks(request):
 def filter_tasks(request):
     if (request.method == 'POST'):
         form = FilterForm(request.POST)
-        field_names = []
-        for field in Task._meta.get_fields():
-            val = field.name
-            if (val == 'id' or val == 'user'):
-                continue
-            elif ('_' in val):
-                field_names.append((val.replace('_', ' '), val))
-                continue
-            else:
-                field_names.append((val, val))
-
+        field_names = remove_omitted_fields()
         if form.is_valid():
+            #print('valid form')
+            user_id = request.POST['user']
             check_values = request.POST.getlist('tag[]')
             filter_key = request.POST['filter_key']
-            if (filter_key.strip() == ''):
-                return render(request, 'tasks/task_list.html', {'task_list': Task.objects.all(), 'fields': field_names})
+            if(filter_key.strip() == ''):
+                return render(request, 'tasks/task_list.html', {'task_list':Task.objects.filter(user=user_id, archived=False).all(), 'fields':field_names})
             else:
                 arg_dict = {}
                 filtered_tasks = Task.objects.none()
@@ -226,12 +216,15 @@ def filter_tasks(request):
                     # arg_dict[field_names[int(val)]+'__icontains'] = filter_key
                     arg_dict = {field_names[int(val)][1] + '__icontains': filter_key}
                     # print(arg_dict)
-                    filtered_tasks = filtered_tasks | Task.objects.all().filter(**arg_dict)
+                    filtered_tasks = filtered_tasks | Task.objects.filter(user=user_id, archived=False).all().filter(**arg_dict)
                 #filtered_tasks = Task.objects.all().filter(**arg_dict)
                 #return HttpResponseRedirect(reverse('tasks:list'))
                 return render(request, 'tasks/task_list.html', {'task_list':filtered_tasks, 'fields':field_names})
+        elif 'reset-button' in request.POST:
+            #print('reset filter')
+            return HttpResponseRedirect(reverse('tasks:list'))
         else:
-            print('nothing to ernder')
+            #print('invalid form')
             return HttpResponseRedirect(reverse('tasks:list'))
 
 

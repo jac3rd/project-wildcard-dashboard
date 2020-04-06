@@ -17,33 +17,42 @@
 <style> .list-group-item{ padding: 12px; } </style>
 
 <h1 align="center">Hello, {{user.username}}! Good to see you :)</h1>
-<form action="{% url 'tasks:filter_tasks' %}" method='post'>
+
+<form action="{% url 'tasks:filter_tasks' %}" method="post" style="margin-bottom:10px">
     {% csrf_token %}
+    <div class="input-group">
+    <input type="hidden" value="{{user.id}}" id="user" name="user">
+    <button type="submit" class="btn btn-danger" name="reset-button" style="margin-right:10px">
+        Reset Filters
+    </button>
     <input class="form-control" type="text" placeholder="Filtered Input" name="filter_key">
     <div class="btn-group">
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" style="margin-left:10px">
             Filter
         </button>
         <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span class="sr-only">Toggle Dropdown</span>
+          <!--<span class="sr-only">Toggle Dropdown</span>-->
+          <span class="fa fa-filter"></span>
         </button>
         <div class="dropdown-menu">
           <button class="dropdown-item" type="button">Filter on the following:</button>
           <div class="dropdown-divider"></div>
             {% for name, real_value in fields %}
                 <div>
-                    <input type="checkbox" name="tag[]" value="{{ forloop.counter0 }}">{{ name }}
+                    <input type="checkbox" name="tag[]" value="{{ forloop.counter0 }}" style="padding-left:10px"><span style="padding-left:10px">{{ name }}</span>
                 </div>
             {% endfor %}
         </div>
       </div>
+    </div>
 </form>
 <!-- Example single danger button -->
 <center>
-    <form action="{% url 'tasks:list' %}" method="get">
+    <form action="{% url 'tasks:list' %}" method="get" style="margin-bottom:20px">
     <div class="btn-group">
         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Sort By
+        <!--<i class="fa fa-sort"style="margin-left:5px"></i>-->
         </button>
         <div class="dropdown-menu">
             <button type="submit" class="dropdown-item" name="sort_by" value="task_name">Task Name</button>
@@ -91,7 +100,7 @@
 
                                                         {% if task.category == 'Homework' %}
                                                             <div class="badge badge-primary ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Chores' %}
+                                                        {% elif task.category == 'Chore' %}
                                                             <div class="badge badge-warning ml-2">{{ task.category }}</div>
                                                         {% elif task.category == 'Work' %}
                                                             <div class="badge badge-danger ml-2">{{ task.category }}</div>
@@ -126,7 +135,7 @@
 
                                                         {% if task.category == 'Homework' %}
                                                             <div class="badge badge-primary ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Chores' %}
+                                                        {% elif task.category == 'Chore' %}
                                                             <div class="badge badge-warning ml-2">{{ task.category }}</div>
                                                         {% elif task.category == 'Work' %}
                                                             <div class="badge badge-danger ml-2">{{ task.category }}</div>
@@ -194,4 +203,6 @@
 {% else %}
 <label>Please login.</label>
 {% endif %}
+
+
 {% endblock %}
