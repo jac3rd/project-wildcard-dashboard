@@ -78,6 +78,7 @@ def add_task(request):
                         curr_t.task_name = request.POST.get('task_name')
                         curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M')
+                        curr_t.length = request.POST.get('length')
                         curr_t.user = request.POST.get('user')
                         curr_t.completed = False
                         curr_t.link = request.POST.get('link', "")
@@ -90,6 +91,7 @@ def add_task(request):
                         curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=i)
+                        curr_t.length = request.POST.get('length')
                         curr_t.user = request.POST.get('user')
                         curr_t.completed = False
                         curr_t.link = request.POST.get('link', "")
@@ -101,6 +103,7 @@ def add_task(request):
                         curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=4 * i)
+                        curr_t.length = request.POST.get('length')
                         curr_t.link = request.POST.get('link', "")
                         curr_t.completed = False
                         curr_t.user = request.POST.get('user')
@@ -112,6 +115,7 @@ def add_task(request):
                         curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=52 * i)
+                        curr_t.length = request.POST.get('length')
                         curr_t.link = request.POST.get('link', "")
                         curr_t.completed = False
                         curr_t.user = request.POST.get('user')

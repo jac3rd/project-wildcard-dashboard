@@ -1,5 +1,6 @@
 from django.db import models
 from social_django import models as oauth_models
+import datetime
 
 
 # Create your models here.
@@ -9,7 +10,7 @@ class Task(models.Model):
 	task_name = models.CharField(max_length=200)
 	task_desc = models.CharField(max_length=400)
 	end_time = models.DateTimeField('end time')
-    length = models.DurationField('length')
+	length = models.DurationField('length', default=datetime.timedelta(hours=3))
 	completed = models.BooleanField('completed')
 	date_completed = models.DateField('date_completed', null=True)
 	archived = models.BooleanField('archived', default=False)
