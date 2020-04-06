@@ -67,6 +67,7 @@ def add_task(request):
             t.task_name = request.POST.get('task_name')
             t.task_desc = request.POST.get('task_desc')
             t.end_time = request.POST.get('end_time')
+            t.length = request.POST.get('length')
             t.category = request.POST.get('category')
             t.link = request.POST.get('link', "")
             # Ensure that the start dates are correct
