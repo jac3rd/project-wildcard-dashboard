@@ -23,7 +23,7 @@
     <div class="input-group">
     <input type="hidden" value="{{user.id}}" id="user" name="user">
     <button type="submit" class="btn btn-danger" name="reset-button" style="margin-right:10px">
-        Reset
+        Reset Filters
     </button>
     <input class="form-control" type="text" placeholder="Filtered Input" name="filter_key">
     <div class="btn-group">
@@ -39,7 +39,7 @@
           <div class="dropdown-divider"></div>
             {% for name, real_value in fields %}
                 <div>
-                    <input type="checkbox" name="tag[]" value="{{ forloop.counter0 }}">{{ name }}
+                    <input type="checkbox" name="tag[]" value="{{ forloop.counter0 }}" style="padding-left:10px"><span style="padding-left:10px">{{ name }}</span>
                 </div>
             {% endfor %}
         </div>
