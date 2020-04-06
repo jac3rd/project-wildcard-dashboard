@@ -117,7 +117,7 @@ def add_task(request):
                         curr_t.save()
                 return HttpResponseRedirect(reverse('tasks:list'))
             else:
-                return render(request, 'tasks/add_task.html', {'error_message': "Due date must be later than current time.",})
+                return render(request, 'tasks/add_task.html', {'form': form, 'error_message': "Due date must be later than current time.",})
     else:
         form = TaskForm()
     return render(request, 'tasks/add_task.html', {'form': form})
