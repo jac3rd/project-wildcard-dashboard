@@ -165,7 +165,6 @@ def delete_task(request):
         try:
             task = Task.objects.get(pk=task_id)
         except:
-            print("Error!")
             return HttpResponseRedirect(reverse('tasks:list'))
         task.delete()
         return HttpResponseRedirect(reverse('tasks:list'))
