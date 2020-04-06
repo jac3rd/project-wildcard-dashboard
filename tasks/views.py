@@ -50,6 +50,7 @@ class TaskListView(generic.ListView):
         context['fields'] = remove_omitted_fields()
         return context
 
+
 @login_required
 def add_task(request):
     """
@@ -242,6 +243,7 @@ def archive_finished(request):
 
 class StatsView(TemplateView):
     template_name = 'tasks/stats.html'
+
     def get_context_data(self, **kwargs):
         if Task.objects.filter(user=self.request.user.id):
             recentTasks = Task.objects.filter(user=self.request.user.id, completed=True,
@@ -252,9 +254,15 @@ class StatsView(TemplateView):
             data = [
                 ['Date', 'Total Completed']
             ]
+            start = datetime.datetime.now().date() - datetime.timedelta(weeks=2)
+            data += [[start + datetime.timedelta(days=i), 0] for i in range(15)]
+            # A counter to keep track of where in the date array we are
+            i = 1
             for dates in recentTasks:
-                data.append([dates['date_only'], dates['total']
-                             ])
+                while data[i][0] != dates['date_only']:
+                    i += 1
+                data[i][1] += int(dates['total'])
+                i += 1
             recently_finished = SimpleDataSource(data)
             recently_finished_chart = LineChart(recently_finished, options={'title': 'Task Completion Graph'})
             completed = len(Task.objects.filter(user=self.request.user.id, completed=True))
@@ -266,8 +274,9 @@ class StatsView(TemplateView):
             ratio_on_time = ((completed - completed_late) * 100) / max(late, 1)
             beginning_of_time = (datetime.datetime.now().date() - Task.objects.all().aggregate(Min('end_time'))[
                 'end_time__min'].date()).days
-            context = {'chart': recently_finished_chart, 'completed': completed, 'ratio_on_time': round(ratio_on_time, 3),
-                       'avg': round(completed / max(beginning_of_time, 1), 3), 'valid': ''}
+            context = {'chart': recently_finished_chart, 'completed': completed,
+                       'ratio_on_time': round(ratio_on_time, 3),
+                       'avg': round(completed / max(beginning_of_time, 1), 3), 'valid': '', 'show_bad_prompt': 'hidden'}
             return context
         else:
-            return {'valid': 'hidden'}
+            return {'valid': 'hidden', 'show_bad_prompt': ''}
