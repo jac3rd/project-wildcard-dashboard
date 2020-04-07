@@ -169,17 +169,20 @@
                                             {% endif %}
                                             <!-- End of Henry's form -->
                                         </div>
-                                        <div class="widget-content-right">
-                                            <small class="text-muted">{{task.length}}</small>
+                                        <div class="ml-auto">
+                                            <div class="d-flex">
+                                                <small class="text-muted">{{task.length}}</small>
+                                                <form action="{% url 'tasks:delete_task' %}" method='post' id="delete_{{ task.id }}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="task_id" value="{{task.id}}">
+                                                    <button class="border-0 btn-transition btn btn-outline-danger" onclick="document.getElementId('delete_{{ task.id }}').submit();">
+                                                        <i class="fa fa-trash"></i> </button>
+                                                </form>
+                                            </div>
                                         </div>
-                                        <div class="widget-content-right">
-                                            <form action="{% url 'tasks:delete_task' %}" method='post' id="delete_{{ task.id }}">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="task_id" value="{{task.id}}">
-                                                <button class="border-0 btn-transition btn btn-outline-danger" onclick="document.getElementId('delete_{{ task.id }}').submit();">
-                                                    <i class="fa fa-trash"></i> </button>
-                                            </form>
-                                        </div>
+<!--                                        <div class="ml-auto">-->
+<!--                                            -->
+<!--                                        </div>-->
                                     </div>
                                     <p class="mb-1">{{ task.task_desc }}</p>
                                     <div class="widget-heading"><b><i>DUE:</i> {{ task.end_time }}</b></div>
