@@ -120,7 +120,8 @@ def add_task(request):
                         curr_t.save()
                 return HttpResponseRedirect(reverse('tasks:list'))
             else:
-                return render(request, 'tasks/add_task.html', {'form': form, 'error_message': "Due date must be later than current time.",})
+                return render(request, 'tasks/add_task.html',
+                              {'form': form, 'error_message': "Due date must be later than current time.", })
     else:
         form = TaskForm()
     return render(request, 'tasks/add_task.html', {'form': form})
@@ -243,42 +244,78 @@ def archive_finished(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
-class StatsView(TemplateView):
-    template_name = 'tasks/stats.html'
+def retrieve_line_data(data, field, request, weeks=2, index=1):
+    if field == 'all':
+        recentTasks = Task.objects.filter(user=request.user.id, completed=True,
+                                          date_completed__gt=datetime.datetime.now() - datetime.timedelta(
+                                              weeks=weeks)).annotate(
+            date_only=Cast('date_completed', DateField())).values(
+            'date_only').annotate(total=Count('date_only')).order_by('date_only')
+    else:
+        recentTasks = Task.objects.filter(user=request.user.id, completed=True, category=field,
+                                          date_completed__gt=datetime.datetime.now() - datetime.timedelta(
+                                              weeks=weeks)).annotate(
+            date_only=Cast('date_completed', DateField())).values(
+            'date_only').annotate(total=Count('date_only')).order_by('date_only')
+    i = 1
+    for dates in recentTasks:
+        while data[i][0] != dates['date_only']:
+            i += 1
+        data[i][index] += int(dates['total'])
+        i += 1
 
-    def get_context_data(self, **kwargs):
-        if Task.objects.filter(user=self.request.user.id):
-            recentTasks = Task.objects.filter(user=self.request.user.id, completed=True,
-                                              date_completed__gt=datetime.datetime.now() - datetime.timedelta(
-                                                  weeks=2)).annotate(
-                date_only=Cast('date_completed', DateField())).values(
-                'date_only').annotate(total=Count('date_only')).order_by('date_only')
-            data = [
-                ['Date', 'Total Completed']
-            ]
-            start = datetime.datetime.now().date() - datetime.timedelta(weeks=2)
-            data += [[start + datetime.timedelta(days=i), 0] for i in range(15)]
+
+def init_dates(data, fields, weeks=2):
+    start = datetime.datetime.now().date() - datetime.timedelta(weeks=weeks)
+    data += [[start + datetime.timedelta(days=i)] for i in range((7*weeks) + 1)]
+    for i in range(1, len(data)):
+        data[i] += [0 for i in range(fields)]
+
+
+def stats(request):
+    data = [
+        ['Date']
+    ]
+    if Task.objects.filter(user=request.user.id):
+        if not request.GET:
+            data[0].append('Tasks Completed')
+            init_dates(data, 1)
+            retrieve_line_data(data, 'all', request)
             # A counter to keep track of where in the date array we are
-            i = 1
-            for dates in recentTasks:
-                while data[i][0] != dates['date_only']:
-                    i += 1
-                data[i][1] += int(dates['total'])
-                i += 1
-            recently_finished = SimpleDataSource(data)
-            recently_finished_chart = LineChart(recently_finished, options={'title': 'Task Completion Graph'})
-            completed = len(Task.objects.filter(user=self.request.user.id, completed=True))
-            late = len(Task.objects.filter(user=self.request.user.id, date_completed__gt=F('end_time'))
-                       | Task.objects.filter(user=self.request.user.id, end_time__lt=datetime.datetime.now(),
-                                             date_completed__isnull=True))
-            completed_late = len(
-                Task.objects.filter(user=self.request.user.id, completed=True, date_completed__gt=F('end_time')))
-            ratio_on_time = ((completed - completed_late) * 100) / max(late, 1)
-            beginning_of_time = (datetime.datetime.now().date() - Task.objects.all().aggregate(Min('end_time'))[
-                'end_time__min'].date()).days
-            context = {'chart': recently_finished_chart, 'completed': completed,
-                       'ratio_on_time': round(ratio_on_time, 3),
-                       'avg': round(completed / max(beginning_of_time, 1), 3), 'valid': '', 'show_bad_prompt': 'hidden'}
-            return context
         else:
-            return {'valid': 'hidden', 'show_bad_prompt': ''}
+            cntr = 1
+            num_fields = len(request.GET.keys())
+            weeks = 2
+            if 'weeks' in request.GET.keys():
+                print(int(request.GET['weeks']))
+                weeks = int(request.GET['weeks'])
+                num_fields -= 1
+            init_dates(data, num_fields, weeks)
+            for field in request.GET.keys():
+                if request.GET[field] == 'on' and field != 'weeks':
+                    data[0].append(field)
+                    retrieve_line_data(data, field, request, weeks, cntr)
+                    cntr += 1
+        recently_finished = SimpleDataSource(data)
+        recently_finished_chart = LineChart(recently_finished, options={'title': 'Task Completion Graph'})
+        completed = len(Task.objects.filter(user=request.user.id, completed=True))
+        late = len(Task.objects.filter(user=request.user.id, date_completed__gt=F('end_time'))
+                   | Task.objects.filter(user=request.user.id, end_time__lt=datetime.datetime.now(),
+                                         date_completed__isnull=True))
+        completed_late = len(
+            Task.objects.filter(user=request.user.id, completed=True, date_completed__gt=F('end_time')))
+        ratio_on_time = ((completed - completed_late) * 100) / max(late + completed, 1)
+        first_completed = Task.objects.all().aggregate(Min('end_time'))[
+            'end_time__min'].date()
+        if first_completed:
+            beginning_of_time = (datetime.datetime.now().date() - first_completed).days
+            avg = round(completed / max(beginning_of_time, 1), 3)
+        else:
+            avg = 0
+        context = {'chart': recently_finished_chart, 'completed': completed,
+                   'ratio_on_time': round(ratio_on_time, 3),
+                   'avg': avg, 'valid': '', 'show_bad_prompt': 'hidden'}
+        return render(request, 'tasks/stats.html', context)
+    else:
+        context = {'valid': 'hidden', 'show_bad_prompt': ''}
+        return render(request, 'tasks/stats.html', context)
