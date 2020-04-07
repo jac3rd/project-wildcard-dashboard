@@ -402,6 +402,13 @@ class TaskModelTests(TestCase):
         task = create_task(task_name=task_name)
         self.assertEqual(task.__str__(), task_name)
 
+    # unit test to assert that get_html_url returns correct HTML
+    def test_get_html_url(self):
+        task_name = "test_get_html_url"
+        task = create_task(task_name=task_name)
+        html_url = task.get_html_url
+        self.assertEqual(html_url, f'<p>{task.task_name}</p><a href="#">edit</a>')
+
 def create_category(user=0, name="generic category"):
     category = models.Category()
     category.user = user

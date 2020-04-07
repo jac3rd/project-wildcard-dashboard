@@ -43,8 +43,9 @@ class Task(models.Model):
 
 	@property
 	def get_html_url(self):
-		url = reverse('task_edit', args=(self.id))
-		return f'<p>{self.task_name}</p><a href="{url}">edit</a>'
+		# url = reverse('task_edit', args=(self.id))
+		# return f'<p>{self.task_name}</p><a href="{url}">edit</a>'
+		return f'<p>{self.task_name}</p><a href="#">edit</a>'
 
 class Category(models.Model):
     name = models.CharField(max_length=32)
