@@ -7,6 +7,7 @@ from . import models, views
 from django.contrib.auth.models import User, AnonymousUser
 from django.http import HttpResponse, HttpResponseRedirect
 from .views import TaskListView
+from .utils import Calendar
 
 
 def create_task(user=0, task_name="generic test", task_desc="generic test description", date_completed=None,
@@ -447,6 +448,18 @@ class CategoryModelTests(TestCase):
         category = create_category(name=name)
         self.assertIsInstance(self.client.post(reverse('tasks:delete_category'), {'id': category.id}), HttpResponse)
 
-# class ListViewTests(TestCase):
+class CalendarTests(TestCase):
+    
+    # unit test to assert that default Calendar constructor works
+    def test_Calendar_init(self):
+        calendar = Calendar()
+        self.assertEqual(calendar.year, None)
+        self.assertEqual(calendar.month, None)
 
-# unit test asserting that stuff h
+    # unit test to asser that Calendar constructor works with passed parameters
+    def test_Calendar_init_pass_param(self):
+        year = 2020
+        month = 4
+        calendar = Calendar(year=year, month=month)
+        self.assertEqual(calendar.year, year)
+        self.assertEqual(calendar.month, month)
