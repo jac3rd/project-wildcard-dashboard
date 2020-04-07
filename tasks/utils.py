@@ -13,7 +13,7 @@ class Calendar(HTMLCalendar):
         tasks_per_day = tasks.filter(end_time__day=day)
         d = ''
         for task in tasks_per_day:
-            d += f'<li class="calendar_list"> {task.get_html_url} </li>'
+            d += f'<li> {task.task_name} </li>'
         if day != 0:
             return f"<td><span class='date'>{day}</span><ul> {d} </ul></td>"
         return '<td></td>'
@@ -25,7 +25,7 @@ class Calendar(HTMLCalendar):
         return f'<tr> {week} </tr>'
 
     def formatmonth(self, withyear=True):
-        tasks = Task.objects.filter(end_time__year=self.year, start_time__month=self.month)
+        tasks = Task.objects.filter(end_time__year=self.year, end_time__month=self.month)
         cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{self.formatweekheader()}\n'

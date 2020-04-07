@@ -3,9 +3,9 @@ from django.db.models import Count, F, Min
 from django.db.models.functions import Cast
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import generic
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 
 from .forms import TaskForm, FilterForm
 from .models import Task, Category
@@ -13,7 +13,8 @@ import datetime
 from graphos.renderers.gchart import LineChart
 from graphos.sources.model import SimpleDataSource
 from django.db.models import DateField
-from django.utils import timezone
+from django.utils import timezone, safestring
+from .utils import Calendar
 
 def remove_omitted_fields():
     omitted_fields = set(['id', 'user', 'created_at', 'completed', 'archived'])
@@ -280,3 +281,24 @@ class StatsView(TemplateView):
             return context
         else:
             return {'valid': 'hidden', 'show_bad_prompt': ''}
+
+class CalendarView(ListView):
+    model = Task
+    template_name = 'templates/tasks/calendar.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        year = datetime.datetime.now().year
+        month = datetime.datetime.now().month
+        cal = Calendar(year, month)
+        html_cal = cal.formatmonth(withyear=True)
+        context['calendar'] = safestring.mark_safe(html_cal)
+        # context['prev_month'] = prev_month(d)
+        # context['next_month'] = next_month(d)
+        return context
+
+def get_date(req_day):
+    if req_day:
+        year, month = (int(x) for x in req_day.split('-'))
+        return date(year, month, day=1)
+    return datetime.today()

@@ -43,7 +43,7 @@ class Task(models.Model):
 
 	@property
 	def get_html_url(self):
-		# url = reverse('task_edit', args=(self.id))
+		# url = reverse('tasks:task_edit', args=(self.id))
 		# return f'<p>{self.task_name}</p><a href="{url}">edit</a>'
 		return f'<p>{self.task_name}</p><a href="#">edit</a>'
 

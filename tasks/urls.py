@@ -17,5 +17,5 @@ urlpatterns = [
     path('filter_tasks/', views.filter_tasks, name='filter_tasks'),
     path('archive_finished/', views.archive_finished, name='archive_finished'),
     path('stats/', views.StatsView.as_view(), name='stats'),
-
+    path('calendar/', views.CalendarView.as_view(), name='calendar'),
 ]
