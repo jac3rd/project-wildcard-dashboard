@@ -171,13 +171,17 @@
                                         </div>
                                         <div class="ml-auto">
                                             <div class="d-flex">
-                                                <small class="text-muted">{{task.length}}</small>
-                                                <form action="{% url 'tasks:delete_task' %}" method='post' id="delete_{{ task.id }}">
-                                                    {% csrf_token %}
-                                                    <input type="hidden" name="task_id" value="{{task.id}}">
-                                                    <button class="border-0 btn-transition btn btn-outline-danger" onclick="document.getElementId('delete_{{ task.id }}').submit();">
-                                                        <i class="fa fa-trash"></i> </button>
-                                                </form>
+                                                <div class="ml-auto">
+                                                    <small class="text-muted">{{task.length}}</small>
+                                                </div>
+                                                <div class="ml-auto">
+                                                    <form action="{% url 'tasks:delete_task' %}" method='post' id="delete_{{ task.id }}">
+                                                        {% csrf_token %}
+                                                        <input type="hidden" name="task_id" value="{{task.id}}">
+                                                        <button class="border-0 btn-transition btn btn-outline-danger" onclick="document.getElementId('delete_{{ task.id }}').submit();">
+                                                            <i class="fa fa-trash"></i> </button>
+                                                    </form>
+                                                </div>
                                             </div>
                                         </div>
 <!--                                        <div class="ml-auto">-->
