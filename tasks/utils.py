@@ -10,7 +10,7 @@ class Calendar(HTMLCalendar):
         super(Calendar, self).__init__()
 
     def formatday(self, day, tasks):
-        tasks_per_day = tasks.filter(start_time_day=day)
+        tasks_per_day = tasks.filter(end_time__day=day)
         d = ''
         for task in tasks_per_day:
             d += f'<li class="calendar_list"> {task.get_html_url} </li>'

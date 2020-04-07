@@ -463,10 +463,32 @@ class CalendarTests(TestCase):
         self.assertEqual(calendar.year, None)
         self.assertEqual(calendar.month, None)
 
-    # unit test to asser that Calendar constructor works with passed parameters
+    # unit test to assert that Calendar constructor works with passed parameters
     def test_Calendar_init_pass_param(self):
         year = 2020
         month = 4
         calendar = Calendar(year=year, month=month)
         self.assertEqual(calendar.year, year)
         self.assertEqual(calendar.month, month)
+
+    # unit test to assert that formatday returns correct HTML when day=0
+    def test_formatday_zero_day(self):
+        calendar = Calendar()
+        html = calendar.formatday(0, models.Task.objects)
+        self.assertEqual(html, '<td></td>')
+
+    # unit test to assert that formatday returns correct HTML when there are no tasks for a given day
+    def test_formatday_empty_queryset(self):
+        calendar = Calendar()
+        curr_time = datetime.datetime.now()
+        html = calendar.formatday(curr_time.day, models.Task.objects)
+        self.assertEqual(html, f"<td><span class='date'>{curr_time.day}</span><ul>  </ul></td>")
+
+    # unit test to assert that formatday returns correct HTML when there are tasks for a given day
+    def test_formatday_tasks_exist(self):
+        calendar = Calendar()
+        curr_time = datetime.datetime.now()
+        task = create_task(end_time=curr_time)
+        task.save()
+        html = calendar.formatday(curr_time.day, models.Task.objects)
+        self.assertEqual(html, f'<td><span class=\'date\'>{curr_time.day}</span><ul> <li class="calendar_list"> {task.get_html_url} </li> </ul></td>')
