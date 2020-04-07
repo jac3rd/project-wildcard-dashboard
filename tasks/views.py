@@ -304,18 +304,25 @@ def stats(request):
                                          date_completed__isnull=True))
         completed_late = len(
             Task.objects.filter(user=request.user.id, completed=True, date_completed__gt=F('end_time')))
-        ratio_on_time = ((completed - completed_late) * 100) / max(late + completed, 1)
-        first_completed = Task.objects.all().aggregate(Min('end_time'))[
-            'end_time__min'].date()
+        ratio_on_time = ((completed - completed_late) * 100) / max(late + completed - completed_late, 1)
+        first_completed = Task.objects.all().aggregate(Min('date_completed'))[
+            'date_completed__min']
         if first_completed:
-            beginning_of_time = (datetime.datetime.now().date() - first_completed).days
-            avg = round(completed / max(beginning_of_time, 1), 3)
+            beginning_of_time = (datetime.datetime.now().date() - first_completed).days + 1
+            avg = round((completed / max(beginning_of_time, 1)), 3)
         else:
             avg = 0
         context = {'chart': recently_finished_chart, 'completed': completed,
                    'ratio_on_time': round(ratio_on_time, 3),
                    'avg': avg, 'valid': '', 'show_bad_prompt': 'hidden'}
-        return render(request, 'tasks/stats.html', context)
+        return context
     else:
         context = {'valid': 'hidden', 'show_bad_prompt': ''}
-        return render(request, 'tasks/stats.html', context)
+        return context
+
+
+class StatsView(TemplateView):
+    template_name = 'tasks/stats.html'
+
+    def get_context_data(self, **kwargs):
+        return stats(self.request)
