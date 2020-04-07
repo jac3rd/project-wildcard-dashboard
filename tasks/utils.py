@@ -23,3 +23,12 @@ class Calendar(HTMLCalendar):
         for d, weekday in theweek:
             week += self.formatday(d, tasks)
         return f'<tr> {week} </tr>'
+
+    def formatmonth(self, withyear=True):
+        tasks = Task.objects.filter(end_time__year=self.year, start_time__month=self.month)
+        cal = f'<table border="0" cellpadding="0" cellspacing="0" class="calendar">\n'
+        cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
+        cal += f'{self.formatweekheader()}\n'
+        for week in self.monthdays2calendar(self.year, self.month):
+            cal += f'{self.formatweek(week, tasks)}\n'
+        return cal
