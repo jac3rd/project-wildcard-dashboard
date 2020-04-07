@@ -284,21 +284,18 @@ class StatsView(TemplateView):
 
 class CalendarView(ListView):
     model = Task
-    template_name = 'templates/tasks/calendar.html'
+    template_name = 'tasks/calendar.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        year = datetime.datetime.now().year
-        month = datetime.datetime.now().month
-        cal = Calendar(year, month)
+        d = get_date(self.request.GET.get('day', None))
+        cal = Calendar(d.year, d.month)
         html_cal = cal.formatmonth(withyear=True)
         context['calendar'] = safestring.mark_safe(html_cal)
-        # context['prev_month'] = prev_month(d)
-        # context['next_month'] = next_month(d)
         return context
 
 def get_date(req_day):
     if req_day:
         year, month = (int(x) for x in req_day.split('-'))
-        return date(year, month, day=1)
-    return datetime.today()
+        return datetime.date(year, month, day=1)
+    return datetime.datetime.today()
