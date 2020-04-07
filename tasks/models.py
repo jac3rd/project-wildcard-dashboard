@@ -1,6 +1,7 @@
 from django.db import models
 from social_django import models as oauth_models
 import datetime
+from django.urls import reverse
 
 
 # Create your models here.
@@ -37,6 +38,13 @@ class Task(models.Model):
 	)
 	created_at = models.DateTimeField(auto_now_add=True)
 	
+	def __str__(self):
+		return self.task_name
+
+	@property
+	def get_html_url(self):
+		url = reverse('task_edit', args=(self.id))
+		return f'<p>{self.task_name}</p><a href="{url}">edit</a>'
 
 class Category(models.Model):
     name = models.CharField(max_length=32)

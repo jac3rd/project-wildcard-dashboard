@@ -395,6 +395,12 @@ class TaskModelTests(TestCase):
         #self.assertTrue(returned_context[0]['task_name'] == 'task1' and returned_context[1]['task_name'] == 'task2' and resp.status_code == 200)
         self.assertTrue(resp.status_code == 200)
 
+    # unit test to test __str__ function
+    def test_str(self):
+        task_name = "test_str"
+        task = create_task(task_name=task_name)
+        self.assertEqual(task.__str__(), task_name)
+
 def create_category(user=0, name="generic category"):
     category = models.Category()
     category.user = user
