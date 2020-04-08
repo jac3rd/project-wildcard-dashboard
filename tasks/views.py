@@ -6,6 +6,7 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
 from django.views.generic import TemplateView
+from django.core.exceptions import ObjectDoesNotExist
 
 from .forms import TaskForm, FilterForm
 from .models import Task, Category
@@ -161,9 +162,12 @@ def uncheck(request):
 def delete_task(request):
     if request.method == 'POST':
         task_id = request.POST['task_id']
-        task = Task.objects.get(pk=task_id)
+        try:
+            task = Task.objects.get(pk=task_id)
+        except:
+            return HttpResponseRedirect(reverse('tasks:list'))
         task.delete()
-    return HttpResponseRedirect(reverse('tasks:list'))
+        return HttpResponseRedirect(reverse('tasks:list'))
 
 
 def add_category(request):
