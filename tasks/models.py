@@ -10,6 +10,7 @@ class Task(models.Model):
 	task_name = models.CharField(max_length=200)
 	task_desc = models.CharField(max_length=400)
 	end_time = models.DateTimeField('end time')
+	#end_time = CustomDateTimeField('end time')
 	length = models.DurationField('length', default=datetime.timedelta(hours=3))
 	completed = models.BooleanField('completed')
 	date_completed = models.DateField('date_completed', null=True)

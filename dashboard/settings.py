@@ -160,7 +160,9 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
+
+DATETIME_FORMAT = "M d Y H:i"
 
 # originally was TRUE
 USE_TZ = False
