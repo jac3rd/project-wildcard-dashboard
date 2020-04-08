@@ -16,7 +16,8 @@ class TaskForm(forms.Form):
     task_name = forms.CharField(label='Task Name', max_length=100)
     task_desc = forms.CharField(label='Task Description', max_length=200, required=False)
     end_time = forms.DateTimeField(label='End Time', input_formats=attempt)
-    length = forms.DurationField(label='Estimated Length')
+    hours = forms.IntegerField(label='Estimated Length (Hours)')
+    minutes = forms.IntegerField(label='Estimated Length (Minutes)')
     category = forms.Select(choices= Task.CATEGORIES)
 
 class FilterForm(forms.Form):

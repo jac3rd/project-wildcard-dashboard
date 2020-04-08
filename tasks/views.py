@@ -66,7 +66,8 @@ def add_task(request):
             t.task_name = request.POST.get('task_name')
             t.task_desc = request.POST.get('task_desc')
             t.end_time = request.POST.get('end_time')
-            t.length = request.POST.get('length')
+            t.hours = request.POST.get('hours')
+            t.minutes = request.POST.get('minutes')
             t.category = request.POST.get('category')
             t.link = request.POST.get('link', "")
             # Ensure that the start dates are correct
@@ -79,7 +80,8 @@ def add_task(request):
                         curr_t.task_name = request.POST.get('task_name')
                         curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M')
-                        curr_t.length = request.POST.get('length')
+                        curr_t.hours = request.POST.get('hours')
+                        curr_t.minutes = request.POST.get('minutes')
                         curr_t.user = request.POST.get('user')
                         curr_t.completed = False
                         curr_t.link = request.POST.get('link', "")
@@ -92,7 +94,8 @@ def add_task(request):
                         curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=i)
-                        curr_t.length = request.POST.get('length')
+                        curr_t.hours = request.POST.get('hours')
+                        curr_t.minutes = request.POST.get('minutes')
                         curr_t.user = request.POST.get('user')
                         curr_t.completed = False
                         curr_t.link = request.POST.get('link', "")
@@ -104,7 +107,8 @@ def add_task(request):
                         curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=4 * i)
-                        curr_t.length = request.POST.get('length')
+                        curr_t.hours = request.POST.get('hours')
+                        curr_t.minutes = request.POST.get('minutes')
                         curr_t.link = request.POST.get('link', "")
                         curr_t.completed = False
                         curr_t.user = request.POST.get('user')
@@ -116,7 +120,8 @@ def add_task(request):
                         curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=52 * i)
-                        curr_t.length = request.POST.get('length')
+                        curr_t.hours = request.POST.get('hours')
+                        curr_t.minutes = request.POST.get('minutes')
                         curr_t.link = request.POST.get('link', "")
                         curr_t.completed = False
                         curr_t.user = request.POST.get('user')

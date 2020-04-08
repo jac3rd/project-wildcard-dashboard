@@ -15,9 +15,19 @@
             <label for="{{ form.end_time.name }}">Due Date</label>
             <input class="form-control" type="datetime-local" id="{{ form.end_time.name }}" name="{{ form.end_time.name }}">
         </div>
-        <div class="form-group">
-            <label for="{{ form.length.name }}">Estimated Length</label>
-            <input class="form-control" type="time" id="{{ form.length.name }}" name="{{ form.length.name }}">
+        <div class="form-group form-row">
+            <div class="col">
+                <label>Estimated Length</label>
+            </div>
+            <div class="col">
+                <input class="form-control" type="number" id="{{ form.hours.name }}" name="{{ form.hours.name }}" placeholder="Hours">
+            </div>
+            <div class="col text-center">
+                <p class="lead">:</p>
+            </div>
+            <div class="col">
+                <input class="form-control" type="number" id="{{ form.minutes.name }}" name="{{ form.minutes.name }}" placeholder="Minutes">
+            </div>
         </div>
         <div class="form-group">
             <label for="category">Category</label>
