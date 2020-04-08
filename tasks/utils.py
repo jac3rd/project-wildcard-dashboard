@@ -13,7 +13,20 @@ class Calendar(HTMLCalendar):
         tasks_per_day = tasks.filter(end_time__day=day).order_by('end_time')
         d = ''
         for task in tasks_per_day:
-            d += f'<li class="list-group-item"> {task.task_name} - {task.end_time.time()} </li>'
+            list_group_color = ''
+            if task.category == 'Homework':
+                list_group_color = ' list-group-item-primary'
+            elif task.category == 'Chore':
+                list_group_color = ' list-group-item-warning'
+            elif task.category == 'Work':
+                list_group_color = ' list-group-item-danger'
+            elif task.category == 'Errand':
+                list_group_color = ' list-group-item-info'
+            elif task.category == 'Life':
+                list_group_color = ' list-group-item-success'
+            elif task.category == 'Other':
+                list_group_color = ' list-group-item-secondary'
+            d += f'<li class="list-group-item' + list_group_color + f'"> <b>{task.task_name}</b> - <i>{task.end_time.time()}</i> </li>'
         if day != 0:
             return f'<td><span class=\'date\'>{day}</span><ul class="list-group"> {d} </ul></td>'
         return '<td></td>'

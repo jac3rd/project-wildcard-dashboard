@@ -491,7 +491,7 @@ class CalendarTests(TestCase):
         task = create_task(end_time=curr_time)
         task.save()
         html = calendar.formatday(curr_time.day, models.Task.objects)
-        self.assertEqual(html, f'<td><span class=\'date\'>{curr_time.day}</span><ul class="list-group"> <li class="list-group-item"> {task.task_name} - {task.end_time.time()} </li> </ul></td>')
+        self.assertEqual(html, f'<td><span class=\'date\'>{curr_time.day}</span><ul class="list-group"> <li class="list-group-item"> <b>{task.task_name}</b> - <i>{task.end_time.time()}</i> </li> </ul></td>')
 
     # unit test to assert that formatweek returns correct HTML when week is empty
     def test_formatweek_empty_week(self):
