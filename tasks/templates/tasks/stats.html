@@ -2,27 +2,37 @@
 {% block content %}
 <div {{valid}}>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-    <script type="text/javascript">
-    google.load("visualization", "1", {packages:["corechart"]});
+    <script type="text/javascript">google.load("visualization", "1", {packages:["corechart"]});</script>
+    <div class="container-fluid">
+        <h3 class="display-5">
+            Dashboard Progress for {{user.username}}:
 
+            
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item lead">
+                    Tasks Completed Since the Beginning of Time: <b>{{completed}}</b>
+                </li>
+                <li class="list-group-item lead">
+                    Percent Tasks Completed On Time: <b>{{ratio_on_time}}%</b>
+                </li>
+                <li class="list-group-item lead">
+                    Average Tasks Per Day (<i>Since First Completed Task</i>): <b>{{avg}}</b>
+                </li>
+            </ul>
 
-    </script>
+        </h3>
+
+    </div>
     Percent Tasks Completed By Category
     {{pie}}
-    <ul class="list-group list-group-flush">
-        <li class="list-group-item lead">
-            Tasks Completed Since the Beginning of Time: <b>{{completed}}</b>
-        </li>
-        <li class="list-group-item lead">
-            Percent Tasks Completed On Time: <b>{{ratio_on_time}}%</b>
-        </li>
-        <li class="list-group-item lead">
-            Average Tasks Per Day (<i>Since First Completed Task</i>): <b>{{avg}}</b>
-        </li>
-    </ul>
+
+    
+
     <hr>
     {{ chart.as_html }}
     <hr>
+
+
     <form action="{% url 'tasks:stats' %}" method="get">
         <p>How many weeks back would you like to see your completion history?</p>
         <select name="weeks" id="weeks" class="custom-select">
