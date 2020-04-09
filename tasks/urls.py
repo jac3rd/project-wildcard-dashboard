@@ -9,7 +9,7 @@ urlpatterns = [
     path('add_task/', views.add_task, name='add_task'),
     path('check_off/', views.check_off, name='check_off'),
     path('uncheck/', views.uncheck, name='uncheck'),
-    path('delete_task', views.delete_task, name='delete_task'),
+    #path('delete_task', views.delete_task, name='delete_task'),
     #url(r'^sort_tasks/*', views.sort_tasks, name='sort_tasks'),
     path('delete_task/', views.delete_task, name='delete_task'),
     path('add_category/', views.add_category, name='add_category'),
@@ -18,4 +18,7 @@ urlpatterns = [
     path('archive_finished/', views.archive_finished, name='archive_finished'),
     path('stats/', views.StatsView.as_view(), name='stats'),
     path('calendar/', views.CalendarView.as_view(), name='calendar'),
+    path('archive_task/', views.archive_task, name='archive_task'),
+    path('check_archived/', views.checkbox_archived, name='check_archived'),
+
 ]

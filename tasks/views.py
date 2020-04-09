@@ -6,9 +6,10 @@ from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
 from django.views.generic import TemplateView, ListView
+from django.core.exceptions import ObjectDoesNotExist
 
 from .forms import TaskForm, FilterForm
-from .models import Task, Category
+from .models import Task, Category, ShowArchived
 import datetime
 from graphos.renderers.gchart import LineChart
 from graphos.sources.model import SimpleDataSource
@@ -42,15 +43,37 @@ class TaskListView(generic.ListView):
 
         sort_key = self.request.GET.get('sort_by', 'give-default-value')
 
-        if (sort_key != 'give-default-value'):
+        """
+        show_arch is used to determine whether to filter out archived tasks
+        If current user does not have ShowArchived model, make one
+        """
+        show_arch = False
+        try:
+            if self.request.user.is_authenticated == True:
+                show_arch = ShowArchived.objects.get(user=self.request.user.id).show_archived
+            else:
+                return render(self.request, 'tasks/login.html')
+        except:
+            sa = ShowArchived()
+            #sa.show_archived = False;
+            sa.user = self.request.user.id
+            sa.save()
+
+        if (sort_key != 'give-default-value' and not show_arch):
             return Task.objects.filter(user=self.request.user.id, archived=False).order_by(sort_key, 'created_at')
-        return Task.objects.filter(user=self.request.user.id, archived=False).order_by('end_time', 'created_at')
+        elif (sort_key != 'give-default-value' and show_arch):
+            return Task.objects.filter(user=self.request.user.id).order_by(sort_key, 'created_at')
+        elif (sort_key == 'give-default-value' and not show_arch):
+            return Task.objects.filter(user=self.request.user.id, archived=False).order_by('end_time', 'created_at')
+        else:
+            return Task.objects.filter(user=self.request.user.id).order_by('end_time', 'created_at')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['fields'] = remove_omitted_fields()
+        if self.request.user.is_authenticated == True:
+            context['sa'] = ShowArchived.objects.get(user=self.request.user.id)
         return context
-
 
 @login_required
 def add_task(request):
@@ -67,11 +90,18 @@ def add_task(request):
             t.task_name = request.POST.get('task_name')
             t.task_desc = request.POST.get('task_desc')
             t.end_time = request.POST.get('end_time')
-            t.length = request.POST.get('length')
+            t.hours = request.POST.get('hours')
+            t.minutes = request.POST.get('minutes')
             t.category = request.POST.get('category')
             t.link = request.POST.get('link', "")
             # Ensure that the start dates are correct
-            if t.end_time >= str(datetime.datetime.now()):
+            if t.end_time < str(datetime.datetime.now()):
+                return render(request, 'tasks/add_task.html',
+                              {'form': form, 'error_message': "Due date must be later than current time.", })
+            elif int(t.minutes) < 0 or int(t.minutes) >= 60 or int(t.hours) < 0:
+                return render(request, 'tasks/add_task.html',
+                              {'form': form, 'error_message': "Please enter valid time values! (Hours >= 0 and 0 <= Min <= 59)", })
+            else:
                 t.completed = False
                 t.save()
                 if request.POST.get('repeat') == 'once':
@@ -80,7 +110,8 @@ def add_task(request):
                         curr_t.task_name = request.POST.get('task_name')
                         curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M')
-                        curr_t.length = request.POST.get('length')
+                        curr_t.hours = request.POST.get('hours')
+                        curr_t.minutes = request.POST.get('minutes')
                         curr_t.user = request.POST.get('user')
                         curr_t.completed = False
                         curr_t.link = request.POST.get('link', "")
@@ -93,7 +124,8 @@ def add_task(request):
                         curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=i)
-                        curr_t.length = request.POST.get('length')
+                        curr_t.hours = request.POST.get('hours')
+                        curr_t.minutes = request.POST.get('minutes')
                         curr_t.user = request.POST.get('user')
                         curr_t.completed = False
                         curr_t.link = request.POST.get('link', "")
@@ -105,7 +137,8 @@ def add_task(request):
                         curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=4 * i)
-                        curr_t.length = request.POST.get('length')
+                        curr_t.hours = request.POST.get('hours')
+                        curr_t.minutes = request.POST.get('minutes')
                         curr_t.link = request.POST.get('link', "")
                         curr_t.completed = False
                         curr_t.user = request.POST.get('user')
@@ -117,14 +150,13 @@ def add_task(request):
                         curr_t.task_desc = request.POST.get('task_desc')
                         curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                             weeks=52 * i)
-                        curr_t.length = request.POST.get('length')
+                        curr_t.hours = request.POST.get('hours')
+                        curr_t.minutes = request.POST.get('minutes')
                         curr_t.link = request.POST.get('link', "")
                         curr_t.completed = False
                         curr_t.user = request.POST.get('user')
                         curr_t.save()
                 return HttpResponseRedirect(reverse('tasks:list'))
-            else:
-                return render(request, 'tasks/add_task.html', {'form': form, 'error_message': "Due date must be later than current time.",})
     else:
         form = TaskForm()
     return render(request, 'tasks/add_task.html', {'form': form})
@@ -158,13 +190,39 @@ def uncheck(request):
         task.save()
     return HttpResponseRedirect(reverse('tasks:list'))
 
+def archive_task(request):
+    if request.method == 'POST':
+        task_id = request.POST['task_id']
+        task = Task.objects.get(pk=task_id)
+        if task.archived == False:
+            task.archived = True
+        else:
+            task.archived = False
+        task.save()
+    return HttpResponseRedirect(reverse('tasks:list'))
+
+def checkbox_archived(request):
+    """
+        This allows a user to see his/her archived tasks.
+    """
+    if request.method == 'POST':
+        ca = ShowArchived.objects.get(user=request.user.id)
+        if ca.show_archived == False:
+            ca.show_archived = True
+        else:
+            ca.show_archived = False;
+        ca.save()
+    return HttpResponseRedirect(reverse('tasks:list'))
 
 def delete_task(request):
     if request.method == 'POST':
         task_id = request.POST['task_id']
-        task = Task.objects.get(pk=task_id)
+        try:
+            task = Task.objects.get(pk=task_id)
+        except:
+            return HttpResponseRedirect(reverse('tasks:list'))
         task.delete()
-    return HttpResponseRedirect(reverse('tasks:list'))
+        return HttpResponseRedirect(reverse('tasks:list'))
 
 
 def add_category(request):

@@ -9,9 +9,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .views import TaskListView
 from .utils import Calendar
 
-
+# creates and saves a task; utility function for tests
 def create_task(user=0, task_name="generic test", task_desc="generic test description", date_completed=None,
-                end_time=timezone.now(), completed=False, category=""):
+                end_time=timezone.now(), completed=False, category="", hours=2, minutes=0):
     task = models.Task()
     task.user = user
     task.task_name = task_name
@@ -19,6 +19,8 @@ def create_task(user=0, task_name="generic test", task_desc="generic test descri
     task.end_time = end_time
     task.completed = completed
     task.category = category
+    task.hours = hours
+    task.minutes = minutes
     task.save()
     return task
 
