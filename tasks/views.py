@@ -10,7 +10,7 @@ from django.views.generic import TemplateView
 from .forms import TaskForm, FilterForm
 from .models import Task, Category
 import datetime
-from graphos.renderers.gchart import LineChart
+from graphos.renderers.gchart import LineChart, PieChart
 from graphos.sources.model import SimpleDataSource
 from django.db.models import DateField
 
@@ -244,6 +244,7 @@ def archive_finished(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+# Below are two methods that help with constructing the line graph
 def retrieve_line_data(data, field, request, weeks=2, index=1):
     if field == 'all':
         recentTasks = Task.objects.filter(user=request.user.id, completed=True,
@@ -267,11 +268,12 @@ def retrieve_line_data(data, field, request, weeks=2, index=1):
 
 def init_dates(data, fields, weeks=2):
     start = datetime.datetime.now().date() - datetime.timedelta(weeks=weeks)
-    data += [[start + datetime.timedelta(days=i)] for i in range((7*weeks) + 1)]
+    data += [[start + datetime.timedelta(days=i)] for i in range((7 * weeks) + 1)]
     for i in range(1, len(data)):
         data[i] += [0 for i in range(fields)]
 
 
+# This helper function contstructs the context for the StatsView
 def stats(request):
     data = [
         ['Date']
@@ -296,6 +298,16 @@ def stats(request):
                     data[0].append(field)
                     retrieve_line_data(data, field, request, weeks, cntr)
                     cntr += 1
+        pie_data = [['Task Type', "Completed"]]
+        non_zero = False
+        for cat in ['Homework', 'Chore', 'Work', 'Errand', 'Lifestyle', 'Others']:
+            num_completed = len(Task.objects.filter(user=request.user.id, completed=True, category=cat))
+            pie_data.append([cat, num_completed])
+            non_zero = (num_completed > 0) or non_zero
+        if non_zero:
+            pie = PieChart(SimpleDataSource(pie_data)).as_html()
+        else:
+            pie = "No completed tasks to display."
         recently_finished = SimpleDataSource(data)
         recently_finished_chart = LineChart(recently_finished, options={'title': 'Task Completion Graph'})
         completed = len(Task.objects.filter(user=request.user.id, completed=True))
@@ -314,7 +326,7 @@ def stats(request):
             avg = 0
         context = {'chart': recently_finished_chart, 'completed': completed,
                    'ratio_on_time': round(ratio_on_time, 3),
-                   'avg': avg, 'valid': '', 'show_bad_prompt': 'hidden'}
+                   'avg': avg, 'valid': '', 'show_bad_prompt': 'hidden', 'pie': pie}
         return context
     else:
         context = {'valid': 'hidden', 'show_bad_prompt': ''}
