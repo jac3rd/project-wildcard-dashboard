@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+<<<<<<< HEAD
 <div {{valid}}>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
@@ -7,14 +8,20 @@
 
 
     </script>
-    <p>Percent Tasks Completed by Category</p>
-    {{pie}}
-    <p>Tasks Completed Since the Beginning of Time: {{completed}}</p>
-    <br>
-    <p>Percent Tasks Completed On Time: {{ratio_on_time}} %</p>
-    <br>
-    <p>Average Tasks Per Day (Since First Completed Task): {{avg}}</p>
+    <ul class="list-group list-group-flush">
+        <li class="list-group-item lead">
+            Tasks Completed Since the Beginning of Time: <b>{{completed}}</b>
+        </li>
+        <li class="list-group-item lead">
+            Percent Tasks Completed On Time: <b>{{ratio_on_time}}%</b>
+        </li>
+        <li class="list-group-item lead">
+            Average Tasks Per Day (<i>Since First Completed Task</i>): <b>{{avg}}</b>
+        </li>
+    </ul>
+    <hr>
     {{ chart.as_html }}
+    <hr>
     <form action="{% url 'tasks:stats' %}" method="get">
         <p>How many weeks back would you like to see your completion history?</p>
         <select name="weeks" id="weeks" class="custom-select">

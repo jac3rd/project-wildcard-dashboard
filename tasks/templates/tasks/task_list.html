@@ -15,35 +15,44 @@
     }
 </style>
 <style> .list-group-item{ padding: 12px; } </style>
-
-<h1 align="center">Hello, {{user.username}}! Good to see you :)</h1>
-<form action="{% url 'tasks:filter_tasks' %}" method='post'>
+<hr>
+<h1 align="center">Hello {{user.username}}, Good to see you!</h1>
+<hr>
+<form action="{% url 'tasks:filter_tasks' %}" method="post" style="margin-bottom:10px">
     {% csrf_token %}
+    <div class="input-group">
+    <input type="hidden" value="{{user.id}}" id="user" name="user">
+    <button type="submit" class="btn btn-danger" name="reset-button" style="margin-right:10px">
+        Reset Filters
+    </button>
     <input class="form-control" type="text" placeholder="Filtered Input" name="filter_key">
     <div class="btn-group">
-        <button type="submit" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary" style="margin-left:10px">
             Filter
         </button>
         <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <span class="sr-only">Toggle Dropdown</span>
+          <!--<span class="sr-only">Toggle Dropdown</span>-->
+          <span class="fa fa-filter"></span>
         </button>
         <div class="dropdown-menu">
           <button class="dropdown-item" type="button">Filter on the following:</button>
           <div class="dropdown-divider"></div>
             {% for name, real_value in fields %}
                 <div>
-                    <input type="checkbox" name="tag[]" value="{{ forloop.counter0 }}">{{ name }}
+                    <input type="checkbox" name="tag[]" value="{{ forloop.counter0 }}" style="padding-left:10px"><span style="padding-left:10px">{{ name }}</span>
                 </div>
             {% endfor %}
         </div>
       </div>
+    </div>
 </form>
 <!-- Example single danger button -->
 <center>
-    <form action="{% url 'tasks:list' %}" method="get">
+    <form action="{% url 'tasks:list' %}" method="get" style="margin-bottom:20px">
     <div class="btn-group">
         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Sort By
+        <!--<i class="fa fa-sort"style="margin-left:5px"></i>-->
         </button>
         <div class="dropdown-menu">
             <button type="submit" class="dropdown-item" name="sort_by" value="task_name">Task Name</button>
@@ -53,23 +62,23 @@
     </div>
     </form>
 </center>
-
+<hr>
 <div class="row d-flex justify-content-center container">
-    <div class="col-md-8">
-        <div class="card-hover-shadow-2x mb-3 card">
-            <div class="card-header-tab card-header">
-                <div class="card-header-title font-size-lg text-capitalize font-weight-normal"><i class="fa fa-tasks"></i>&nbsp;Task Lists</div>
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-header-title lead"><i class="fa fa-tasks"></i>&nbsp;Tasks</div>
             </div>
             <div class="scroll-area-sm">
                 <perfect-scrollbar class="ps-show-limits">
                     <div style="position: static;" class="ps ps--active-y">
                         <div class="ps-content">
-                            <div class=" list-group list-group-flush">
+                            <div class="list-group list-group-flush">
 
                                 <!-- Individual Tasks -->
                                 {% for task in task_list %}
-                                <div class="list-group-item">
-                                    <div class="d-flex w-100 justify-content-between">
+                                <li class="list-group-item">
+                                    <div class="d-flex">
                                         <div class="widget-content-left">
                                             <!-- Checkbox form: Credit to Henry -->
                                             {% if not task.completed %}
@@ -91,7 +100,7 @@
 
                                                         {% if task.category == 'Homework' %}
                                                             <div class="badge badge-primary ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Chores' %}
+                                                        {% elif task.category == 'Chore' %}
                                                             <div class="badge badge-warning ml-2">{{ task.category }}</div>
                                                         {% elif task.category == 'Work' %}
                                                             <div class="badge badge-danger ml-2">{{ task.category }}</div>
@@ -126,7 +135,7 @@
 
                                                         {% if task.category == 'Homework' %}
                                                             <div class="badge badge-primary ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Chores' %}
+                                                        {% elif task.category == 'Chore' %}
                                                             <div class="badge badge-warning ml-2">{{ task.category }}</div>
                                                         {% elif task.category == 'Work' %}
                                                             <div class="badge badge-danger ml-2">{{ task.category }}</div>
@@ -160,7 +169,7 @@
                                             <!-- End of Henry's form -->
                                         </div>
                                         <div class="widget-content-right">
-                                            <small class="text-muted">(Task Estimated Time Here)</small>
+                                            <small class="text-muted">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
                                         </div>
                                         <div class="widget-content-right">
                                             <form action="{% url 'tasks:delete_task' %}" method='post' id="delete_{{ task.id }}">
@@ -171,10 +180,9 @@
                                             </form>
                                         </div>
                                     </div>
-                                    <p class="mb-1">{{ task.task_desc }}</p>
-                                    <div class="widget-heading"><b>DUE: {{ task.end_time }}</b></div>
+                                    <div class="widget-heading"><b><i>DUE:</i> {{ task.end_time }}</b></div>
                                     <div class="todo-indicator bg-warning"></div>
-                                </div>
+                                </li>
                                 {% endfor %}
                                 <!-- End task -->
 
@@ -183,15 +191,17 @@
                     </div>
                 </perfect-scrollbar>
             </div>
-            <div class="d-block text-right card-footer">
-                <a href="{% url 'tasks:add_task' %}"><button class="btn btn-primary" id="add_button">Add Task</button></a>
-                <a href="{% url 'tasks:archive_finished' %}"><button class="btn btn-danger" id="del_all_button">Archive Finished</button></a>
+            <div class="text-right card-footer">
+                <a href="{% url 'tasks:add_task' %}"><button class="btn btn-primary" id="add_button" role="button">Add Task</button></a>
+                <a href="{% url 'tasks:archive_finished' %}"><button class="btn btn-danger" id="del_all_button" role="button">Archive Finished</button></a>
             </div>
         </div>
     </div>
 </div>
-
+<hr>
 {% else %}
 <label>Please login.</label>
 {% endif %}
+
+
 {% endblock %}

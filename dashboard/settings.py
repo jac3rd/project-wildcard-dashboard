@@ -39,6 +39,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'ENufVEyUrFwKJ7jPP_USNn0n'
 
 LOGIN_URL = '/auth/login/google-oauth2/'
 LOGIN_REDIRECT_URL = '/tasks/'
+LOGOUT_REDIRECT_URL = 'index'
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 #Allows project to run on heroku
 ALLOWED_HOSTS = [
@@ -162,7 +163,8 @@ USE_I18N = True
 
 USE_L10N = True
 
-USE_TZ = True
+# originally was TRUE
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
