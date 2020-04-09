@@ -7,7 +7,7 @@ from django.urls import reverse
 # Create your models here.
 
 class ShowArchived(models.Model):
-	user = models.IntegerField(default=-1)
+	user = models.IntegerField(default=-1, parimary_key=True)
 	show_archived = models.BooleanField('archived', default=False)
 
 class Task(models.Model):

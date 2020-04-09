@@ -27,6 +27,7 @@
         </div>
         <div>
           {% if user.is_authenticated %}
+          <a class="text-white">Logged in as: &nbsp{{user.username}}&nbsp</a>
           <a class="btn btn-primary" href="{% url 'logout' %}">Logout</a>
           {% else %}
           <a class="btn btn-primary" href="{% url 'social:begin' 'google-oauth2' %}" role = "button">Login</a>
