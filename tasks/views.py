@@ -330,7 +330,7 @@ class StatsView(TemplateView):
                                              date_completed__isnull=True))
             completed_late = len(
                 Task.objects.filter(user=self.request.user.id, completed=True, date_completed__gt=F('end_time')))
-            ratio_on_time = ((completed - completed_late) * 100) / max(late, 1)
+            ratio_on_time = (completed * 100) / max(completed + completed_late, 1)
             beginning_of_time = (datetime.datetime.now().date() - Task.objects.all().aggregate(Min('end_time'))[
                 'end_time__min'].date()).days
             context = {'chart': recently_finished_chart, 'completed': completed,
