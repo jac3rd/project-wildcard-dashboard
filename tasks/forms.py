@@ -1,8 +1,9 @@
 from django import forms
-from .models import Task, Category
+from .models import Task
+
 
 class TaskForm(forms.Form):
-    #Reformats the html input to work with the django datetime field
+    # Reformats the html input to work with the django datetime field
     attempt = ['%Y-%m-%d %H:%M:%S',  # '2006-10-25 14:30:59'
                '%Y-%m-%d %H:%M',  # '2006-10-25 14:30'
                '%Y-%m-%d',  # '2006-10-25'
@@ -18,7 +19,8 @@ class TaskForm(forms.Form):
     end_time = forms.DateTimeField(label='End Time', input_formats=attempt)
     hours = forms.IntegerField(label='Estimated Length (Hours)')
     minutes = forms.IntegerField(label='Estimated Length (Minutes)')
-    category = forms.Select(choices= Task.CATEGORIES)
+    category = forms.Select(choices=Task.CATEGORIES)
+
 
 class FilterForm(forms.Form):
     filter_key = forms.CharField(label='Filter Key', max_length=100)
