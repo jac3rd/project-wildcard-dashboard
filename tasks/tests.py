@@ -50,7 +50,7 @@ class StatsViewTests(TestCase):
         request = self.factory.get('/tasks/stats/')
         request.user = self.user
         response = views.StatsView.as_view()(request)
-        self.assertAlmostEqual(response.context_data['ratio_on_time'], round((1 / 3) * 100, 3))
+        self.assertAlmostEqual(response.context_data['ratio_on_time'], round(100, 3))
 
     def test_correct_avg(self):
         request = self.factory.get('/tasks/stats/')
