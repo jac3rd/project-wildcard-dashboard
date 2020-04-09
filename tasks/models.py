@@ -2,8 +2,11 @@ from django.db import models
 from social_django import models as oauth_models
 import datetime
 
-
 # Create your models here.
+
+class ShowArchived(models.Model):
+	user = models.IntegerField(default=-1)
+	show_archived = models.BooleanField('archived', default=False)
 
 class Task(models.Model):
 	user = models.IntegerField(default=-1)

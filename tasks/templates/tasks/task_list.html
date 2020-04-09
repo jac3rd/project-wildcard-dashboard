@@ -4,19 +4,32 @@
 {% if request.user.is_authenticated %}
 
 <style>
+    .border-0.btn-transition.btn.btn-outline-warning {
+        height: 26px;
+        width: 10px;
+    }
     .border-0.btn-transition.btn.btn-outline-danger {
         height: 26px;
         width: 10px;
     }
-</style>
-<style>
+    .border-0.btn-transition.btn.btn-outline-success {
+        height: 26px;
+        width: 10px;
+    }
     .fa.fa-trash {
+        transform: translate(-50%, -40%);
+    }
+    .fa.fa-level-up {
+        transform: translate(-50%, -40%);
+    }
+    .fa.fa-archive {
         transform: translate(-50%, -40%);
     }
 </style>
 <style> .list-group-item{ padding: 12px; } </style>
 <hr>
 <h1 align="center">Hello {{user.username}}, Good to see you!</h1>
+{% if error_message %}<p><font color="red"><strong>{{ error_message }}</strong></font></p>{% endif %}
 <hr>
 <form action="{% url 'tasks:filter_tasks' %}" method="post" style="margin-bottom:10px">
     {% csrf_token %}
@@ -67,7 +80,32 @@
     <div>
         <div class="card">
             <div class="card-header">
-                <div class="card-header-title lead"><i class="fa fa-tasks"></i>&nbsp;Tasks</div>
+                <div class="d-flex">
+                    <div class="card-header-title lead"><i class="fa fa-tasks"></i>&nbsp;Current Tasks</div>
+                    <div class="ml-auto pl-5">
+                        {% if sa.show_archived == False %}
+                            <form action="{% url 'tasks:check_archived' %}" method='post' id="show_all_archived_not_checked">
+                                {% csrf_token %}
+                                <input type="hidden" name="task_id" value="{{task.id}}">
+                                <div class="custom-checkbox custom-control">
+                                    <input class="custom-control-input" type="checkbox" id="show_archived"
+                                           onclick="document.getElementById('show_all_archived_not_checked').submit();">
+                                    <label class="custom-control-label" for="show_archived">Show Archived Tasks?</label>
+                                </div>
+                            </form>
+                        {% else %}
+                            <form action="{% url 'tasks:check_archived' %}" method='post' id="show_all_archived_checked">
+                                {% csrf_token %}
+                                <input type="hidden" name="task_id" value="{{task.id}}">
+                                <div class="custom-checkbox custom-control">
+                                    <input class="custom-control-input" type="checkbox" id="stop_show_archived"
+                                           onclick="document.getElementById('show_all_archived_checked').submit();" checked>
+                                    <label class="custom-control-label" for="stop_show_archived">Show Archived Tasks?</label>
+                                </div>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
             <div class="scroll-area-sm">
                 <perfect-scrollbar class="ps-show-limits">
@@ -77,112 +115,263 @@
 
                                 <!-- Individual Tasks -->
                                 {% for task in task_list %}
-                                <li class="list-group-item">
+                                {% if task.archived == False %}
+                                    <li class="list-group-item">
+                                        <div class="d-flex">
+                                            <div class="widget-content-left">
+                                                <!-- Checkbox form: Credit to Henry -->
+                                                {% if not task.completed %}
+                                                <form action="{% url 'tasks:check_off' %}" method='post' id="check_{{ task.id }}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="task_id" value='{{task.id}}'>
+                                                    <!--<input class="form-check-input" type="checkbox"
+                                                    onclick="document.getElementById('check_{{ task.id }}').submit();">-->
+                                                    <div class="custom-checkbox custom-control">
+                                                        <input class="custom-control-input" type="checkbox" id="_{{ task.id }}"
+                                                               onclick="document.getElementById('check_{{ task.id }}').submit();">
+                                                        <label class="custom-control-label" for="_{{ task.id }}">
+                                                            <h5 class="widget-heading">
+                                                            {% if task.link == '' %}
+                                                                {{ task.task_name }}
+                                                            {% else %}
+                                                                <a href="{{ task.link }}">{{ task.task_name }}</a>
+                                                            {% endif %}
+
+                                                            {% if task.category == 'Homework' %}
+                                                                <div class="badge badge-primary ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Chore' %}
+                                                                <div class="badge badge-warning ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Work' %}
+                                                                <div class="badge badge-danger ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Errand' %}
+                                                               <div class="badge badge-info ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Life' %}
+                                                                <div class="badge badge-success ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Other' %}
+                                                                <div class="badge badge-secondary ml-2">{{ task.category }}</div>
+                                                            {% else %}
+                                                                <div class="badge badge-light ml-2">Category</div>
+                                                            {% endif %}
+                                                            </h5>
+                                                        </label>
+                                                    </div>
+                                                </form>
+                                                {% else %}
+                                                <form action="{% url 'tasks:uncheck' %}" method='post' id="uncheck_{{ task.id }}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="task_id" value='{{task.id}}'>
+                                                    <div class="custom-checkbox custom-control">
+                                                        <input class="custom-control-input" type="checkbox" id="__{{ task.id }}"
+                                                               onclick="document.getElementById('uncheck_{{ task.id }}').submit();" checked>
+                                                        <label class="custom-control-label" for="__{{ task.id }}">
+                                                            <h5 class="widget-heading">
+                                                            {% if task.link == '' %}
+                                                                {{ task.task_name }}
+                                                            {% else %}
+                                                                <a href="{{ task.link }}">{{ task.task_name }}</a>
+                                                            {% endif %}
+
+                                                            {% if task.category == 'Homework' %}
+                                                                <div class="badge badge-primary ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Chore' %}
+                                                                <div class="badge badge-warning ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Work' %}
+                                                                <div class="badge badge-danger ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Errand' %}
+                                                               <div class="badge badge-info ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Life' %}
+                                                                <div class="badge badge-success ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Other' %}
+                                                                <div class="badge badge-secondary ml-2">{{ task.category }}</div>
+                                                            {% else %}
+                                                                <div class="badge badge-light ml-2">Category</div>
+                                                            {% endif %}
+                                                            </h5>
+                                                            <h5 class="widget-heading" style="color:green">COMPLETE!</h5>
+                                                        </label>
+                                                    </div>
+
+                                                </form>
+                                                <script>
+                                                    function undoButton(button) {
+                                                        document.getElementById(button.id).innerHTML = "Undo?";
+                                                        document.getElementById(button.id).style = "color:red";
+                                                    }
+                                                    function normalButton(button) {
+                                                        document.getElementById(button.id).innerHTML = "Completed!";
+                                                        document.getElementById(button.id).style = "color:green";
+                                                    }
+                                                </script>
+
+                                                {% endif %}
+                                                <!-- End of Henry's form -->
+                                            </div>
+                                            <div class="ml-auto">
+                                                <div class="d-flex">
+                                                    <div class="ml-auto">
+                                                        <small class="pl-2 text-muted">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
+                                                    </div>
+                                                    <div class="ml-auto">
+                                                        <form action="{% url 'tasks:archive_task' %}" method='post' id="archive_{{ task.id }}">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="task_id" value="{{task.id}}">
+                                                            <button class="border-0 btn-transition btn btn-outline-warning" data-toggle="tooltip" title="Archive"
+                                                                    onclick="document.getElementId('archive_{{ task.id }}').submit();">
+                                                                <i class="fa fa-archive"></i> </button>
+                                                        </form>
+                                                    </div>
+                                                    <div class="ml-auto">
+                                                        <form action="{% url 'tasks:delete_task' %}" method='post' id="delete_{{ task.id }}">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="task_id" value="{{task.id}}">
+                                                            <button class="border-0 btn-transition btn btn-outline-danger" data-toggle="tooltip" title="Delete"
+                                                                    onclick="document.getElementId('delete_{{ task.id }}').submit();">
+                                                                <i class="fa fa-trash"></i> </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="mb-1">{{ task.task_desc }}</p>
+                                        <div class="widget-heading"><b><i>DUE:</i> {{ task.end_time }}</b></div>
+                                        <div class="todo-indicator bg-warning"></div>
+                                    </li>
+                                {% endif %}
+                                {% endfor %}
+                                <!-- End task -->
+
+                                {% if sa.show_archived == True %}
+                                <div class="card-header">
                                     <div class="d-flex">
-                                        <div class="widget-content-left">
-                                            <!-- Checkbox form: Credit to Henry -->
-                                            {% if not task.completed %}
-                                            <form action="{% url 'tasks:check_off' %}" method='post' id="check_{{ task.id }}">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="task_id" value='{{task.id}}'>
-                                                <!--<input class="form-check-input" type="checkbox"
-                                                onclick="document.getElementById('check_{{ task.id }}').submit();">-->
-                                                <div class="custom-checkbox custom-control">
-                                                    <input class="custom-control-input" type="checkbox" id="_{{ task.id }}"
-                                                           onclick="document.getElementById('check_{{ task.id }}').submit();">
-                                                    <label class="custom-control-label" for="_{{ task.id }}">
-                                                        <h5 class="widget-heading">
-                                                        {% if task.link == '' %}
-                                                            {{ task.task_name }}
-                                                        {% else %}
-                                                            <a href="{{ task.link }}">{{ task.task_name }}</a>
-                                                        {% endif %}
-
-                                                        {% if task.category == 'Homework' %}
-                                                            <div class="badge badge-primary ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Chore' %}
-                                                            <div class="badge badge-warning ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Work' %}
-                                                            <div class="badge badge-danger ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Errand' %}
-                                                           <div class="badge badge-info ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Life' %}
-                                                            <div class="badge badge-success ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Other' %}
-                                                            <div class="badge badge-secondary ml-2">{{ task.category }}</div>
-                                                        {% else %}
-                                                            <div class="badge badge-light ml-2">Category</div>
-                                                        {% endif %}
-                                                        </h5>
-                                                    </label>
-                                                </div>
-
-                                            </form>
-                                            {% else %}
-                                            <form action="{% url 'tasks:uncheck' %}" method='post' id="uncheck_{{ task.id }}">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="task_id" value='{{task.id}}'>
-                                                <div class="custom-checkbox custom-control">
-                                                    <input class="custom-control-input" type="checkbox" id="__{{ task.id }}"
-                                                           onclick="document.getElementById('uncheck_{{ task.id }}').submit();" checked>
-                                                    <label class="custom-control-label" for="__{{ task.id }}">
-                                                        <h5 class="widget-heading">
-                                                        {% if task.link == '' %}
-                                                            {{ task.task_name }}
-                                                        {% else %}
-                                                            <a href="{{ task.link }}">{{ task.task_name }}</a>
-                                                        {% endif %}
-
-                                                        {% if task.category == 'Homework' %}
-                                                            <div class="badge badge-primary ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Chore' %}
-                                                            <div class="badge badge-warning ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Work' %}
-                                                            <div class="badge badge-danger ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Errand' %}
-                                                           <div class="badge badge-info ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Life' %}
-                                                            <div class="badge badge-success ml-2">{{ task.category }}</div>
-                                                        {% elif task.category == 'Other' %}
-                                                            <div class="badge badge-secondary ml-2">{{ task.category }}</div>
-                                                        {% else %}
-                                                            <div class="badge badge-light ml-2">Category</div>
-                                                        {% endif %}
-                                                        </h5>
-                                                        <h5 class="widget-heading" style="color:green">COMPLETE!</h5>
-                                                    </label>
-                                                </div>
-
-                                            </form>
-                                            <script>
-                                                function undoButton(button) {
-                                                    document.getElementById(button.id).innerHTML = "Undo?";
-                                                    document.getElementById(button.id).style = "color:red";
-                                                }
-                                                function normalButton(button) {
-                                                    document.getElementById(button.id).innerHTML = "Completed!";
-                                                    document.getElementById(button.id).style = "color:green";
-                                                }
-                                            </script>
-
-                                            {% endif %}
-                                            <!-- End of Henry's form -->
-                                        </div>
-                                        <div class="widget-content-right">
-                                            <small class="text-muted">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
-                                        </div>
-                                        <div class="widget-content-right">
-                                            <form action="{% url 'tasks:delete_task' %}" method='post' id="delete_{{ task.id }}">
-                                                {% csrf_token %}
-                                                <input type="hidden" name="task_id" value="{{task.id}}">
-                                                <button class="border-0 btn-transition btn btn-outline-danger" onclick="document.getElementId('delete_{{ task.id }}').submit();">
-                                                    <i class="fa fa-trash"></i> </button>
-                                            </form>
-                                        </div>
+                                        <div class="card-header-title lead"><i class="fa fa-archive" style="transform: translate(0%, 0%);"></i>&nbsp;Archived Tasks</div>
                                     </div>
-                                    <div class="widget-heading"><b><i>DUE:</i> {{ task.end_time }}</b></div>
-                                    <div class="todo-indicator bg-warning"></div>
-                                </li>
+                                </div>
+                                {% endif %}
+                                <!-- Display archived tasks -->
+                                {% for task in task_list %}
+                                {% if task.archived == True %}
+                                    <li class="list-group-item">
+                                        <div class="d-flex">
+                                            <div class="widget-content-left">
+                                                <!-- Checkbox form: Credit to Henry -->
+                                                {% if not task.completed %}
+                                                <form action="{% url 'tasks:check_off' %}" method='post' id="check__{{ task.id }}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="task_id" value='{{task.id}}'>
+                                                    <!--<input class="form-check-input" type="checkbox"
+                                                    onclick="document.getElementById('check_{{ task.id }}').submit();">-->
+                                                    <div class="custom-checkbox custom-control">
+                                                        <input class="custom-control-input" type="checkbox" id="{{ task.id }}_"
+                                                               onclick="document.getElementById('check__{{ task.id }}').submit();">
+                                                        <label class="custom-control-label" for="{{ task.id }}_">
+                                                            <h5 class="widget-heading">
+                                                            {% if task.link == '' %}
+                                                                {{ task.task_name }}
+                                                            {% else %}
+                                                                <a href="{{ task.link }}">{{ task.task_name }}</a>
+                                                            {% endif %}
+
+                                                            {% if task.category == 'Homework' %}
+                                                                <div class="badge badge-primary ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Chore' %}
+                                                                <div class="badge badge-warning ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Work' %}
+                                                                <div class="badge badge-danger ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Errand' %}
+                                                               <div class="badge badge-info ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Life' %}
+                                                                <div class="badge badge-success ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Other' %}
+                                                                <div class="badge badge-secondary ml-2">{{ task.category }}</div>
+                                                            {% else %}
+                                                                <div class="badge badge-light ml-2">Category</div>
+                                                            {% endif %}
+                                                            </h5>
+                                                        </label>
+                                                    </div>
+
+                                                </form>
+                                                {% else %}
+                                                <form action="{% url 'tasks:uncheck' %}" method='post' id="uncheck__{{ task.id }}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="task_id" value='{{task.id}}'>
+                                                    <div class="custom-checkbox custom-control">
+                                                        <input class="custom-control-input" type="checkbox" id="{{ task.id }}__"
+                                                               onclick="document.getElementById('uncheck__{{ task.id }}').submit();" checked>
+                                                        <label class="custom-control-label" for="{{ task.id }}__">
+                                                            <h5 class="widget-heading">
+                                                            {% if task.link == '' %}
+                                                                {{ task.task_name }}
+                                                            {% else %}
+                                                                <a href="{{ task.link }}">{{ task.task_name }}</a>
+                                                            {% endif %}
+
+                                                            {% if task.category == 'Homework' %}
+                                                                <div class="badge badge-primary ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Chore' %}
+                                                                <div class="badge badge-warning ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Work' %}
+                                                                <div class="badge badge-danger ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Errand' %}
+                                                               <div class="badge badge-info ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Life' %}
+                                                                <div class="badge badge-success ml-2">{{ task.category }}</div>
+                                                            {% elif task.category == 'Other' %}
+                                                                <div class="badge badge-secondary ml-2">{{ task.category }}</div>
+                                                            {% else %}
+                                                                <div class="badge badge-light ml-2">Category</div>
+                                                            {% endif %}
+                                                            </h5>
+                                                            <h5 class="widget-heading" style="color:green">COMPLETE!</h5>
+                                                        </label>
+                                                    </div>
+
+                                                </form>
+                                                <script>
+                                                    function undoButton(button) {
+                                                        document.getElementById(button.id).innerHTML = "Undo?";
+                                                        document.getElementById(button.id).style = "color:red";
+                                                    }
+                                                    function normalButton(button) {
+                                                        document.getElementById(button.id).innerHTML = "Completed!";
+                                                        document.getElementById(button.id).style = "color:green";
+                                                    }
+                                                </script>
+
+                                                {% endif %}
+                                                <!-- End of Henry's form -->
+                                            </div>
+                                            <div class="ml-auto">
+                                                <div class="d-flex">
+                                                    <div class="ml-auto">
+                                                        <small class="pl-2 text-muted">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
+                                                    </div>
+                                                    <div class="ml-auto">
+                                                        <form action="{% url 'tasks:archive_task' %}" method='post' id="archive__{{ task.id }}">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="task_id" value="{{task.id}}">
+                                                            <button class="border-0 btn-transition btn btn-outline-success" data-toggle="tooltip" title="Un-archive"
+                                                                    onclick="document.getElementId('archive__{{ task.id }}').submit();">
+                                                                <i class="fa fa-level-up"></i> </button>
+                                                        </form>
+                                                    </div>
+                                                    <div class="ml-auto">
+                                                        <form action="{% url 'tasks:delete_task' %}" method='post' id="delete__{{ task.id }}">
+                                                            {% csrf_token %}
+                                                            <input type="hidden" name="task_id" value="{{task.id}}">
+                                                            <button class="border-0 btn-transition btn btn-outline-danger" data-toggle="tooltip" title="Delete"
+                                                                    onclick="document.getElementId('delete__{{ task.id }}').submit();">
+                                                                <i class="fa fa-trash"></i> </button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p class="mb-1">{{ task.task_desc }}</p>
+                                        <div class="widget-heading"><b><i>DUE:</i> {{ task.end_time }}</b></div>
+                                        <div class="todo-indicator bg-warning"></div>
+                                    </li>
+                                {% endif %}
                                 {% endfor %}
                                 <!-- End task -->
 

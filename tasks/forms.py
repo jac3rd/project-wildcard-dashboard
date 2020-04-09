@@ -2,6 +2,7 @@ from django import forms
 from .models import Task
 
 
+
 class TaskForm(forms.Form):
     # Reformats the html input to work with the django datetime field
     attempt = ['%Y-%m-%d %H:%M:%S',  # '2006-10-25 14:30:59'
