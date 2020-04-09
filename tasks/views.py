@@ -11,10 +11,11 @@ from django.core.exceptions import ObjectDoesNotExist
 from .forms import TaskForm, FilterForm
 from .models import Task, Category, ShowArchived
 import datetime
-from graphos.renderers.gchart import LineChart
+from graphos.renderers.gchart import LineChart, PieChart
 from graphos.sources.model import SimpleDataSource
 from django.db.models import DateField
 from django.utils import timezone
+
 
 def remove_omitted_fields():
     omitted_fields = set(['id', 'user', 'created_at', 'completed', 'archived'])
@@ -30,6 +31,7 @@ def remove_omitted_fields():
             l.append((val, val))
     return l
 
+
 # Create your views here.
 class TaskListView(generic.ListView):
     """
@@ -39,7 +41,6 @@ class TaskListView(generic.ListView):
     context_object_name = 'task_list'
 
     def get_queryset(self):
-
         sort_key = self.request.GET.get('sort_by', 'give-default-value')
 
         """
@@ -99,7 +100,8 @@ def add_task(request):
                               {'form': form, 'error_message': "Due date must be later than current time.", })
             elif int(t.minutes) < 0 or int(t.minutes) >= 60 or int(t.hours) < 0:
                 return render(request, 'tasks/add_task.html',
-                              {'form': form, 'error_message': "Please enter valid time values! (Hours >= 0 and 0 <= Min <= 59)", })
+                              {'form': form,
+                               'error_message': "Please enter valid time values! (Hours >= 0 and 0 <= Min <= 59)", })
             else:
                 t.completed = False
                 t.save()
@@ -267,12 +269,14 @@ def filter_tasks(request):
         form = FilterForm(request.POST)
         field_names = remove_omitted_fields()
         if form.is_valid():
-            #print('valid form')
+            # print('valid form')
             user_id = request.POST['user']
             check_values = request.POST.getlist('tag[]')
             filter_key = request.POST['filter_key']
-            if(filter_key.strip() == ''):
-                return render(request, 'tasks/task_list.html', {'task_list':Task.objects.filter(user=user_id, archived=False).all(), 'fields':field_names})
+            if (filter_key.strip() == ''):
+                return render(request, 'tasks/task_list.html',
+                              {'task_list': Task.objects.filter(user=user_id, archived=False).all(),
+                               'fields': field_names})
             else:
                 arg_dict = {}
                 filtered_tasks = Task.objects.none()
@@ -280,15 +284,16 @@ def filter_tasks(request):
                     # arg_dict[field_names[int(val)]+'__icontains'] = filter_key
                     arg_dict = {field_names[int(val)][1] + '__icontains': filter_key}
                     # print(arg_dict)
-                    filtered_tasks = filtered_tasks | Task.objects.filter(user=user_id, archived=False).all().filter(**arg_dict)
-                #filtered_tasks = Task.objects.all().filter(**arg_dict)
-                #return HttpResponseRedirect(reverse('tasks:list'))
-                return render(request, 'tasks/task_list.html', {'task_list':filtered_tasks, 'fields':field_names})
+                    filtered_tasks = filtered_tasks | Task.objects.filter(user=user_id, archived=False).all().filter(
+                        **arg_dict)
+                # filtered_tasks = Task.objects.all().filter(**arg_dict)
+                # return HttpResponseRedirect(reverse('tasks:list'))
+                return render(request, 'tasks/task_list.html', {'task_list': filtered_tasks, 'fields': field_names})
         elif 'reset-button' in request.POST:
-            #print('reset filter')
+            # print('reset filter')
             return HttpResponseRedirect(reverse('tasks:list'))
         else:
-            #print('invalid form')
+            # print('invalid form')
             return HttpResponseRedirect(reverse('tasks:list'))
 
 
@@ -299,42 +304,105 @@ def archive_finished(request):
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
+# Below are two methods that help with constructing the line graph
+def retrieve_line_data(data, field, request, weeks=2, index=1):
+    if field == 'all':
+        recentTasks = Task.objects.filter(user=request.user.id, completed=True,
+                                          date_completed__gt=datetime.datetime.now() - datetime.timedelta(
+                                              weeks=weeks)).annotate(
+            date_only=Cast('date_completed', DateField())).values(
+            'date_only').annotate(total=Count('date_only')).order_by('date_only')
+    else:
+        recentTasks = Task.objects.filter(user=request.user.id, completed=True, category=field,
+                                          date_completed__gt=datetime.datetime.now() - datetime.timedelta(
+                                              weeks=weeks)).annotate(
+            date_only=Cast('date_completed', DateField())).values(
+            'date_only').annotate(total=Count('date_only')).order_by('date_only')
+    i = 1
+    for dates in recentTasks:
+        while data[i][0] != dates['date_only']:
+            i += 1
+        data[i][index] += int(dates['total'])
+        i += 1
+
+
+def init_dates(data, fields, weeks=2):
+    start = datetime.datetime.now().date() - datetime.timedelta(weeks=weeks)
+    data += [[start + datetime.timedelta(days=i)] for i in range((7 * weeks) + 1)]
+    for i in range(1, len(data)):
+        data[i] += [0 for i in range(fields)]
+
+
+# This helper function contstructs the context for the StatsView
+def stats(request):
+    data = [
+        ['Date']
+    ]
+    if Task.objects.filter(user=request.user.id):
+        if not request.GET:
+            data[0].append('Tasks Completed')
+            init_dates(data, 1)
+            retrieve_line_data(data, 'all', request)
+            # A counter to keep track of where in the date array we are
+        else:
+            cntr = 1
+            weeks = 2
+            if 'weeks' in request.GET.keys():
+                weeks = int(request.GET['weeks'])
+            if 'category' in request.GET:
+                num_fields = len(request.GET.getlist('category'))
+                init_dates(data, num_fields, weeks)
+                for field in request.GET.getlist('category'):
+                    data[0].append(field)
+                    retrieve_line_data(data, field, request, weeks, cntr)
+                    cntr += 1
+            else:
+                num_fields = 1
+                init_dates(data, num_fields, weeks)
+                data[0].append('all')
+                retrieve_line_data(data, 'all', request, weeks, cntr)
+                cntr += 1
+        pie_data = [['Task Type', "Completed"]]
+        non_zero = False
+        for cat in ['Homework', 'Chore', 'Work', 'Errand', 'Lifestyle', 'Others']:
+            num_completed = len(Task.objects.filter(user=request.user.id, completed=True, category=cat))
+            pie_data.append([cat, num_completed])
+            non_zero = (num_completed > 0) or non_zero
+        if non_zero:
+            pie = PieChart(SimpleDataSource(pie_data),
+                           options={'title': 'Tasks Completed by Category', 'width': 400}).as_html()
+        else:
+            pie = "No completed tasks to display."
+        recently_finished = SimpleDataSource(data)
+        recently_finished_chart = LineChart(recently_finished, options={'title': 'Daily Tasks Completed', 'width': 600,
+                                                                        'legend': {'position': 'bottom'},
+                                                                        'vAxis': {'viewWindow': {'min': 0, 'max': 25},
+                                                                                  'ticks': [i for i in range(0, 26, 2)]}})
+        completed = len(Task.objects.filter(user=request.user.id, completed=True))
+        late = len(Task.objects.filter(user=request.user.id, date_completed__gt=F('end_time'))
+                   | Task.objects.filter(user=request.user.id, end_time__lt=datetime.datetime.now(),
+                                         date_completed__isnull=True))
+        completed_late = len(
+            Task.objects.filter(user=request.user.id, completed=True, date_completed__gt=F('end_time')))
+        ratio_on_time = ((completed - completed_late) * 100) / max(late + completed - completed_late, 1)
+        first_completed = Task.objects.all().aggregate(Min('date_completed'))[
+            'date_completed__min']
+        if first_completed:
+            beginning_of_time = (datetime.datetime.now().date() - first_completed).days + 1
+            avg = round((completed / max(beginning_of_time, 1)), 3)
+        else:
+            avg = 0
+        context = {'chart': recently_finished_chart, 'completed': completed,
+                   'ratio_on_time': round(ratio_on_time, 3),
+                   'avg': avg, 'valid': '', 'show_bad_prompt': 'hidden', 'pie': pie, 'categories': Task.CATEGORIES}
+        return context
+    else:
+        context = {'valid': 'hidden', 'show_bad_prompt': ''}
+        return context
+
+
 class StatsView(TemplateView):
     template_name = 'tasks/stats.html'
 
     def get_context_data(self, **kwargs):
-        if Task.objects.filter(user=self.request.user.id):
-            recentTasks = Task.objects.filter(user=self.request.user.id, completed=True,
-                                              date_completed__gt=datetime.datetime.now() - datetime.timedelta(
-                                                  weeks=2)).annotate(
-                date_only=Cast('date_completed', DateField())).values(
-                'date_only').annotate(total=Count('date_only')).order_by('date_only')
-            data = [
-                ['Date', 'Total Completed']
-            ]
-            start = datetime.datetime.now().date() - datetime.timedelta(weeks=2)
-            data += [[start + datetime.timedelta(days=i), 0] for i in range(15)]
-            # A counter to keep track of where in the date array we are
-            i = 1
-            for dates in recentTasks:
-                while data[i][0] != dates['date_only']:
-                    i += 1
-                data[i][1] += int(dates['total'])
-                i += 1
-            recently_finished = SimpleDataSource(data)
-            recently_finished_chart = LineChart(recently_finished, options={'title': 'Task Completion Graph'})
-            completed = len(Task.objects.filter(user=self.request.user.id, completed=True))
-            late = len(Task.objects.filter(user=self.request.user.id, date_completed__gt=F('end_time'))
-                       | Task.objects.filter(user=self.request.user.id, end_time__lt=datetime.datetime.now(),
-                                             date_completed__isnull=True))
-            completed_late = len(
-                Task.objects.filter(user=self.request.user.id, completed=True, date_completed__gt=F('end_time')))
-            ratio_on_time = (completed * 100) / max(completed + completed_late, 1)
-            beginning_of_time = (datetime.datetime.now().date() - Task.objects.all().aggregate(Min('end_time'))[
-                'end_time__min'].date()).days
-            context = {'chart': recently_finished_chart, 'completed': completed,
-                       'ratio_on_time': round(ratio_on_time, 3),
-                       'avg': round(completed / max(beginning_of_time, 1), 3), 'valid': '', 'show_bad_prompt': 'hidden'}
-            return context
-        else:
-            return {'valid': 'hidden', 'show_bad_prompt': ''}
+        return stats(self.request)
