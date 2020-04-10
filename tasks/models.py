@@ -2,16 +2,20 @@ from django.db import models
 from social_django import models as oauth_models
 import datetime
 
-
 # Create your models here.
+
+class ShowArchived(models.Model):
+	user = models.IntegerField(default=-1, primary_key=True)
+	show_archived = models.BooleanField('archived', default=False)
 
 class Task(models.Model):
 	user = models.IntegerField(default=-1)
 	task_name = models.CharField(max_length=200)
 	task_desc = models.CharField(max_length=400)
 	end_time = models.DateTimeField('end time')
-	#end_time = CustomDateTimeField('end time')
-	length = models.DurationField('length', default=datetime.timedelta(hours=3))
+	length = models.DurationField('length', default=datetime.timedelta(hours=3), null=True, blank=True)
+	hours = models.IntegerField('hours', default=2)
+	minutes = models.IntegerField('minutes', default=0)
 	completed = models.BooleanField('completed')
 	date_completed = models.DateField('date_completed', null=True)
 	archived = models.BooleanField('archived', default=False)

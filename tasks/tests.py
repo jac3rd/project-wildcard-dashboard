@@ -8,16 +8,19 @@ from django.contrib.auth.models import User, AnonymousUser
 from django.http import HttpResponse, HttpResponseRedirect
 from .views import TaskListView
 
-
+# creates and saves a task; utility function for tests
 def create_task(user=0, task_name="generic test", task_desc="generic test description", date_completed=None,
-                end_time=timezone.now(), completed=False, category=""):
+                end_time=timezone.now(), completed=False, category="", hours=2, minutes=0):
     task = models.Task()
     task.user = user
     task.task_name = task_name
     task.task_desc = task_desc
     task.end_time = end_time
+    task.date_completed = date_completed
     task.completed = completed
     task.category = category
+    task.hours = hours
+    task.minutes = minutes
     task.save()
     return task
 
@@ -32,9 +35,12 @@ class StatsViewTests(TestCase):
         current = datetime.datetime.now()
         create_task(user=self.user.id, task_name="test1", task_desc=task_desc, date_completed=yesterday,
                     end_time=current, completed=True)
+        create_task(user=self.user.id, task_name="test1", task_desc=task_desc,
+                    end_time=current - datetime.timedelta(hours=5))
         create_task(user=self.user.id, task_name="test2", task_desc=task_desc,
-                    date_completed=yesterday, end_time=yesterday)
-        create_task(user=self.user.id, task_name="test2", task_desc=task_desc, end_time=current)
+                    date_completed=current, completed=True, end_time=yesterday)
+        create_task(user=self.user.id, task_name="test2", task_desc=task_desc, end_time=current +
+                    datetime.timedelta(minutes=2))
         create_task(user=2, task_name="test1", task_desc=task_desc, end_time=current, date_completed=current,
                     completed=True)
 
@@ -42,13 +48,13 @@ class StatsViewTests(TestCase):
         request = self.factory.get('/tasks/stats/')
         request.user = self.user
         response = views.StatsView.as_view()(request)
-        self.assertEqual(response.context_data['completed'], 1)
+        self.assertEqual(response.context_data['completed'], 2)
 
     def test_correct_percent(self):
         request = self.factory.get('/tasks/stats/')
         request.user = self.user
         response = views.StatsView.as_view()(request)
-        self.assertAlmostEqual(response.context_data['ratio_on_time'], round((1 / 3) * 100, 3))
+        self.assertAlmostEqual(response.context_data['ratio_on_time'], round( (1/3)*100, 3))
 
     def test_correct_avg(self):
         request = self.factory.get('/tasks/stats/')

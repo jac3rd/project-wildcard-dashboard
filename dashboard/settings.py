@@ -39,6 +39,7 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'ENufVEyUrFwKJ7jPP_USNn0n'
 
 LOGIN_URL = '/auth/login/google-oauth2/'
 LOGIN_REDIRECT_URL = '/tasks/'
+LOGOUT_REDIRECT_URL = 'index'
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 #Allows project to run on heroku
 ALLOWED_HOSTS = [
@@ -79,6 +80,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
     'social_core.pipeline.social_auth.associate_by_email',
+    'tasks.pipeline.archived_entry',
 )
 
 MIDDLEWARE = [
@@ -162,7 +164,7 @@ USE_I18N = True
 
 USE_L10N = False
 
-DATETIME_FORMAT = "M d Y H:i"
+DATETIME_FORMAT = "M d, Y; h:i a"
 
 # originally was TRUE
 USE_TZ = False
