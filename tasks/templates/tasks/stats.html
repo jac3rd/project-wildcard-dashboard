@@ -6,14 +6,15 @@
     <script type="text/javascript">google.load("visualization", "1", {packages:["corechart"]});</script>
     <div class="container-fluid">
         <h3 class="display-5">
+            <style>.display-5 {align-self: center;}</style>
             Dashboard Progress for {{user.username}}:
         </h3>
     </div>
-    <!--<div class = "wrapper">-->
+    <div class = "wrapper">
         <style>
             .wrapper
             {
-                width: 50%;
+                width: 100%;
                 max-width: 960px;
                 margin: auto;
             }
@@ -23,7 +24,7 @@
                 .flex-container
                 {
                     display: flex;
-                    justify-content: flex-start;
+                    justify-content: space-between;
                     align-items: flex-start;
                     flex-flow: row;
                 }
@@ -32,16 +33,18 @@
                 {
                     align-items: stretch;
                     margin: auto;
+                    width: 100%;
                 }
                 .one
                 {
-                    justify-content: space-between;
-                    flex-grow: 1;
+                    flex-grow: 3;
                 }
 
                 .two
                 {
-                    flex-grow: 2;
+                    flex-grow: 1; 
+                    align-self: center;
+                    resize: horizontal;
                 }
 
                 .three
@@ -73,7 +76,7 @@
                             Submit
                         </button>
         
-                 </form>
+                </form>
             </div>
             <div class = "box two">
                 {{ chart.as_html }}
@@ -83,7 +86,7 @@
                 {{pie}}
             </div>
         </div>
-    <!--</div>-->
+    </div>
 </div>
 <p {{show_bad_prompt}}>
     No tasks appear for you in the database.
