@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+.chart {
+  float: left;
+  width: 50%;
+  padding: 20px;
+  position: relative;
+}
+
+.clearfix::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+.form-group {
+   width: 50%;
+   float: right;
+   padding: 20px;
+}
+
+.button{
+  position: absolute;
+  right: 150px;
+  top: 400px;
+
+}
+
+.boxed
+{
+    border: 1px solid blue;
+}
+
+
+
+
+</style>
+<div {{valid}}>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">google.load("visualization", "1", {packages:["corechart"]});</script>
+    <div class="container-fluid">
+        <h3 class="display-5">
+            Dashboard Progress for {{user.username}}:
+        </h3>
+
+    </div>
+    <div class = "container-fluid">
+        <div class = "boxed">
+        <ul class="list-group list-group-flush">
+            <li class="list-group-item lead">
+                <font size="+.05">Tasks Completed as a Dashboard User: <b>{{completed}}</b></font>
+            </li>
+            <li class="list-group-item lead">
+                Percent Tasks Completed On Time: <b>{{ratio_on_time}}%</b>
+            </li>
+            <li class="list-group-item lead">
+                Average Tasks Per Day (<i>Since First Completed Task</i>): <b>{{avg}}</b>
+            </li>
+        </ul>
+        </div>
+    </div>
+    
+
+
+    <form action="{% url 'tasks:stats' %}" method="get">
+        <div class="clearfix w-100">
+            <div class="form-group">
+                <label for="category">Plot Which Categories?</label>
+                <select name="category" id="category" multiple class="form-control">
+                    <option value="all">All</option>
+                    {% for choice in categories %}
+                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <p>Plot how many weeks?</p>
+                <select name="weeks" id="weeks" class="custom-select">
+                    <option value="1">Past Week</option>
+                    <option value="2">Past 2 Weeks</option>
+                    <option value="3">Past 3 Weeks</option>
+                    <option value="4">Past 4 Week</option>
+                </select>
+            </div>
+            <button class="button" type="submit">
+            Submit
+        </button>
+
+        </div>
+    </form>
+
+    <hr>
+
+    <div class="clearfix">
+        <div class="chart">
+            Percent Tasks Completed By Category
+            {{pie}}
+        </div>
+        <div class="chart">
+            {{ chart.as_html }}
+        </div>
+    </div>
+    <hr>
+</div>
+<p {{show_bad_prompt}}>
+    No tasks appear for you in the database.
+</p>
+{% endblock %}

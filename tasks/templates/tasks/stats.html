@@ -1,89 +1,58 @@
 {% extends 'base.html' %}
 {% block content %}
-<style>
-.chart {
-  float: left;
-  width: 50%;
-  padding: 5px;
-}
-.clearfix::after {
-  content: "";
-  clear: both;
-  display: table;
-}
-.form-group {
-   width: 25%;
-   float: left;
-   padding: 10px;
-}
 
-
-</style>
 <div {{valid}}>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">google.load("visualization", "1", {packages:["corechart"]});</script>
     <div class="container-fluid">
         <h3 class="display-5">
             Dashboard Progress for {{user.username}}:
-
-
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item lead">
-                    Tasks Completed (<i>Since the Beginning of Time</i>): <b>{{completed}}</b>
-                </li>
-                <li class="list-group-item lead">
-                    Percent Tasks Completed On Time: <b>{{ratio_on_time}}%</b>
-                </li>
-                <li class="list-group-item lead">
-                    Average Tasks Per Day (<i>Since First Completed Task</i>): <b>{{avg}}</b>
-                </li>
-            </ul>
-
         </h3>
-
     </div>
-    <hr>
 
-    <div class="clearfix">
-        <div class="chart">
+    <div class = "flex-container">
+        <style>
+            .flex-container
+            {
+                display: flex;
+            }
+        </style>
+        <div class = "box one"> 
+            <form action="{% url 'tasks:stats' %}" method="get">
+                <div class="clearfix w-100">
+                    <div class="form-group">
+                        <label for="category">Plot Which Categories?</label>
+                        <select name="category" id="category" multiple class="form-control">
+                            <option value="all">All</option>
+                            {% for choice in categories %}
+                            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <p>Plot how many weeks?</p>
+                        <select name="weeks" id="weeks" class="custom-select">
+                            <option value="1">Past Week</option>
+                            <option value="2">Past 2 Weeks</option>
+                            <option value="3">Past 3 Weeks</option>
+                            <option value="4">Past 4 Week</option>
+                        </select>
+                    </div>
+                    <button class="button" type="submit">
+                    Submit
+                </button>
+        
+                </div>
+            </form>
+        </div>
+        <div class = "box two">
+            {{ chart.as_html }}
+        </div>
+        <div class = "box three">
             Percent Tasks Completed By Category
             {{pie}}
         </div>
-        <div class="chart">
-            {{ chart.as_html }}
-        </div>
-    </div>
-    <hr>
-
-
-    <form action="{% url 'tasks:stats' %}" method="get">
-        <div class="clearfix">
-            <div class="form-group">
-                <label for="category">Plot Which Categories?</label>
-                <select name="category" id="category" multiple class="form-control">
-                    <option value="all">All</option>
-                    {% for choice in categories %}
-                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <div class="form-group">
-                <p>Plot how many weeks?</p>
-                <select name="weeks" id="weeks" class="custom-select">
-                    <option value="1">Past Week</option>
-                    <option value="2">Past 2 Weeks</option>
-                    <option value="3">Past 3 Weeks</option>
-                    <option value="4">Past 4 Week</option>
-                </select>
-            </div>
-            <button class="btn-primary" type="submit">
-            Submit
-        </button>
-
-        </div>
-    </form>
+    </div>    
 </div>
-<p {{show_bad_prompt}}>
-    No tasks appear for you in the database.
-</p>
-{% endblock %}
+
+{%endblock%}
