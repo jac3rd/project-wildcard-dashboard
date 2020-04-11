@@ -9,50 +9,83 @@
             Dashboard Progress for {{user.username}}:
         </h3>
     </div>
-
-    <div class = "flex-container">
+    <!--<div class = "wrapper">-->
         <style>
-            .flex-container
+            .wrapper
             {
-                display: flex;
+                width: 50%;
+                max-width: 960px;
+                margin: auto;
             }
-        </style>
-        <div class = "box one"> 
-            <form action="{% url 'tasks:stats' %}" method="get">
-                <div class="clearfix w-100">
-                    <div class="form-group">
-                        <label for="category">Choose a Category:</label>
-                        <select name="category" id="category" class="custom-select">
-                            <option value="all">All</option>
-                            {% for choice in categories %}
-                            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <p>Choose how many weeks: </p>
-                        <select name="weeks" id="weeks" class="custom-select">
-                            <option value="1">Past Week</option>
-                            <option value="2">Past 2 Weeks</option>
-                            <option value="3">Past 3 Weeks</option>
-                            <option value="4">Past 4 Week</option>
-                        </select>
-                    </div>
-                    <button class="button" type="submit">
-                    Submit
-                </button>
-        
-                </div>
-            </form>
-        </div>
-        <div class = "box two">
-            {{ chart.as_html }}
-        </div>
-        <div class = "box three">
-            Percent Tasks Completed By Category
-            {{pie}}
-        </div>
-    </div>    
-</div>
+        </style>    
+        <div class = "flex-container">
+            <style>
+                .flex-container
+                {
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: flex-start;
+                    flex-flow: row;
+                }
 
+                .box
+                {
+                    align-items: stretch;
+                    margin: auto;
+                }
+                .one
+                {
+                    justify-content: space-between;
+                    flex-grow: 1;
+                }
+
+                .two
+                {
+                    flex-grow: 2;
+                }
+
+                .three
+                {
+                    flex-grow: 3;
+                }
+            </style>
+            <div class = "box one"> 
+                <form action="{% url 'tasks:stats' %}" method="get">
+                        <div class="form-group">
+                            <label for="category">Choose a Category:</label>
+                            <select name="category" id="category" class="custom-select">
+                                <option value="all">All</option>
+                                {% for choice in categories %}
+                                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <p>Choose how many weeks: </p>
+                            <select name="weeks" id="weeks" class="custom-select">
+                                <option value="1">Past Week</option>
+                                <option value="2">Past 2 Weeks</option>
+                                <option value="3">Past 3 Weeks</option>
+                                <option value="4">Past 4 Week</option>
+                            </select>
+                        </div>
+                        <button class="button" type="submit">
+                            Submit
+                        </button>
+        
+                 </form>
+            </div>
+            <div class = "box two">
+                {{ chart.as_html }}
+            </div>
+            <div class = "box three">
+                Percent Tasks Completed By Category
+                {{pie}}
+            </div>
+        </div>
+    <!--</div>-->
+</div>
+<p {{show_bad_prompt}}>
+    No tasks appear for you in the database.
+</p>
 {%endblock%}
