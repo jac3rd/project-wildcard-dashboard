@@ -448,7 +448,7 @@ class TaskViewTests(TestCase):
         task.save()
         self.client.post(reverse('tasks:move_date_backward'), {'task_id': task.id})
         task = models.Task.objects.get(pk=task.id)
-        self.assertEqual(task.end_time, end_time - datetime.timedelta(days=1))
+        self.assertAlmostEqual(task.end_time, end_time - datetime.timedelta(days=1))
 
     # unit test for asserting that task_move_date_forward alters end_time field of task object
     def test_move_date_forward_model_good_id(self):
@@ -457,7 +457,7 @@ class TaskViewTests(TestCase):
         task.save()
         self.client.post(reverse('tasks:move_date_forward'), {'task_id': task.id})
         task = models.Task.objects.get(pk=task.id)
-        self.assertEqual(task.end_time, end_time + datetime.timedelta(days=1))
+        self.assertAlmostEqual(task.end_time, end_time + datetime.timedelta(days=1))
 
 def create_category(user=0, name="generic category"):
     category = models.Category()
