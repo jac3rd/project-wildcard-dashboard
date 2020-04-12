@@ -444,7 +444,13 @@ class CalendarView(ListView):
         d = get_date(self.request.GET.get('day', None))
         cal = Calendar(d.year, d.month)
         html_cal = cal.formatmonth(withyear=True)
+        if d.month < 12:
+            cal_next = Calendar(d.year, d.month + 1)
+        else:
+            cal_next = Calendar(d.year+1, 1)
+        html_cal_next = cal_next.formatmonth(withyear=True)
         context['calendar'] = safestring.mark_safe(html_cal)
+        context['calendar_next'] = safestring.mark_safe(html_cal_next)
         return context
 
 def get_date(req_day):
