@@ -16,6 +16,8 @@ from graphos.sources.model import SimpleDataSource
 from django.db.models import DateField
 from django.utils import timezone, safestring
 from .utils import Calendar
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 
 def remove_omitted_fields():
@@ -253,6 +255,8 @@ def index(request):
 
     return render(request, 'tasks/task_list.html', context)
 
+@require_POST
+@csrf_exempt
 def move_date_backward(request):
     if request.method == 'POST':
         task_id = request.POST.get('task_id', default=-1)
@@ -264,6 +268,8 @@ def move_date_backward(request):
         task.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
+@require_POST
+@csrf_exempt
 def move_date_forward(request):
     if request.method == 'POST':
         task_id = request.POST.get('task_id', default=-1)
