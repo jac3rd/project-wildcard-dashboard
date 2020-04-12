@@ -20,5 +20,6 @@ urlpatterns = [
     path('calendar/', views.CalendarView.as_view(), name='calendar'),
     path('archive_task/', views.archive_task, name='archive_task'),
     path('check_archived/', views.checkbox_archived, name='check_archived'),
-
+    path('move_date_backward/', views.move_date_backward, name='move_date_backward'),
+    path('move_date_forward/', views.move_date_forward, name='move_date_forward'),
 ]

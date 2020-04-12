@@ -253,6 +253,27 @@ def index(request):
 
     return render(request, 'tasks/task_list.html', context)
 
+def move_date_backward(request):
+    if request.method == 'POST':
+        task_id = request.POST.get('task_id', default=-1)
+        try:
+            task = Task.objects.get(pk=task_id)
+        except Task.DoesNotExist:
+            return HttpResponse("ObjectDoesNotExist:task_move_date_backward")
+        task.end_time -= datetime.timedelta(days=1)
+        task.save()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+def move_date_forward(request):
+    if request.method == 'POST':
+        task_id = request.POST.get('task_id', default=-1)
+        try:
+            task = Task.objects.get(pk=task_id)
+        except ObjectDoesNotExist:
+            return HttpResponse("ObjectDoesNotExist:task_move_date_forward")
+        task.end_time += datetime.timedelta(days=1)
+        task.save()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 '''
 def sort_tasks(request):

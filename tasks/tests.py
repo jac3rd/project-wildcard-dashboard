@@ -415,6 +415,50 @@ class TaskModelTests(TestCase):
         html_url = task.get_html_url
         self.assertEqual(html_url, f'<p>{task.task_name}</p><a href="#">edit</a>')
 
+class TaskViewTests(TestCase):
+
+    # unit test for asserting that task_move_date_backward returns error on invalid id
+    def test_move_date_backward_bad_id(self):
+        resp = self.client.post(reverse('tasks:move_date_backward'), {'task_id': -1})
+        self.assertEqual(resp.content, b'ObjectDoesNotExist:task_move_date_backward')
+        
+    # unit test for asserting that task_move_date_forward returns error on invalid id
+    def test_move_date_forward_bad_id(self):
+        resp = self.client.post(reverse('tasks:move_date_forward'), {'task_id': -1})
+        self.assertEqual(resp.content, b'ObjectDoesNotExist:task_move_date_forward')
+
+    # unit test for asserting that task_move_date_backward returns correct HttpResponse code on valid id
+    def test_move_date_backward_response_good_id(self):
+        task = create_task(task_name="test_move_date_backward_response_good_id", task_desc="test_move_date_backward_response_good_id description")
+        task.save()
+        resp = self.client.post(reverse('tasks:move_date_backward'), {'task_id': task.id})
+        self.assertEqual(resp.status_code, 302)
+
+    # unit test for asserting that task_move_date_forward returns correct HttpResponse code on valid id
+    def test_move_date_forward_response_good_id(self):
+        task = create_task(task_name="test_move_date_forward_response_good_id", task_desc="test_move_date_forward_response_good_id description")
+        task.save()
+        resp = self.client.post(reverse('tasks:move_date_forward'), {'task_id': task.id})
+        self.assertEqual(resp.status_code, 302)
+
+    # unit test for asserting that task_move_date_backward alters end_time field of task object
+    def test_move_date_backward_model_good_id(self):
+        end_time = datetime.datetime.now()
+        task=create_task(task_name="test_move_date_backward_model_good_id", task_desc="test_move_date_backward_model_good_id description", end_time=end_time)
+        task.save()
+        self.client.post(reverse('tasks:move_date_backward'), {'task_id': task.id})
+        task = models.Task.objects.get(pk=task.id)
+        self.assertEqual(task.end_time, end_time - datetime.timedelta(days=1))
+
+    # unit test for asserting that task_move_date_forward alters end_time field of task object
+    def test_move_date_forward_model_good_id(self):
+        end_time = datetime.datetime.now()
+        task=create_task(task_name="test_move_date_forward_model_good_id", task_desc="test_move_date_forward_model_good_id description", end_time=end_time)
+        task.save()
+        self.client.post(reverse('tasks:move_date_forward'), {'task_id': task.id})
+        task = models.Task.objects.get(pk=task.id)
+        self.assertEqual(task.end_time, end_time + datetime.timedelta(days=1))
+
 def create_category(user=0, name="generic category"):
     category = models.Category()
     category.user = user
