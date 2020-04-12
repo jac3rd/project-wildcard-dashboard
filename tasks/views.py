@@ -1,11 +1,12 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, F, Min
 from django.db.models.functions import Cast
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import generic
-from django.views.generic import TemplateView
+from djqscsv import render_to_csv_response
+from django.views.generic import TemplateView, ListView
 from django.core.exceptions import ObjectDoesNotExist
 
 from .forms import TaskForm, FilterForm
@@ -14,7 +15,10 @@ import datetime
 from graphos.renderers.gchart import LineChart, PieChart
 from graphos.sources.model import SimpleDataSource
 from django.db.models import DateField
-from django.utils import timezone
+from django.utils import timezone, safestring
+from .utils import Calendar
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 
 def remove_omitted_fields():
@@ -55,7 +59,7 @@ class TaskListView(generic.ListView):
                 return render(self.request, 'tasks/login.html')
         except:
             sa = ShowArchived()
-            #sa.show_archived = False;
+            # sa.show_archived = False;
             sa.user = self.request.user.id
             sa.save()
 
@@ -74,6 +78,7 @@ class TaskListView(generic.ListView):
         if self.request.user.is_authenticated == True:
             context['sa'] = ShowArchived.objects.get(user=self.request.user.id)
         return context
+
 
 @login_required
 def add_task(request):
@@ -191,6 +196,7 @@ def uncheck(request):
         task.save()
     return HttpResponseRedirect(reverse('tasks:list'))
 
+
 def archive_task(request):
     if request.method == 'POST':
         task_id = request.POST['task_id']
@@ -201,6 +207,7 @@ def archive_task(request):
             task.archived = False
         task.save()
     return HttpResponseRedirect(reverse('tasks:list'))
+
 
 def checkbox_archived(request):
     """
@@ -214,6 +221,7 @@ def checkbox_archived(request):
             ca.show_archived = False;
         ca.save()
     return HttpResponseRedirect(reverse('tasks:list'))
+
 
 def delete_task(request):
     if request.method == 'POST':
@@ -251,6 +259,34 @@ def index(request):
     }
 
     return render(request, 'tasks/task_list.html', context)
+
+
+@require_POST
+@csrf_exempt
+def move_date_backward(request):
+    if request.method == 'POST':
+        task_id = request.POST.get('task_id', default=-1)
+        try:
+            task = Task.objects.get(pk=task_id)
+        except Task.DoesNotExist:
+            return HttpResponse("ObjectDoesNotExist:task_move_date_backward")
+        task.end_time -= datetime.timedelta(days=1)
+        task.save()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+@require_POST
+@csrf_exempt
+def move_date_forward(request):
+    if request.method == 'POST':
+        task_id = request.POST.get('task_id', default=-1)
+        try:
+            task = Task.objects.get(pk=task_id)
+        except ObjectDoesNotExist:
+            return HttpResponse("ObjectDoesNotExist:task_move_date_forward")
+        task.end_time += datetime.timedelta(days=1)
+        task.save()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 
 '''
@@ -302,6 +338,43 @@ def archive_finished(request):
         Task.objects.filter(user=request.user.id,
                             completed=True).update(archived=True, date_completed=datetime.datetime.now())
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+
+def get_pie(request):
+    if 'pie_category' not in request.GET or request.GET['pie_category'] == 'all':
+        pie_data = [['Task Type', "Completed"]]
+        non_zero = False
+        for cat in ['Homework', 'Chore', 'Work', 'Errand', 'Lifestyle', 'Others']:
+            num_completed = len(Task.objects.filter(user=request.user.id, completed=True, category=cat))
+            pie_data.append([cat, num_completed])
+            non_zero = (num_completed > 0) or non_zero
+        if non_zero:
+            pie = PieChart(SimpleDataSource(pie_data),
+                           options={'title': 'Tasks Completed by Category', 'width': 400}).as_html()
+        else:
+            pie = "No completed tasks to display."
+    else:
+        pie_data = [["Task Status", "Count"]]
+        num_completed = len(
+            Task.objects.filter(user=request.user.id, completed=True, category=request.GET['pie_category']))
+        num_uncompleted = len(
+            Task.objects.filter(user=request.user.id, completed=False, category=request.GET['pie_category']))
+        completed_late = len(
+            Task.objects.filter(user=request.user.id, completed=True, date_completed__gt=F('end_time'),
+                                category=request.GET['pie_category']))
+        uncompleted_late = len(Task.objects.filter(user=request.user.id, end_time__lt=datetime.datetime.now(),
+                                                   date_completed__isnull=True, category=request.GET['pie_category']))
+        pie_data.append(['Completed On-time', num_completed - completed_late])
+        pie_data.append(['Completed Late', completed_late])
+        pie_data.append(['Uncompleted & On-time', num_uncompleted - uncompleted_late])
+        pie_data.append(['Uncompleted & Late', uncompleted_late])
+        non_zero = (num_completed > 0) or (num_uncompleted > 0) or (completed_late > 0) or (uncompleted_late > 0)
+        if non_zero:
+            pie = PieChart(SimpleDataSource(pie_data),
+                           options={'title': 'Task Status', 'width': 400}).as_html()
+        else:
+            pie = "No completed tasks to display."
+    return pie
 
 
 # Below are two methods that help with constructing the line graph
@@ -362,22 +435,13 @@ def stats(request):
                 data[0].append('all')
                 retrieve_line_data(data, 'all', request, weeks, cntr)
                 cntr += 1
-        pie_data = [['Task Type', "Completed"]]
-        non_zero = False
-        for cat in ['Homework', 'Chore', 'Work', 'Errand', 'Lifestyle', 'Others']:
-            num_completed = len(Task.objects.filter(user=request.user.id, completed=True, category=cat))
-            pie_data.append([cat, num_completed])
-            non_zero = (num_completed > 0) or non_zero
-        if non_zero:
-            pie = PieChart(SimpleDataSource(pie_data),
-                           options={'title': 'Tasks Completed by Category', 'width': 400}).as_html()
-        else:
-            pie = "No completed tasks to display."
+        pie = get_pie(request)
         recently_finished = SimpleDataSource(data)
         recently_finished_chart = LineChart(recently_finished, options={'title': 'Daily Tasks Completed', 'width': 600,
                                                                         'legend': {'position': 'bottom'},
                                                                         'vAxis': {'viewWindow': {'min': 0, 'max': 25},
-                                                                                  'ticks': [i for i in range(0, 26, 2)]}})
+                                                                                  'ticks': [i for i in
+                                                                                            range(0, 26, 2)]}})
         completed = len(Task.objects.filter(user=request.user.id, completed=True))
         late = len(Task.objects.filter(user=request.user.id, date_completed__gt=F('end_time'))
                    | Task.objects.filter(user=request.user.id, end_time__lt=datetime.datetime.now(),
@@ -406,3 +470,38 @@ class StatsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         return stats(self.request)
+
+
+def as_csv(request):
+    if request.user.is_authenticated:
+        user_task_records = Task.objects.filter(user=request.user.id).values(
+            *[str(field.name) for field in Task._meta.get_fields() if field.name != "id" and field.name != "user"])
+        return render_to_csv_response(user_task_records)
+    else:
+        raise Http404("No user found.")
+
+
+class CalendarView(ListView):
+    model = Task
+    template_name = 'tasks/calendar.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        d = get_date(self.request.GET.get('day', None))
+        cal = Calendar(d.year, d.month)
+        html_cal = cal.formatmonth(withyear=True)
+        if d.month < 12:
+            cal_next = Calendar(d.year, d.month + 1)
+        else:
+            cal_next = Calendar(d.year + 1, 1)
+        html_cal_next = cal_next.formatmonth(withyear=True)
+        context['calendar'] = safestring.mark_safe(html_cal)
+        context['calendar_next'] = safestring.mark_safe(html_cal_next)
+        return context
+
+
+def get_date(req_day):
+    if req_day:
+        year, month = (int(x) for x in req_day.split('-'))
+        return datetime.date(year, month, day=1)
+    return datetime.datetime.today()
