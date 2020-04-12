@@ -19,5 +19,6 @@ urlpatterns = [
     path('stats/', views.StatsView.as_view(), name='stats'),
     path('archive_task/', views.archive_task, name='archive_task'),
     path('check_archived/', views.checkbox_archived, name='check_archived'),
+    path('as_csv', views.as_csv, name='as_csv')
 
 ]

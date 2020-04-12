@@ -2,6 +2,7 @@
 {% block content %}
 
 <div {{valid}}>
+    <a href="{% url 'tasks:as_csv' %}" download>Export Data AS CSV</a>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">google.load("visualization", "1", {packages:["corechart"]});</script>
     <div class="container-fluid">
@@ -110,8 +111,8 @@
             <div class = "box four">
                 <form action="{% url 'tasks:stats' %}" method="get">
                     <div class="form-group">
-                        <label for="category">Choose a Category:</label>
-                        <select name="category" id="category" class="custom-select">
+                        <label for="pie_category">Choose a Category:</label>
+                        <select name="pie_category" id="pie_category" class="custom-select">
                             <option value="all">All</option>
                             {% for choice in categories %}
                             <option value="{{ choice.0 }}">{{ choice.1 }}</option>

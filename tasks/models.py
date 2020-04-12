@@ -1,4 +1,5 @@
 from django.db import models
+import djqscsv
 from social_django import models as oauth_models
 import datetime
 
