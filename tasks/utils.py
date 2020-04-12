@@ -28,7 +28,7 @@ class Calendar(HTMLCalendar):
                 list_group_color = ' list-group-item-secondary'
             d += f'<li class="list-group-item' + list_group_color + f'"> <b>{task.task_name}</b> - <i>{task.end_time.time()}</i> </li>'
         if day != 0:
-            return f'<td><span class=\'date\'>{day}</span><ul class="list-group"> {d} </ul></td>'
+            return f'<td><span class=\'date\'><u>{day}</u></span><ul class="list-group"> {d} </ul></td>'
         return '<td></td>'
 
     def formatweek(self, theweek, tasks):

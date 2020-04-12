@@ -488,7 +488,7 @@ class CalendarTests(TestCase):
         calendar = Calendar()
         curr_time = datetime.datetime.now()
         html = calendar.formatday(curr_time.day, models.Task.objects)
-        self.assertEqual(html, f'<td><span class=\'date\'>{curr_time.day}</span><ul class="list-group">  </ul></td>')
+        self.assertEqual(html, f'<td><span class=\'date\'><u>{curr_time.day}</u></span><ul class="list-group">  </ul></td>')
 
     # unit test to assert that formatday returns correct HTML when there are tasks for a given day
     def test_formatday_tasks_exist(self):
@@ -497,7 +497,7 @@ class CalendarTests(TestCase):
         task = create_task(end_time=curr_time)
         task.save()
         html = calendar.formatday(curr_time.day, models.Task.objects)
-        self.assertEqual(html, f'<td><span class=\'date\'>{curr_time.day}</span><ul class="list-group"> <li class="list-group-item"> <b>{task.task_name}</b> - <i>{task.end_time.time()}</i> </li> </ul></td>')
+        self.assertEqual(html, f'<td><span class=\'date\'><u>{curr_time.day}</u></span><ul class="list-group"> <li class="list-group-item"> <b>{task.task_name}</b> - <i>{task.end_time.time()}</i> </li> </ul></td>')
 
     # unit test to assert that formatweek returns correct HTML when week is empty
     def test_formatweek_empty_week(self):
