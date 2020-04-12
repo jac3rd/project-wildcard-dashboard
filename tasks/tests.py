@@ -8,6 +8,7 @@ from . import models, views
 from django.contrib.auth.models import User, AnonymousUser
 from django.http import HttpResponse, HttpResponseRedirect
 from .views import TaskListView
+from .utils import Calendar
 
 
 # creates and saves a task; utility function for tests
@@ -466,9 +467,69 @@ class TaskModelTests(TestCase):
         req.user = self.user
         resp = TaskListView.as_view()(req)
 
-        # returned_context = list(resp.context['task_list'].values())
-        # self.assertTrue(returned_context[0]['task_name'] == 'task1' and returned_context[1]['task_name'] == 'task2' and resp.status_code == 200)
         self.assertTrue(resp.status_code == 200)
+
+    # unit test to test __str__ function
+    def test_str(self):
+        task_name = "test_str"
+        task = create_task(task_name=task_name)
+        self.assertEqual(task.__str__(), task_name)
+
+    # unit test to assert that get_html_url returns correct HTML
+    def test_get_html_url(self):
+        task_name = "test_get_html_url"
+        task = create_task(task_name=task_name)
+        html_url = task.get_html_url
+        self.assertEqual(html_url, f'<p>{task.task_name}</p><a href="#">edit</a>')
+
+
+class TaskViewTests(TestCase):
+
+    # unit test for asserting that task_move_date_backward returns error on invalid id
+    def test_move_date_backward_bad_id(self):
+        resp = self.client.post(reverse('tasks:move_date_backward'), {'task_id': -1})
+        self.assertEqual(resp.content, b'ObjectDoesNotExist:task_move_date_backward')
+
+    # unit test for asserting that task_move_date_forward returns error on invalid id
+    def test_move_date_forward_bad_id(self):
+        resp = self.client.post(reverse('tasks:move_date_forward'), {'task_id': -1})
+        self.assertEqual(resp.content, b'ObjectDoesNotExist:task_move_date_forward')
+
+    # unit test for asserting that task_move_date_backward returns correct HttpResponse code on valid id
+    def test_move_date_backward_response_good_id(self):
+        task = create_task(task_name="test_move_date_backward_response_good_id",
+                           task_desc="test_move_date_backward_response_good_id description")
+        task.save()
+        resp = self.client.post(reverse('tasks:move_date_backward'), {'task_id': task.id})
+        self.assertEqual(resp.status_code, 302)
+
+    # unit test for asserting that task_move_date_forward returns correct HttpResponse code on valid id
+    def test_move_date_forward_response_good_id(self):
+        task = create_task(task_name="test_move_date_forward_response_good_id",
+                           task_desc="test_move_date_forward_response_good_id description")
+        task.save()
+        resp = self.client.post(reverse('tasks:move_date_forward'), {'task_id': task.id})
+        self.assertEqual(resp.status_code, 302)
+
+    # unit test for asserting that task_move_date_backward alters end_time field of task object
+    def test_move_date_backward_model_good_id(self):
+        end_time = datetime.datetime.now()
+        task = create_task(task_name="test_move_date_backward_model_good_id",
+                           task_desc="test_move_date_backward_model_good_id description", end_time=end_time)
+        task.save()
+        self.client.post(reverse('tasks:move_date_backward'), {'task_id': task.id})
+        task = models.Task.objects.get(pk=task.id)
+        self.assertAlmostEqual(task.end_time.replace(tzinfo=None), end_time - datetime.timedelta(days=1))
+
+    # unit test for asserting that task_move_date_forward alters end_time field of task object
+    def test_move_date_forward_model_good_id(self):
+        end_time = datetime.datetime.now()
+        task = create_task(task_name="test_move_date_forward_model_good_id",
+                           task_desc="test_move_date_forward_model_good_id description", end_time=end_time)
+        task.save()
+        self.client.post(reverse('tasks:move_date_forward'), {'task_id': task.id})
+        task = models.Task.objects.get(pk=task.id)
+        self.assertEqual(task.end_time.replace(tzinfo=None), end_time + datetime.timedelta(days=1))
 
 
 def create_category(user=0, name="generic category"):
@@ -517,6 +578,71 @@ class CategoryModelTests(TestCase):
         category = create_category(name=name)
         self.assertIsInstance(self.client.post(reverse('tasks:delete_category'), {'id': category.id}), HttpResponse)
 
-# class ListViewTests(TestCase):
 
-# unit test asserting that stuff h
+class CalendarTests(TestCase):
+
+    # unit test to assert that default Calendar constructor works
+    def test_Calendar_init(self):
+        calendar = Calendar()
+        self.assertEqual(calendar.year, None)
+        self.assertEqual(calendar.month, None)
+
+    # unit test to assert that Calendar constructor works with passed parameters
+    def test_Calendar_init_pass_param(self):
+        year = 2020
+        month = 4
+        calendar = Calendar(year=year, month=month)
+        self.assertEqual(calendar.year, year)
+        self.assertEqual(calendar.month, month)
+
+    # unit test to assert that formatday returns correct HTML when day=0
+    def test_formatday_zero_day(self):
+        calendar = Calendar()
+        html = calendar.formatday(0, models.Task.objects)
+        self.assertEqual(html, '<td></td>')
+
+    # unit test to assert that formatday returns correct HTML when there are no tasks for a given day
+    def test_formatday_empty_queryset(self):
+        calendar = Calendar()
+        curr_time = datetime.datetime.now()
+        html = calendar.formatday(curr_time.day, models.Task.objects)
+        self.assertEqual(html,
+                         f'<td><span class=\'date\'><u>{curr_time.day}</u></span><ul class="list-group">  </ul></td>')
+
+    # unit test to assert that formatday returns correct HTML when there are tasks for a given day
+    def test_formatday_tasks_exist(self):
+        calendar = Calendar()
+        curr_time = datetime.datetime.now()
+        task = create_task(end_time=curr_time)
+        task.save()
+        html = calendar.formatday(curr_time.day, models.Task.objects)
+        self.assertNotEqual(html,
+                            f'<td><span class=\'date\'><u>{curr_time.day}</u></span><ul class="list-group"> <li class="list-group-item"> <b>{task.task_name}</b> - <i>{task.end_time.time()}</i> </li> </ul></td>')
+
+    # unit test to assert that formatweek returns correct HTML when week is empty
+    def test_formatweek_empty_week(self):
+        calendar = Calendar()
+        html = calendar.formatweek([], models.Task.objects)
+        self.assertEqual(html, f'<tr>  </tr>')
+
+    # unit test to assert that formatweek returns correct HTML when there are no tasks
+    def test_formatweek_no_tasks(self):
+        calendar = Calendar(year=2020, month=4)
+        theweek = calendar.monthdays2calendar(calendar.year, calendar.month)[0]
+        html = calendar.formatweek(theweek, models.Task.objects)
+        inner_result = ''
+        for d, weekday in theweek:
+            inner_result += calendar.formatday(d, models.Task.objects)
+        self.assertEqual(html, f'<tr> ' + inner_result + f' </tr>')
+
+    # unit test to assert that formatweek returns correct HTML when there is a task
+    def test_formatweek_tasks_exist(self):
+        calendar = Calendar(year=2020, month=4)
+        task = create_task(end_time=datetime.datetime(2020, 4, 3))
+        task.save()
+        theweek = calendar.monthdays2calendar(calendar.year, calendar.month)[0]
+        html = calendar.formatweek(theweek, models.Task.objects)
+        inner_result = ''
+        for d, weekday in theweek:
+            inner_result += calendar.formatday(d, models.Task.objects)
+        self.assertEqual(html, f'<tr> ' + inner_result + f' </tr>')

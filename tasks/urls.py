@@ -17,8 +17,10 @@ urlpatterns = [
     path('filter_tasks/', views.filter_tasks, name='filter_tasks'),
     path('archive_finished/', views.archive_finished, name='archive_finished'),
     path('stats/', views.StatsView.as_view(), name='stats'),
+    path('calendar/', views.CalendarView.as_view(), name='calendar'),
     path('archive_task/', views.archive_task, name='archive_task'),
     path('check_archived/', views.checkbox_archived, name='check_archived'),
-    path('as_csv', views.as_csv, name='as_csv')
-
+    path('as_csv', views.as_csv, name='as_csv'),
+    path('move_date_backward/', views.move_date_backward, name='move_date_backward'),
+    path('move_date_forward/', views.move_date_forward, name='move_date_forward'),
 ]
