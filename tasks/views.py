@@ -3,9 +3,9 @@ from django.db.models import Count, F, Min
 from django.db.models.functions import Cast
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.views import generic
-from django.views.generic import TemplateView
+from django.views.generic import TemplateView, ListView
 from django.core.exceptions import ObjectDoesNotExist
 
 from .forms import TaskForm, FilterForm
@@ -14,7 +14,10 @@ import datetime
 from graphos.renderers.gchart import LineChart, PieChart
 from graphos.sources.model import SimpleDataSource
 from django.db.models import DateField
-from django.utils import timezone
+from django.utils import timezone, safestring
+from .utils import Calendar
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 
 def remove_omitted_fields():
@@ -252,6 +255,31 @@ def index(request):
 
     return render(request, 'tasks/task_list.html', context)
 
+@require_POST
+@csrf_exempt
+def move_date_backward(request):
+    if request.method == 'POST':
+        task_id = request.POST.get('task_id', default=-1)
+        try:
+            task = Task.objects.get(pk=task_id)
+        except Task.DoesNotExist:
+            return HttpResponse("ObjectDoesNotExist:task_move_date_backward")
+        task.end_time -= datetime.timedelta(days=1)
+        task.save()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
+
+@require_POST
+@csrf_exempt
+def move_date_forward(request):
+    if request.method == 'POST':
+        task_id = request.POST.get('task_id', default=-1)
+        try:
+            task = Task.objects.get(pk=task_id)
+        except ObjectDoesNotExist:
+            return HttpResponse("ObjectDoesNotExist:task_move_date_forward")
+        task.end_time += datetime.timedelta(days=1)
+        task.save()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
 '''
 def sort_tasks(request):
@@ -406,3 +434,27 @@ class StatsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         return stats(self.request)
+
+class CalendarView(ListView):
+    model = Task
+    template_name = 'tasks/calendar.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        d = get_date(self.request.GET.get('day', None))
+        cal = Calendar(d.year, d.month)
+        html_cal = cal.formatmonth(withyear=True)
+        if d.month < 12:
+            cal_next = Calendar(d.year, d.month + 1)
+        else:
+            cal_next = Calendar(d.year+1, 1)
+        html_cal_next = cal_next.formatmonth(withyear=True)
+        context['calendar'] = safestring.mark_safe(html_cal)
+        context['calendar_next'] = safestring.mark_safe(html_cal_next)
+        return context
+
+def get_date(req_day):
+    if req_day:
+        year, month = (int(x) for x in req_day.split('-'))
+        return datetime.date(year, month, day=1)
+    return datetime.datetime.today()
