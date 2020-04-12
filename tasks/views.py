@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.db.models import Count, F, Min
 from django.db.models.functions import Cast
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
 from django.views import generic
@@ -473,9 +473,12 @@ class StatsView(TemplateView):
 
 
 def as_csv(request):
-    user_task_records = Task.objects.filter(user=request.user.id).values(
-        *[str(field.name) for field in Task._meta.get_fields() if field.name != "id" and field.name != "user"])
-    return render_to_csv_response(user_task_records)
+    if request.user.is_authenticated:
+        user_task_records = Task.objects.filter(user=request.user.id).values(
+            *[str(field.name) for field in Task._meta.get_fields() if field.name != "id" and field.name != "user"])
+        return render_to_csv_response(user_task_records)
+    else:
+        raise Http404("No user found.")
 
 
 class CalendarView(ListView):
