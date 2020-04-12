@@ -9,16 +9,23 @@
             <style>.display-5 {align-self: center;}</style>
             Dashboard Progress for {{user.username}}:
         </h3>
-    </div>
-    <div class = "wrapper">
-        <style>
-            .wrapper
-            {
-                width: 100%;
-                max-width: 960px;
-                margin: auto;
-            }
-        </style>    
+            <div class = "Main Stats">
+                <div class = "boxed">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item lead">
+                            Tasks Completed as a Dashboard User: <b>{{completed}}</b>
+                        </li>
+                        <li class="list-group-item lead">
+                            Percent Tasks Completed On Time: <b>{{ratio_on_time}}%</b>
+                        </li>
+                        <li class="list-group-item lead">
+                            Average Tasks Per Day (<i>Since First Completed Task</i>): <b>{{avg}}</b>
+                        </li>
+                    </ul>
+                    </div>
+            </div>
+        
+    </div>   
         <div class = "flex-container">
             <style>
                 .flex-container
@@ -52,6 +59,7 @@
                     flex-grow: 3;
                 }
             </style>
+
             <div class = "box one"> 
                 <form action="{% url 'tasks:stats' %}" method="get">
                         <div class="form-group">
@@ -78,16 +86,47 @@
         
                 </form>
             </div>
-            <div class = "box two">
+            <div class = "box three">
                 {{ chart.as_html }}
             </div>
-            <div class = "box three">
-                Percent Tasks Completed By Category
+           
+           
+        </div>
+        <div class="flex-container">
+            <style>
+                .flex-container
+                {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    flex-flow: row;
+                }
+            </style>
+            <div class = "box four">
+                <form action="{% url 'tasks:stats' %}" method="get">
+                    <div class="form-group">
+                        <label for="category">Choose a Category:</label>
+                        <select name="category" id="category" class="custom-select">
+                            <option value="all">All</option>
+                            {% for choice in categories %}
+                            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" type="submit">
+                        Submit
+                    </button>
+    
+            </form>
+            <div class = "box five">
                 {{pie}}
             </div>
         </div>
-    </div>
+        
+
+    
 </div>
+
 <p {{show_bad_prompt}}>
     No tasks appear for you in the database.
 </p>
