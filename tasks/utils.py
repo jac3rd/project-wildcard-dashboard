@@ -12,7 +12,7 @@ class Calendar(HTMLCalendar):
         super(Calendar, self).__init__()
 
     def formatday(self, day, tasks):
-        tasks_per_day = tasks.filter(end_time__day=day).order_by('end_time')
+        tasks_per_day = tasks.filter(end_time__day=day, ).order_by('end_time')
         d = ''
         for task in tasks_per_day:
             list_group_color = ''
@@ -39,8 +39,8 @@ class Calendar(HTMLCalendar):
             week += self.formatday(d, tasks)
         return f'<tr> {week} </tr>'
 
-    def formatmonth(self, withyear=True, weekonly=False):
-        tasks = Task.objects.filter(end_time__year=self.year, end_time__month=self.month)
+    def formatmonth(self, withyear=True, user=-1, archived=False, weekonly=False):
+        tasks = Task.objects.filter(end_time__year=self.year, end_time__month=self.month, user=user, archived=archived)
         cal = f'<table class="calendar table table-hover table-bordered table-striped"><tbody>\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{self.formatweekheader()}\n'
