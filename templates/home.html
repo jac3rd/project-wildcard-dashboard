@@ -2,6 +2,7 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <link rel="icon" href="{% static 'dashboard/images/Wildard_logo.png'%}">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
@@ -29,12 +30,13 @@
 
       <main role="main" class="inner cover">
         <!--<h1 class="cover-heading">Be Productive!</h1>-->
-        <p class="lead">Welcome to Dashboard, a companion for your browser, dedicated of keeping track of and organizing your day.</p>
+        <p class="lead">Welcome to <b><i><font color="#17a2b8">Dashboard</font></i></b>, a companion for your browser, dedicated of keeping track of and organizing your day.</p>
         <p class="lead">
           <!--<a href="#" class="btn btn-lg btn-danger">Login</a>-->
           {% if user.is_authenticated %}
             <p>Logged as {{ user.username }}</p>
             <a class="btn btn-danger btn-lg" href="{% url 'logout' %}">Logout</a>
+            <a class="btn btn-danger btn-lg" href="{% url 'tasks:list' %}">Dashboard</a>
           {% else %}
             <p class="lead">Login with your Google Account to get started.</p>
             <a class="btn btn-primary btn-lg" href="{% url 'social:begin' 'google-oauth2' %}" role = "button">Login</a>
