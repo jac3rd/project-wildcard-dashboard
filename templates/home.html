@@ -34,7 +34,7 @@
         <p class="lead">
           <!--<a href="#" class="btn btn-lg btn-danger">Login</a>-->
           {% if user.is_authenticated %}
-            <p>Logged as {{ user.username }}</p>
+            <p>Logged in as {{ user.username }}</p>
             <a class="btn btn-danger btn-lg" href="{% url 'logout' %}">Logout</a>
             <a class="btn btn-primary btn-lg" href="{% url 'tasks:index' %}">Dashboard</a>
           {% else %}
