@@ -9,8 +9,9 @@
         align-items: flex-start;
         flex-flow: row;
     }
-</style>
-<div class = "flex-container">
+</style> 
+<div class = "container">
+    <h1 align="center">Hello, {{user.username}}! Let's get to work:</h1> 
     <div class = "task-list">
             {% if task_list %}
         <ul>
@@ -50,6 +51,8 @@
         <p>You have no tasks!</p>
         {% endif %}
     </div>
+</div>
+<div class = "flex-container">
     <div class = "calendar">
         Calendar
     </div>
@@ -69,6 +72,5 @@
         </div>
 
     </div>
-    
 </div>
 {% endblock %}
