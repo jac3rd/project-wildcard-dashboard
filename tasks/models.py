@@ -1,7 +1,5 @@
 from django.db import models
-from social_django import models as oauth_models
 import datetime
-from django.urls import reverse
 
 
 # Create your models here.
@@ -58,7 +56,3 @@ class Category(models.Model):
     user = models.IntegerField()
 
 
-# class Level(models.Model):
-# 	level = models.IntegerField(default=1)
-# 	xp = models.IntegerField(default=0)
-#     user = models.IntegerField(primary_key=True)
