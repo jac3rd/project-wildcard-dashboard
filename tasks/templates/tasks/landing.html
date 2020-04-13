@@ -11,6 +11,8 @@
     }
 </style>
 <div class = "flex-container">
+    <center><h2>Welcome, {{user.username}}! Let's get started: </h2></center>
+    <hr>
     <div class = "task-list">
         <h4>Tasks: </h4>
         {% if task_list %}
@@ -295,7 +297,9 @@
         </div>
 
     </div>
+    <hr>
     <div class = "calendar">
+        <h4>Calendar View:</h4>
         Calendar
     </div>
 </div>
