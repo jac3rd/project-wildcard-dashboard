@@ -36,6 +36,21 @@ def remove_omitted_fields():
             l.append((val, val))
     return l
 
+class SummaryView(generic.ListView):
+    model = Task
+    template_name = 'tasks/landing.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        task_list = Task.objects.filter(user=self.request.user.id, archived=False, end_time__gte=datetime.datetime.now())
+        task_list = task_list.order_by('end_time')
+        task_list = task_list[:5]
+        context['task_list'] = task_list
+        d = get_date(self.request.GET.get('day', None))
+        cal = Calendar(d.year, d.month)
+        html_cal = cal.formatmonth(withyear=True, weekonly=True)
+        context['calendar'] = safestring.mark_safe(html_cal)
+        return context
 
 # Create your views here.
 class TaskListView(generic.ListView):
