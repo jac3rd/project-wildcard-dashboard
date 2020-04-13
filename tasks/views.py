@@ -436,7 +436,7 @@ def get_pie(request):
         non_zero = (num_completed > 0) or (num_uncompleted > 0) or (completed_late > 0) or (uncompleted_late > 0)
         if non_zero:
             pie = PieChart(SimpleDataSource(pie_data),
-                           options={'title': 'Task Status', 'width': 400}).as_html()
+                           options={'title': request.GET['pie_category'] + " On-Time Completion Rate", 'width': 400}).as_html()
         else:
             pie = "No completed tasks to display."
     return pie
