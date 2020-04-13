@@ -24,13 +24,14 @@
         <div class = "boxed">
             <ul class="list-group list-group-flush">
                 <li class="list-group-item lead">
-                    Tasks Completed as a Dashboard User: <b>{{completed}}</b>
+                    Tasks Left This Week: <b>{{tasks_left}}</b>
                 </li>
                 <li class="list-group-item lead">
-                    Percent Tasks Completed On Time: <b>{{ratio_on_time}}%</b>
+                    Estimated Time Required: <b>{{est_hours}} <i>hours</i> {{est_minutes}} <i>minutes</i></b>
                 </li>
                 <li class="list-group-item lead">
-                    Average Tasks Per Day (<i>Since First Completed Task</i>): <b>{{avg}}</b>
+                    {% load static %}
+                    How You Are Doing: <b>{{state}}</b>
                 </li>
             </ul>
         </div>

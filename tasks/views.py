@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, F, Min
-from django.db.models.functions import Cast
+from django.db.models import Count, F, Min, Sum, Avg
+from django.db.models.functions import Cast, Extract
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -8,6 +8,7 @@ from django.views import generic
 from djqscsv import render_to_csv_response
 from django.views.generic import TemplateView, ListView
 from django.core.exceptions import ObjectDoesNotExist
+from django.template import Template
 
 from .forms import TaskForm, FilterForm
 from .models import Task, Category, ShowArchived
@@ -253,11 +254,13 @@ def delete_category(request):
 
 @login_required
 def index(request):
-    context = {
-        'tasks': Task.objects.order_by('-date')
-        if request.user.is_authenticated else []
-    }
-
+    if request.user.is_authenticated:
+        tasks = {
+        'tasks': Task.objects.order_by('-end_time')
+        }
+        context = {**tasks, **progress(request)}
+    else:
+        context = {'tasks':[]}
     return render(request, 'tasks/landing.html', context)
 
 
@@ -505,3 +508,38 @@ def get_date(req_day):
         year, month = (int(x) for x in req_day.split('-'))
         return datetime.date(year, month, day=1)
     return datetime.datetime.today()
+
+
+def progress(request):
+    start_of_week = datetime.datetime.today() - datetime.timedelta(
+        days=datetime.datetime.today().isoweekday() % 7)
+    tasks_left_this_week = Task.objects.filter(user=request.user.id, completed=False,
+                                               end_time__gte=start_of_week,
+                                               end_time__lte=start_of_week + datetime.timedelta(days=6)
+                                               )
+    # print(tasks_left_this_week.values('hours').aggregate(total=Sum('hours')))
+    estimated_hours = tasks_left_this_week.aggregate(total=Sum('hours'))['total']
+    estimated_minutes = tasks_left_this_week.aggregate(total=Sum('minutes'))['total']
+    if estimated_minutes and estimated_hours:
+        estimated_hours += estimated_minutes // 60
+        estimated_minutes %= 60
+    else:
+        estimated_hours = 0
+        estimated_minutes = 0
+    weekly = Task.objects.filter(completed=True).annotate(week=Extract('date_completed', 'week'),
+                                                          year=Extract('date_completed', 'year')).values('year',
+                                                                                                         'week').annotate(
+        per_week=Count('week')).aggregate(avg=Avg('per_week'))
+    tasks_done_this_week = Task.objects.filter(user=request.user.id, completed=True,
+                                               date_completed__gte=start_of_week,
+                                               date_completed__lte=start_of_week + datetime.timedelta(days=6)
+                                               ).count()
+    if weekly['avg'] < tasks_done_this_week:
+        emoji = ':('
+    elif weekly['avg'] == tasks_done_this_week:
+        emoji = ': |'
+    else:
+        emoji = ':)'
+    context = {'state': emoji, 'tasks_left': tasks_left_this_week.count(), 'est_hours': estimated_hours,
+               'est_minutes': estimated_minutes}
+    return context

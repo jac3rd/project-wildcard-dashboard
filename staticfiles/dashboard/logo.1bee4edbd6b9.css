@@ -1,0 +1,46 @@
+.container {
+  position: relative;
+  text-align: center;
+  color: black;
+}
+
+.option1 {
+  font-weight: bold;
+  font-size = 120%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-300%, -50%);
+}
+
+.option2 {
+  font-weight: bold;
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.option3 {
+  font-weight: bold;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(190%, -50%);
+}
+
+.option4 {
+  font-weight: bold;
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+img {
+    source: Wildcard_logo.png;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    opacity: 0.7
+}
