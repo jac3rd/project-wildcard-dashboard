@@ -192,9 +192,9 @@ def check_off(request):
     """
     url_path_from = 'tasks:list'
     if request.method == 'POST':
-        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split(b"/"))) 
         url_path_from = ':'.join(url_path_from)
-        if(url_path_from == 'tasks'):
+        if(url_path_from == 'tasks' or url_path_from == ""):
             url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
@@ -212,9 +212,9 @@ def uncheck(request):
     """
     url_path_from = 'tasks:list'
     if request.method == 'POST':
-        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split(b"/"))) 
         url_path_from = ':'.join(url_path_from)
-        if(url_path_from == 'tasks'):
+        if(url_path_from == 'tasks' or url_path_from == ""):
             url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
@@ -262,9 +262,9 @@ def checkbox_archived(request):
 def delete_task(request):
     url_path_from = 'tasks:list'
     if request.method == 'POST':
-        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split(b"/"))) 
         url_path_from = ':'.join(url_path_from)
-        if(url_path_from == 'tasks'):
+        if(url_path_from == 'tasks' or url_path_from == ""):
             url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         try:
