@@ -389,7 +389,7 @@ def filter_tasks(request):
                         **arg_dict)
                 # filtered_tasks = Task.objects.all().filter(**arg_dict)
                 # return HttpResponseRedirect(reverse('tasks:list'))
-                return render(request, 'tasks/task_list.html', {'task_list': filtered_tasks, 'fields': field_names})
+                return render(request, 'tasks/task_list.html', {'task_list': filtered_tasks.order_by('end_time', 'created_at'), 'fields': field_names})
         elif 'reset-button' in request.POST:
             # print('reset filter')
             return HttpResponseRedirect(reverse('tasks:list'))

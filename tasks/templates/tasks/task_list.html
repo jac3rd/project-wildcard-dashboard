@@ -37,25 +37,17 @@
     <button type="submit" class="btn btn-danger" name="reset-button" style="margin-right:10px">
         Reset Filters
     </button>
-    <input class="form-control" type="text" placeholder="Filtered Input" name="filter_key">
-    <div class="btn-group">
-        <button type="submit" class="btn btn-primary" style="margin-left:10px">
-            Filter
-        </button>
-        <button type="button" class="btn btn-primary dropdown-toggle dropdown-toggle-split" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <!--<span class="sr-only">Toggle Dropdown</span>-->
-          <span class="fa fa-filter"></span>
-        </button>
-        <div class="dropdown-menu">
-          <button class="dropdown-item" type="button">Filter on the following:</button>
-          <div class="dropdown-divider"></div>
-            {% for name, real_value in fields %}
-                <div>
-                    <input type="checkbox" name="tag[]" value="{{ forloop.counter0 }}" style="padding-left:10px"><span style="padding-left:10px">{{ name }}</span>
-                </div>
-            {% endfor %}
-        </div>
-      </div>
+    <input class="form-control" type="text" placeholder="Filtered Input" name="filter_key" style="margin-right:10px">
+    <!--original code goes here-->
+    <select name="tag[]" class="selectpicker" data-style="btn-primary" data-live-search="true" multiple title="Filter Options" data-width="150px">
+        {% for name, real_value in fields %}
+            <option value="{{ forloop.counter0 }}">{{ name }}</option>
+        {% endfor %}
+    </select>
+    <span class="input-group-btn">
+        <button type="submit" class="btn btn-primary" type="button" tabindex="-1"><span class="fa fa-filter"></span></button>
+    </span>
+    <!--new code-->
     </div>
 </form>
 <!-- Example single danger button -->
