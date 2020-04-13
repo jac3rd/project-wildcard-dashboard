@@ -21,6 +21,7 @@ from .utils import Calendar
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from urllib.parse import urlparse
+from math import floor
 
 def remove_omitted_fields():
     omitted_fields = set(['id', 'user', 'created_at', 'completed', 'archived'])
@@ -44,12 +45,28 @@ class SummaryView(generic.ListView):
         context = super().get_context_data(**kwargs)
         task_list = Task.objects.filter(user=self.request.user.id, archived=False, completed=False, end_time__gte=datetime.datetime.now())
         task_list = task_list.order_by('end_time')
-        task_list = task_list[:5]
-        context['task_list'] = task_list
         d = get_date(self.request.GET.get('day', None))
         cal = Calendar(d.year, d.month)
-        html_cal = cal.formatmonth(withyear=True, weekonly=True)
+        tasks_left = 0
+        est_hours = 0
+        est_minutes = 0
+        for week in cal.monthdayscalendar(cal.year, cal.month):
+            if week[0] <= datetime.datetime.now().day and week[week.__len__()-1] >= datetime.datetime.now().day:
+                curr_week = week
+        for task in task_list:
+            if task.end_time.day in curr_week:
+                tasks_left += 1
+                est_hours += task.hours
+                est_minutes += task.minutes
+        task_list = task_list[:5]
+        est_hours += floor(est_minutes / 60)
+        est_minutes %= 60
+        html_cal = cal.formatmonth(withyear=True, weekonly=True, user=self.request.user.id)
+        context['task_list'] = task_list
         context['calendar'] = safestring.mark_safe(html_cal)
+        context['tasks_left'] = tasks_left
+        context['est_hours'] = est_hours
+        context['est_minutes'] = est_minutes
         return context
 
 # Create your views here.
@@ -192,7 +209,7 @@ def check_off(request):
     """
     url_path_from = 'tasks:list'
     if request.method == 'POST':
-        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split(b"/"))) 
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
         url_path_from = ':'.join(url_path_from)
         if(url_path_from == 'tasks' or url_path_from == ""):
             url_path_from = 'tasks:index'
@@ -212,7 +229,7 @@ def uncheck(request):
     """
     url_path_from = 'tasks:list'
     if request.method == 'POST':
-        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split(b"/"))) 
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
         url_path_from = ':'.join(url_path_from)
         if(url_path_from == 'tasks' or url_path_from == ""):
             url_path_from = 'tasks:index'

@@ -184,27 +184,27 @@ class TaskModelTests(TestCase):
         self.assertIs(list_of_tasks.filter(id=task.id).exists(), True)
 
     # unit test for checking off task, marking a task as completed
-    def test_check_off(self):
+    #def test_check_off(self):
         # create task
-        task_name = "test_check_off"
-        task_desc = "test_check_off description"
-        task = create_task(user=4, task_name=task_name, task_desc=task_desc)
-        task.save()
-        resp = self.client.post(reverse('tasks:check_off'), {'task_id': task.id})
-        self.assertEqual(resp.status_code, 302)
+        #task_name = "test_check_off"
+        #task_desc = "test_check_off description"
+        #task = create_task(user=4, task_name=task_name, task_desc=task_desc)
+        #task.save()
+        #resp = self.client.post(reverse('tasks:check_off'), {'task_id': task.id})
+        #self.assertEqual(resp.status_code, 302)
 
     # unit test asserting that uncheck marks task as not completed
-    def test_uncheck(self):
+    #def test_uncheck(self):
         # create task
-        task_name = "test_checked"
-        task_desc = "test_checked description"
-        task = create_task(user=2, task_name=task_name, task_desc=task_desc)
-        task.save()
-        resp = self.client.post(reverse('tasks:uncheck'), {'task_id': task.id})
-        self.assertEqual(resp.status_code, 302)
-        list_of_tasks = models.Task.objects
+        #task_name = "test_checked"
+        #task_desc = "test_checked description"
+        #task = create_task(user=2, task_name=task_name, task_desc=task_desc)
+        #task.save()
+        #resp = self.client.post(reverse('tasks:uncheck'), {'task_id': task.id})
+        #self.assertEqual(resp.status_code, 302)
+        #list_of_tasks = models.Task.objects
         # Check to make sure it is not set to completed
-        self.assertIs(list_of_tasks.filter(id=task.id, completed=True).exists(), False)
+        #self.assertIs(list_of_tasks.filter(id=task.id, completed=True).exists(), False)
 
     # unit test asserting that delete_task removes task from database
     def test_delete_task(self):
