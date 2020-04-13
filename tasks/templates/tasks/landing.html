@@ -110,9 +110,6 @@
                         <div class="ml-auto">
                             <div class="d-flex">
                                 <div class="ml-auto">
-                                    <small class="pl-2 text-muted">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
-                                </div>
-                                <div class="ml-auto">
                                     <form action="{% url 'tasks:archive_task' %}" method='post' id="archive_{{ task.id }}">
                                         {% csrf_token %}
                                         <input type="hidden" name="task_id" value="{{task.id}}">
@@ -133,7 +130,6 @@
                             </div>
                         </div>
                     </div>
-                    <p class="mb-1">{{ task.task_desc }}</p>
                     <div class="widget-heading"><b><i>DUE:</i> {{ task.end_time }}</b></div>
                     <div class="todo-indicator bg-warning"></div>
                 </li>
@@ -245,9 +241,6 @@
                         <div class="ml-auto">
                             <div class="d-flex">
                                 <div class="ml-auto">
-                                    <small class="pl-2 text-muted">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
-                                </div>
-                                <div class="ml-auto">
                                     <form action="{% url 'tasks:archive_task' %}" method='post' id="archive__{{ task.id }}">
                                         {% csrf_token %}
                                         <input type="hidden" name="task_id" value="{{task.id}}">
@@ -268,7 +261,6 @@
                             </div>
                         </div>
                     </div>
-                    <p class="mb-1">{{ task.task_desc }}</p>
                     <div class="widget-heading"><b><i>DUE:</i> {{ task.end_time }}</b></div>
                     <div class="todo-indicator bg-warning"></div>
                 </li>
@@ -284,6 +276,10 @@
     <div class = "calendar">
         Calendar
     </div>
+</div>
+<hr>
+<hr>
+<div class = "flex-container">
     <div class = "stats">
         <div class = "boxed">
             <ul class="list-group list-group-flush">
@@ -300,6 +296,8 @@
         </div>
 
     </div>
-    
+    <div class = "calendar">
+        Calendar
+    </div>
 </div>
 {% endblock %}

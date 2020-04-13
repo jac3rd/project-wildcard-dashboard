@@ -28,7 +28,6 @@
 </style>
 <style> .list-group-item{ padding: 12px; } </style>
 <hr>
-<h1 align="center">Hello {{user.username}}, Good to see you!</h1>
 {% if error_message %}<p><font color="red"><strong>{{ error_message }}</strong></font></p>{% endif %}
 <hr>
 <form action="{% url 'tasks:filter_tasks' %}" method="post" style="margin-bottom:10px">
