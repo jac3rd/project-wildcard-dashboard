@@ -36,7 +36,7 @@
           {% if user.is_authenticated %}
             <p>Logged as {{ user.username }}</p>
             <a class="btn btn-danger btn-lg" href="{% url 'logout' %}">Logout</a>
-            <a class="btn btn-primary btn-lg" href="{% url 'tasks:list' %}">Dashboard</a>
+            <a class="btn btn-primary btn-lg" href="{% url 'tasks:index' %}">Dashboard</a>
           {% else %}
             <p class="lead">Login with your Google Account to get started.</p>
             <a class="btn btn-primary btn-lg" href="{% url 'social:begin' 'google-oauth2' %}" role = "button">Login</a>
