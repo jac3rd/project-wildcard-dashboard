@@ -7,11 +7,12 @@
         display: flex;
         justify-content: space-between;
         align-items: flex-start;
-        flex-flow: row;
+        flex-flow: column;
     }
 </style>
 <div class = "flex-container">
     <div class = "task-list">
+        <h4>Tasks: </h4>
         {% if task_list %}
         <div class="list-group list-group-flush">
             <!-- Individual Tasks -->
@@ -273,13 +274,10 @@
             <p>You have no tasks!</p>
         {% endif %}
     </div>
-    <div class = "calendar">
-        Calendar
-    </div>
 </div>
 <hr>
-<hr>
 <div class = "flex-container">
+    <h4>Stats Summary: </h4>
     <div class = "stats">
         <div class = "boxed">
             <ul class="list-group list-group-flush">
@@ -291,7 +289,7 @@
                 </li>
                 <li class="list-group-item lead">
                     {% load static %}
-                    How You Are Doing: <b>{{state}}</b>
+                    Work Completion Streak: <b>{{state}}</b>
                 </li>
             </ul>
         </div>
