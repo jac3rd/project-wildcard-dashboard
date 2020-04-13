@@ -258,7 +258,7 @@ def index(request):
         if request.user.is_authenticated else []
     }
 
-    return render(request, 'tasks/task_list.html', context)
+    return render(request, 'tasks/landing.html', context)
 
 
 @require_POST

@@ -1,42 +1,74 @@
 {% extends 'base.html' %}
 {% block content %}
-<div>
-    {% if task_list %}
-    <ul>
-        {% for task in task_list %}
-        <li>
-            {% if not task.completed %}
-            <div class="form-check">
-                <form action="{% url 'tasks:check_off' %}" method='post' id="check">
-                    {% csrf_token %}
-                    <input type="hidden" name="task_id" value='{{task.id}}'>
-                    <input class="form-check-input" type="checkbox" onclick="document.getElementById('check').submit();">
-                </form>
-                <label class="form-check-label" for="defaultCheck1">
-                    Completed?
-                </label>
+
+<style>
+    .flex-container
+    {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-flow: row;
+    }
+</style>
+<div class = "flex-container">
+    <div class = "task-list">
+            {% if task_list %}
+        <ul>
+            {% for task in task_list %}
+            <li>
+                {% if not task.completed %}
+                <div class="form-check">
+                    <form action="{% url 'tasks:check_off' %}" method='post' id="check">
+                        {% csrf_token %}
+                        <input type="hidden" name="task_id" value='{{task.id}}'>
+                        <input class="form-check-input" type="checkbox" onclick="document.getElementById('check').submit();">
+                    </form>
+                    <label class="form-check-label" for="defaultCheck1">
+                        Completed?
+                    </label>
+                    <b>{{ task.task_name }}</b></br>
+                <p1>{{ task.task_desc }}</p1>
+                </br>
+                End time: {{ task.end_time }}</br>
+                </div>
+                {% else %}
+                    <label class="form-check-label" for="defaultCheck2">
+                        Completed!!!
+                    </label>
+                <br>
+                <strike>
                 <b>{{ task.task_name }}</b></br>
-            <p1>{{ task.task_desc }}</p1>
-            </br>
-            End time: {{ task.end_time }}</br>
-            </div>
-            {% else %}
-                <label class="form-check-label" for="defaultCheck2">
-                    Completed!!!
-                </label>
-            <br>
-            <strike>
-            <b>{{ task.task_name }}</b></br>
-            <p1>{{ task.task_desc }}</p1>
-            </br>
-            End time: {{ task.end_time }}</br>
-                </strike>
-                {% endif %}
-        </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>You have no tasks!</p>
-    {% endif %}
+                <p1>{{ task.task_desc }}</p1>
+                </br>
+                End time: {{ task.end_time }}</br>
+                    </strike>
+                    {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p>You have no tasks!</p>
+        {% endif %}
+    </div>
+    <div class = "calendar">
+        Calendar
+    </div>
+    <div class = "stats">
+        <div class = "boxed">
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item lead">
+                    Tasks Completed as a Dashboard User: <b>{{completed}}</b>
+                </li>
+                <li class="list-group-item lead">
+                    Percent Tasks Completed On Time: <b>{{ratio_on_time}}%</b>
+                </li>
+                <li class="list-group-item lead">
+                    Average Tasks Per Day (<i>Since First Completed Task</i>): <b>{{avg}}</b>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+    
 </div>
 {% endblock %}
