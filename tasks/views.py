@@ -488,13 +488,14 @@ class CalendarView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         d = get_date(self.request.GET.get('day', None))
+        user = self.request.user.id
         cal = Calendar(d.year, d.month)
-        html_cal = cal.formatmonth(withyear=True)
+        html_cal = cal.formatmonth(withyear=True, user=user)
         if d.month < 12:
             cal_next = Calendar(d.year, d.month + 1)
         else:
             cal_next = Calendar(d.year + 1, 1)
-        html_cal_next = cal_next.formatmonth(withyear=True)
+        html_cal_next = cal_next.formatmonth(withyear=True, user=user)
         context['calendar'] = safestring.mark_safe(html_cal)
         context['calendar_next'] = safestring.mark_safe(html_cal_next)
         return context
