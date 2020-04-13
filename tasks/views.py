@@ -20,7 +20,7 @@ from django.utils import timezone, safestring
 from .utils import Calendar
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-
+from urllib.parse import urlparse
 
 def remove_omitted_fields():
     omitted_fields = set(['id', 'user', 'created_at', 'completed', 'archived'])
@@ -175,13 +175,18 @@ def check_off(request):
     :param request: A request that contains a primary key for the task being completed.
     :return: A redirect to our index page for tasks.
     """
+    url_path_from = 'tasks:list'
     if request.method == 'POST':
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
+        url_path_from = ':'.join(url_path_from)
+        if(url_path_from == 'tasks'):
+            url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
         task.completed = True
         task.date_completed = datetime.datetime.now().date()
         task.save()
-    return HttpResponseRedirect(reverse('tasks:list'))
+    return HttpResponseRedirect(reverse(url_path_from))
 
 
 def uncheck(request):
@@ -190,16 +195,26 @@ def uncheck(request):
     :param request: A request that contains a primary key for the task being unmarked.
     :return: A redirect to our index page for tasks.
     """
+    url_path_from = 'tasks:list'
     if request.method == 'POST':
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
+        url_path_from = ':'.join(url_path_from)
+        if(url_path_from == 'tasks'):
+            url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
         task.completed = False
         task.save()
-    return HttpResponseRedirect(reverse('tasks:list'))
+    return HttpResponseRedirect(reverse(url_path_from))
 
 
 def archive_task(request):
+    url_path_from = 'tasks:list'
     if request.method == 'POST':
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
+        url_path_from = ':'.join(url_path_from)
+        if(url_path_from == 'tasks'):
+            url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
         if task.archived == False:
@@ -207,32 +222,42 @@ def archive_task(request):
         else:
             task.archived = False
         task.save()
-    return HttpResponseRedirect(reverse('tasks:list'))
+    return HttpResponseRedirect(reverse(url_path_from))
 
 
 def checkbox_archived(request):
     """
         This allows a user to see his/her archived tasks.
     """
+    url_path_from = 'tasks:list'
     if request.method == 'POST':
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
+        url_path_from = ':'.join(url_path_from)
+        if(url_path_from == 'tasks'):
+            url_path_from = 'tasks:index'
         ca = ShowArchived.objects.get(user=request.user.id)
         if ca.show_archived == False:
             ca.show_archived = True
         else:
             ca.show_archived = False;
         ca.save()
-    return HttpResponseRedirect(reverse('tasks:list'))
+    return HttpResponseRedirect(reverse(url_path_from))
 
 
 def delete_task(request):
+    url_path_from = 'tasks:list'
     if request.method == 'POST':
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
+        url_path_from = ':'.join(url_path_from)
+        if(url_path_from == 'tasks'):
+            url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         try:
             task = Task.objects.get(pk=task_id)
         except:
-            return HttpResponseRedirect(reverse('tasks:list'))
+            return HttpResponseRedirect(reverse(url_path_from))
         task.delete()
-        return HttpResponseRedirect(reverse('tasks:list'))
+        return HttpResponseRedirect(reverse(url_path_from))
 
 
 def add_category(request):
