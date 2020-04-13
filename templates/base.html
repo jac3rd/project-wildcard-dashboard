@@ -1,7 +1,9 @@
 <!doctype html>
+{% load static %}
 <html lang="en">
   <head>
     <!-- Required meta tags -->
+    <link rel="icon" href="{% static 'dashboard/images/Wildard_logo.png'%}">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSS -->
@@ -53,9 +55,10 @@
         </div>
       </div>
     </div>
-    <footer class="footer fixed-bottom">
+    <div class="footer-spacer"></div>
+    <footer class="page-footer font-small blue pt-4 bg-dark my-sticky-footer" style="min-height: 15vh;">
       <div class="container text-center">
-        <span class="text-muted">Created by team WILDCARD!</span>
+        <span class="text-muted font-weight-light">Created by team WILDCARD!: Andrew Boyd, Henry Carscadden, Jimmy Chiou, Ashwin Pathi, Gabriel Simmons</span>
         <hr>
       </div>
     </footer>
