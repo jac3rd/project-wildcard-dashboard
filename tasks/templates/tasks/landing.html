@@ -12,6 +12,7 @@
 </style> 
 <div class = "container">
     <h1 align="center">Hello, {{user.username}}! Let's get to work:</h1> 
+    <hr>
     <div class = "task-list">
             {% if task_list %}
         <ul>
@@ -52,10 +53,9 @@
         {% endif %}
     </div>
 </div>
+<hr>
+<hr>
 <div class = "flex-container">
-    <div class = "calendar">
-        Calendar
-    </div>
     <div class = "stats">
         <div class = "boxed">
             <ul class="list-group list-group-flush">
@@ -71,6 +71,9 @@
             </ul>
         </div>
 
+    </div>
+    <div class = "calendar">
+        Calendar
     </div>
 </div>
 {% endblock %}
