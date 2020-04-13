@@ -43,21 +43,25 @@ class SummaryView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        task_list = Task.objects.filter(user=self.request.user.id, archived=False, completed=False, end_time__gte=datetime.datetime.now())
+        task_list = Task.objects.filter(user=self.request.user.id, archived=False, end_time__gte=datetime.datetime.now())
         task_list = task_list.order_by('end_time')
         d = get_date(self.request.GET.get('day', None))
         cal = Calendar(d.year, d.month)
         tasks_left = 0
         est_hours = 0
         est_minutes = 0
+        state = 0
         for week in cal.monthdayscalendar(cal.year, cal.month):
             if week[0] <= datetime.datetime.now().day and week[week.__len__()-1] >= datetime.datetime.now().day:
                 curr_week = week
         for task in task_list:
             if task.end_time.day in curr_week:
-                tasks_left += 1
-                est_hours += task.hours
-                est_minutes += task.minutes
+                if not task.completed:
+                    tasks_left += 1
+                    est_hours += task.hours
+                    est_minutes += task.minutes
+                else:
+                    state += 1
         task_list = task_list[:5]
         est_hours += floor(est_minutes / 60)
         est_minutes %= 60
@@ -67,6 +71,7 @@ class SummaryView(generic.ListView):
         context['tasks_left'] = tasks_left
         context['est_hours'] = est_hours
         context['est_minutes'] = est_minutes
+        context['state'] = state
         return context
 
 # Create your views here.
