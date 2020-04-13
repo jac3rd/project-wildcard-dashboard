@@ -1,3 +1,4 @@
+import csv
 import datetime
 from django.test import TestCase, RequestFactory, Client
 from django.utils import timezone
@@ -8,6 +9,7 @@ from django.contrib.auth.models import User, AnonymousUser
 from django.http import HttpResponse, HttpResponseRedirect
 from .views import TaskListView
 from .utils import Calendar
+
 
 # creates and saves a task; utility function for tests
 def create_task(user=0, task_name="generic test", task_desc="generic test description", date_completed=None,
@@ -41,7 +43,7 @@ class StatsViewTests(TestCase):
         create_task(user=self.user.id, task_name="test2", task_desc=task_desc,
                     date_completed=current, completed=True, end_time=yesterday)
         create_task(user=self.user.id, task_name="test2", task_desc=task_desc, end_time=current +
-                    datetime.timedelta(minutes=2))
+                                                                                        datetime.timedelta(minutes=2))
         create_task(user=2, task_name="test1", task_desc=task_desc, end_time=current, date_completed=current,
                     completed=True)
 
@@ -55,13 +57,75 @@ class StatsViewTests(TestCase):
         request = self.factory.get('/tasks/stats/')
         request.user = self.user
         response = views.StatsView.as_view()(request)
-        self.assertAlmostEqual(response.context_data['ratio_on_time'], round(100.0 / 3, 3))
+        self.assertAlmostEqual(response.context_data['ratio_on_time'], round((1 / 3) * 100, 3))
 
     def test_correct_avg(self):
         request = self.factory.get('/tasks/stats/')
         request.user = self.user
         response = views.StatsView.as_view()(request)
         self.assertAlmostEqual(response.context_data['avg'], 1)
+
+
+class CSVTests1(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username='jacob', email='jacob@…', password='top_secret', id=1)
+        task_desc = "task_desc"
+        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+        current = datetime.datetime.now()
+        create_task(user=self.user.id, task_name="test1", task_desc=task_desc, date_completed=yesterday,
+                    end_time=current, completed=True)
+        create_task(user=self.user.id, task_name="test1", task_desc=task_desc,
+                    end_time=current - datetime.timedelta(hours=5))
+        create_task(user=self.user.id, task_name="test2", task_desc=task_desc,
+                    date_completed=current, completed=True, end_time=yesterday)
+        create_task(user=self.user.id, task_name="test2", task_desc=task_desc, end_time=current +
+                                                                                        datetime.timedelta(minutes=2))
+        create_task(user=2, task_name="test1", task_desc=task_desc, end_time=current, date_completed=current,
+                    completed=True)
+
+    def test_num_tasks1(self):
+        request = self.factory.get('/tasks/stats/')
+        request.user = self.user
+        response = views.as_csv(request)
+        self.assertEqual(len(list(response.streaming_content)), 6)
+
+
+class CSVTests2(TestCase):
+    def setUp(self):
+        self.factory = RequestFactory()
+        self.user = User.objects.create_user(
+            username='rob', email='rob@…', password='top_secret', id=1)
+        self.user = User.objects.create_user(
+            username='jacob', email='jacob@…', password='top_secret', id=2)
+        task_desc = "task_desc"
+        yesterday = datetime.datetime.now() - datetime.timedelta(days=1)
+        current = datetime.datetime.now()
+        create_task(user=1, task_name="test1", task_desc=task_desc, date_completed=yesterday,
+                    end_time=current, completed=True)
+        create_task(user=1, task_name="test1", task_desc=task_desc,
+                    end_time=current - datetime.timedelta(hours=5))
+        create_task(user=1, task_name="test2", task_desc=task_desc,
+                    date_completed=current, completed=True, end_time=yesterday)
+        create_task(user=1, task_name="test2", task_desc=task_desc, end_time=current +
+                                                                             datetime.timedelta(minutes=2))
+        create_task(user=2, task_name="test1", task_desc=task_desc, end_time=current, date_completed=current,
+                    completed=True)
+
+    def test_num_tasks2(self):
+        request = self.factory.get('/tasks/stats/')
+        request.user = self.user
+        response = views.as_csv(request)
+        self.assertEqual(len(list(response.streaming_content)), 3)
+
+    def test_not_in_header(self):
+        request = self.factory.get('/tasks/stats/')
+        request.user = self.user
+        response = views.as_csv(request)
+        header = list(response.streaming_content)[1].decode()
+        self.assertTrue("id" not in header)
+        self.assertTrue("user" not in header)
 
 
 class StatsViewNullTests(TestCase):
@@ -198,8 +262,9 @@ class TaskModelTests(TestCase):
         task3.save()
 
         filter_key = 'task'
-        filter_by = ['0'] # just task name
-        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]':filter_by, 'filter_key':filter_key, 'user':'0'})
+        filter_by = ['0']  # just task name
+        resp = self.client.post(reverse('tasks:filter_tasks'),
+                                {'tag[]': filter_by, 'filter_key': filter_key, 'user': '0'})
         filtered_context = list(resp.context['task_list'].values())
         self.assertTrue(len(filtered_context) == 1 and filtered_context[0]['task_name'] == task_name1)
 
@@ -227,8 +292,9 @@ class TaskModelTests(TestCase):
         task3.save()
 
         filter_key = 'task'
-        filter_by = ['1'] # just task name
-        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]':filter_by, 'filter_key':filter_key, 'user':'0'})
+        filter_by = ['1']  # just task name
+        resp = self.client.post(reverse('tasks:filter_tasks'),
+                                {'tag[]': filter_by, 'filter_key': filter_key, 'user': '0'})
         filtered_context = list(resp.context['task_list'].values())
         self.assertTrue(len(filtered_context) == 1 and filtered_context[0]['task_name'] == task_name2)
 
@@ -256,8 +322,9 @@ class TaskModelTests(TestCase):
         task3.save()
 
         filter_key = 'task'
-        filter_by = ['0', '1'] # just task name
-        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]':filter_by, 'filter_key':filter_key, 'user':'0'})
+        filter_by = ['0', '1']  # just task name
+        resp = self.client.post(reverse('tasks:filter_tasks'),
+                                {'tag[]': filter_by, 'filter_key': filter_key, 'user': '0'})
         filtered_context = list(resp.context['task_list'].values())
         self.assertTrue(len(filtered_context) == 2 and (
                 task_name3 not in filtered_context[0] and task_name3 not in filtered_context[1]))
@@ -286,8 +353,9 @@ class TaskModelTests(TestCase):
         task3.save()
 
         filter_key = 'asdfasdf'
-        filter_by = ['1'] # just task name
-        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]':filter_by, 'filter_key':filter_key, 'user':'0'})
+        filter_by = ['1']  # just task name
+        resp = self.client.post(reverse('tasks:filter_tasks'),
+                                {'tag[]': filter_by, 'filter_key': filter_key, 'user': '0'})
         filtered_context = list(resp.context['task_list'].values())
         self.assertTrue(len(filtered_context) == 0)
 
@@ -315,9 +383,10 @@ class TaskModelTests(TestCase):
         task3.save()
 
         filter_key = ''
-        filter_by = [] # just task name
-        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]':filter_by, 'filter_key':filter_key, 'user':'0'})
-        self.assertEqual(resp.status_code,302)
+        filter_by = []  # just task name
+        resp = self.client.post(reverse('tasks:filter_tasks'),
+                                {'tag[]': filter_by, 'filter_key': filter_key, 'user': '0'})
+        self.assertEqual(resp.status_code, 302)
 
     # unit test asserting that filtering posts a 200 status code and filtering on no keyword returns original list
     # tag0 = task_name
@@ -327,24 +396,25 @@ class TaskModelTests(TestCase):
         task_name1 = "task in name but not desc"
         task_desc1 = "not in desc"
         category1 = "Homework"
-        task1 = create_task(user=1,task_name=task_name1, task_desc=task_desc1, category=category1)
+        task1 = create_task(user=1, task_name=task_name1, task_desc=task_desc1, category=category1)
         task1.save()
 
         task_name2 = "no keyword in name"
         task_desc2 = "task in description but not name"
         category2 = "Homework"
-        task2 = create_task(user=1,task_name=task_name2, task_desc=task_desc2, category=category2)
+        task2 = create_task(user=1, task_name=task_name2, task_desc=task_desc2, category=category2)
         task2.save()
 
         task_name3 = "random"
         task_desc3 = "not in anything"
         category3 = "Homework"
-        task3 = create_task(user=1,task_name=task_name3, task_desc=task_desc3, category=category3)
+        task3 = create_task(user=1, task_name=task_name3, task_desc=task_desc3, category=category3)
         task3.save()
 
         filter_key = 'a'
-        filter_by = ['0'] # just task name
-        resp = self.client.post(reverse('tasks:filter_tasks'), {'tag[]':filter_by, 'filter_key':filter_key, 'user':'0'})
+        filter_by = ['0']  # just task name
+        resp = self.client.post(reverse('tasks:filter_tasks'),
+                                {'tag[]': filter_by, 'filter_key': filter_key, 'user': '0'})
         filtered_context = list(resp.context['task_list'].values())
         self.assertTrue(resp.status_code == 200 and filtered_context == [])
 
@@ -365,15 +435,15 @@ class TaskModelTests(TestCase):
         task2.save()
 
         sort_key = 'task_desc'
-        #req = self.client.get(reverse('tasks:list'), {'sort_by':sort_key})
-        req = self.factory.get('tasks/list?sort_by='+sort_key)
+        # req = self.client.get(reverse('tasks:list'), {'sort_by':sort_key})
+        req = self.factory.get('tasks/list?sort_by=' + sort_key)
         req.user = self.user
         resp = TaskListView.as_view()(req)
 
-        #returned_context = list(resp.context['task_list'].values())
-        #self.assertTrue(returned_context[0]['task_name'] == 'task2' and returned_context[1]['task_name'] == 'task1' and resp.status_code == 200)
+        # returned_context = list(resp.context['task_list'].values())
+        # self.assertTrue(returned_context[0]['task_name'] == 'task2' and returned_context[1]['task_name'] == 'task1' and resp.status_code == 200)
         self.assertTrue(resp.status_code == 200)
-    
+
     # unit test to test sorting by task description
     def test_sorting_task_name(self):
 
@@ -390,16 +460,13 @@ class TaskModelTests(TestCase):
         category = "Homework"
         task2 = create_task(task_name=task_name, task_desc=task_desc, category=category)
         task2.save()
-    
 
         sort_key = 'task_name'
-        #req = self.client.get(reverse('tasks:list'), {'sort_by':sort_key})
-        req = self.factory.get('tasks/list?sort_by='+sort_key)
+        # req = self.client.get(reverse('tasks:list'), {'sort_by':sort_key})
+        req = self.factory.get('tasks/list?sort_by=' + sort_key)
         req.user = self.user
         resp = TaskListView.as_view()(req)
 
-        #returned_context = list(resp.context['task_list'].values())
-        #self.assertTrue(returned_context[0]['task_name'] == 'task1' and returned_context[1]['task_name'] == 'task2' and resp.status_code == 200)
         self.assertTrue(resp.status_code == 200)
 
     # unit test to test __str__ function
@@ -415,13 +482,14 @@ class TaskModelTests(TestCase):
         html_url = task.get_html_url
         self.assertEqual(html_url, f'<p>{task.task_name}</p><a href="#">edit</a>')
 
+
 class TaskViewTests(TestCase):
 
     # unit test for asserting that task_move_date_backward returns error on invalid id
     def test_move_date_backward_bad_id(self):
         resp = self.client.post(reverse('tasks:move_date_backward'), {'task_id': -1})
         self.assertEqual(resp.content, b'ObjectDoesNotExist:task_move_date_backward')
-        
+
     # unit test for asserting that task_move_date_forward returns error on invalid id
     def test_move_date_forward_bad_id(self):
         resp = self.client.post(reverse('tasks:move_date_forward'), {'task_id': -1})
@@ -429,14 +497,16 @@ class TaskViewTests(TestCase):
 
     # unit test for asserting that task_move_date_backward returns correct HttpResponse code on valid id
     def test_move_date_backward_response_good_id(self):
-        task = create_task(task_name="test_move_date_backward_response_good_id", task_desc="test_move_date_backward_response_good_id description")
+        task = create_task(task_name="test_move_date_backward_response_good_id",
+                           task_desc="test_move_date_backward_response_good_id description")
         task.save()
         resp = self.client.post(reverse('tasks:move_date_backward'), {'task_id': task.id})
         self.assertEqual(resp.status_code, 302)
 
     # unit test for asserting that task_move_date_forward returns correct HttpResponse code on valid id
     def test_move_date_forward_response_good_id(self):
-        task = create_task(task_name="test_move_date_forward_response_good_id", task_desc="test_move_date_forward_response_good_id description")
+        task = create_task(task_name="test_move_date_forward_response_good_id",
+                           task_desc="test_move_date_forward_response_good_id description")
         task.save()
         resp = self.client.post(reverse('tasks:move_date_forward'), {'task_id': task.id})
         self.assertEqual(resp.status_code, 302)
@@ -444,7 +514,8 @@ class TaskViewTests(TestCase):
     # unit test for asserting that task_move_date_backward alters end_time field of task object
     def test_move_date_backward_model_good_id(self):
         end_time = datetime.datetime.now()
-        task=create_task(task_name="test_move_date_backward_model_good_id", task_desc="test_move_date_backward_model_good_id description", end_time=end_time)
+        task = create_task(task_name="test_move_date_backward_model_good_id",
+                           task_desc="test_move_date_backward_model_good_id description", end_time=end_time)
         task.save()
         self.client.post(reverse('tasks:move_date_backward'), {'task_id': task.id})
         task = models.Task.objects.get(pk=task.id)
@@ -453,11 +524,13 @@ class TaskViewTests(TestCase):
     # unit test for asserting that task_move_date_forward alters end_time field of task object
     def test_move_date_forward_model_good_id(self):
         end_time = datetime.datetime.now()
-        task=create_task(task_name="test_move_date_forward_model_good_id", task_desc="test_move_date_forward_model_good_id description", end_time=end_time)
+        task = create_task(task_name="test_move_date_forward_model_good_id",
+                           task_desc="test_move_date_forward_model_good_id description", end_time=end_time)
         task.save()
         self.client.post(reverse('tasks:move_date_forward'), {'task_id': task.id})
         task = models.Task.objects.get(pk=task.id)
         self.assertEqual(task.end_time.replace(tzinfo=None), end_time + datetime.timedelta(days=1))
+
 
 def create_category(user=0, name="generic category"):
     category = models.Category()
@@ -505,8 +578,9 @@ class CategoryModelTests(TestCase):
         category = create_category(name=name)
         self.assertIsInstance(self.client.post(reverse('tasks:delete_category'), {'id': category.id}), HttpResponse)
 
+
 class CalendarTests(TestCase):
-    
+
     # unit test to assert that default Calendar constructor works
     def test_Calendar_init(self):
         calendar = Calendar()
@@ -532,7 +606,8 @@ class CalendarTests(TestCase):
         calendar = Calendar()
         curr_time = datetime.datetime.now()
         html = calendar.formatday(curr_time.day, models.Task.objects)
-        self.assertEqual(html, f'<td><span class=\'date\'><u>{curr_time.day}</u></span><ul class="list-group">  </ul></td>')
+        self.assertEqual(html,
+                         f'<td><span class=\'date\'><u>{curr_time.day}</u></span><ul class="list-group">  </ul></td>')
 
     # unit test to assert that formatday returns correct HTML when there are tasks for a given day
     def test_formatday_tasks_exist(self):
@@ -541,7 +616,8 @@ class CalendarTests(TestCase):
         task = create_task(end_time=curr_time)
         task.save()
         html = calendar.formatday(curr_time.day, models.Task.objects)
-        self.assertNotEqual(html, f'<td><span class=\'date\'><u>{curr_time.day}</u></span><ul class="list-group"> <li class="list-group-item"> <b>{task.task_name}</b> - <i>{task.end_time.time()}</i> </li> </ul></td>')
+        self.assertNotEqual(html,
+                            f'<td><span class=\'date\'><u>{curr_time.day}</u></span><ul class="list-group"> <li class="list-group-item"> <b>{task.task_name}</b> - <i>{task.end_time.time()}</i> </li> </ul></td>')
 
     # unit test to assert that formatweek returns correct HTML when week is empty
     def test_formatweek_empty_week(self):
@@ -559,10 +635,10 @@ class CalendarTests(TestCase):
             inner_result += calendar.formatday(d, models.Task.objects)
         self.assertEqual(html, f'<tr> ' + inner_result + f' </tr>')
 
-    #unit test to assert that formatweek returns correct HTML when there is a task
+    # unit test to assert that formatweek returns correct HTML when there is a task
     def test_formatweek_tasks_exist(self):
         calendar = Calendar(year=2020, month=4)
-        task = create_task(end_time=datetime.datetime(2020,4,3))
+        task = create_task(end_time=datetime.datetime(2020, 4, 3))
         task.save()
         theweek = calendar.monthdays2calendar(calendar.year, calendar.month)[0]
         html = calendar.formatweek(theweek, models.Task.objects)

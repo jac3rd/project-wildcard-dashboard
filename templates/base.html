@@ -11,7 +11,7 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="">Dashboard</a> <!--Change href to base page or something-->
+        <a class="navbar-brand" href="">Dashboard </a> <!--Change href to base page or something-->
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav">
             {% if request.user.is_authenticated %}
@@ -35,7 +35,15 @@
         </div>  
         <!--<a href="/admin"><button class="btn btn-danger my-2 my-sm-0" type="submit">Admin Settings</button></a>-->
     </nav>
-    <div class="container">
+    <div class="Dashboard">
+      <style>
+        .Dashboard
+        {
+          margin: 0 auto;
+          max-width: 100%;
+          
+        }
+      </style>
       <div class="row justify-content-center">
         <div class="col-md-8">
           <!--<h1 class="mt-2">Django Practice</h1>-->

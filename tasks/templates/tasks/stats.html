@@ -1,89 +1,140 @@
 {% extends 'base.html' %}
 {% block content %}
-<style>
-.chart {
-  float: left;
-  width: 50%;
-  padding: 5px;
-}
-.clearfix::after {
-  content: "";
-  clear: both;
-  display: table;
-}
-.form-group {
-   width: 25%;
-   float: left;
-   padding: 10px;
-}
 
-
-</style>
 <div {{valid}}>
+    <a href="{% url 'tasks:as_csv' %}" download>Export Data AS CSV</a>
+    <hr>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">google.load("visualization", "1", {packages:["corechart"]});</script>
     <div class="container-fluid">
         <h3 class="display-5">
+            <style>.display-5 {align-self: center;}</style>
             Dashboard Progress for {{user.username}}:
-
-
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item lead">
-                    Tasks Completed (<i>Since the Beginning of Time</i>): <b>{{completed}}</b>
-                </li>
-                <li class="list-group-item lead">
-                    Percent Tasks Completed On Time: <b>{{ratio_on_time}}%</b>
-                </li>
-                <li class="list-group-item lead">
-                    Average Tasks Per Day (<i>Since First Completed Task</i>): <b>{{avg}}</b>
-                </li>
-            </ul>
-
         </h3>
-
-    </div>
-    <hr>
-
-    <div class="clearfix">
-        <div class="chart">
-            Percent Tasks Completed By Category
-            {{pie}}
-        </div>
-        <div class="chart">
-            {{ chart.as_html }}
-        </div>
-    </div>
-    <hr>
-
-
-    <form action="{% url 'tasks:stats' %}" method="get">
-        <div class="clearfix">
-            <div class="form-group">
-                <label for="category">Plot Which Categories?</label>
-                <select name="category" id="category" multiple class="form-control">
-                    <option value="all">All</option>
-                    {% for choice in categories %}
-                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
-                    {% endfor %}
-                </select>
+            <div class = "Main Stats">
+                <div class = "boxed">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item lead">
+                            Tasks Completed as a Dashboard User: <b>{{completed}}</b>
+                        </li>
+                        <li class="list-group-item lead">
+                            Percent Tasks Completed On Time: <b>{{ratio_on_time}}%</b>
+                        </li>
+                        <li class="list-group-item lead">
+                            Average Tasks Per Day (<i>Since First Completed Task</i>): <b>{{avg}}</b>
+                        </li>
+                    </ul>
+                    </div>
             </div>
-            <div class="form-group">
-                <p>Plot how many weeks?</p>
-                <select name="weeks" id="weeks" class="custom-select">
-                    <option value="1">Past Week</option>
-                    <option value="2">Past 2 Weeks</option>
-                    <option value="3">Past 3 Weeks</option>
-                    <option value="4">Past 4 Week</option>
-                </select>
-            </div>
-            <button class="btn-primary" type="submit">
-            Submit
-        </button>
+        
+    </div>
+    <hr>   
+        <div class = "flex-container">
+            <style>
+                .flex-container
+                {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    flex-flow: row;
+                }
 
+                .box
+                {
+                    align-items: stretch;
+                    margin: auto;
+                    width: 100%;
+                }
+                .one
+                {
+                    flex-grow: 3;
+                }
+
+                .two
+                {
+                    flex-grow: 1; 
+                    align-self: center;
+                    resize: horizontal;
+                }
+
+                .three
+                {
+                    flex-grow: 3;
+                }
+            </style>
+
+            
+            <div class = "box one"> 
+                <form action="{% url 'tasks:stats' %}" method="get">
+                    <div class = "form-row">
+                        <div class="form-group col-md-6">
+                            <label for="category">Category:</label>
+                            <select name="category" id="category" class="custom-select">
+                                <option value="all">All</option>
+                                {% for choice in categories %}
+                                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="weeks">Number of Weeks:</label>
+                            <select name="weeks" id="weeks" class="custom-select">
+                                <option value="1">Past Week</option>
+                                <option value="2">Past 2 Weeks</option>
+                                <option value="3">Past 3 Weeks</option>
+                                <option value="4">Past 4 Week</option>
+                            </select>
+                        
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" type="submit">
+                        Submit
+                    </button>
+                </form>
+            </div>
+            <div class = "box three text-center">
+                {{ chart.as_html }}
+            </div>
+           
         </div>
-    </form>
+
+        <hr>  
+        <div class="flex-container">
+            <style>
+                .flex-container
+                {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: flex-start;
+                    flex-flow: column;
+                }
+            </style>
+            <div class = "box four">
+                <form action="{% url 'tasks:stats' %}" method="get">
+                    <div class="form-group">
+                        <label for="pie_category">Category:</label>
+                        <select name="pie_category" id="pie_category" class="custom-select">
+                            <option value="all">All</option>
+                            {% for choice in categories %}
+                            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button class="btn btn-primary" type="submit">
+                        Submit
+                    </button>
+    
+            </form>
+            <div class = "box five text-center" >
+                {{pie}}
+            </div>
+        </div>
+    
+
+    
 </div>
+
 <p {{show_bad_prompt}}>
     No tasks appear for you in the database.
 </p>
-{% endblock %}
+{%endblock%}
