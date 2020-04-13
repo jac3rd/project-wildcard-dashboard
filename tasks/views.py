@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
-from django.db.models import Count, F, Min
-from django.db.models.functions import Cast
+from django.db.models import Count, F, Min, Sum, Avg
+from django.db.models.functions import Cast, Extract
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
 from django.urls import reverse, reverse_lazy
@@ -8,6 +8,7 @@ from django.views import generic
 from djqscsv import render_to_csv_response
 from django.views.generic import TemplateView, ListView
 from django.core.exceptions import ObjectDoesNotExist
+from django.template import Template
 
 from .forms import TaskForm, FilterForm
 from .models import Task, Category, ShowArchived
@@ -19,7 +20,8 @@ from django.utils import timezone, safestring
 from .utils import Calendar
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-
+from urllib.parse import urlparse
+from math import floor
 
 def remove_omitted_fields():
     omitted_fields = set(['id', 'user', 'created_at', 'completed', 'archived'])
@@ -35,6 +37,42 @@ def remove_omitted_fields():
             l.append((val, val))
     return l
 
+class SummaryView(generic.ListView):
+    model = Task
+    template_name = 'tasks/landing.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        task_list = Task.objects.filter(user=self.request.user.id, archived=False, end_time__gte=datetime.datetime.now())
+        task_list = task_list.order_by('end_time')
+        d = get_date(self.request.GET.get('day', None))
+        cal = Calendar(d.year, d.month)
+        tasks_left = 0
+        est_hours = 0
+        est_minutes = 0
+        state = 0
+        for week in cal.monthdayscalendar(cal.year, cal.month):
+            if week[0] <= datetime.datetime.now().day and week[week.__len__()-1] >= datetime.datetime.now().day:
+                curr_week = week
+        for task in task_list:
+            if task.end_time.day in curr_week:
+                if not task.completed:
+                    tasks_left += 1
+                    est_hours += task.hours
+                    est_minutes += task.minutes
+                else:
+                    state += 1
+        task_list = task_list[:5]
+        est_hours += floor(est_minutes / 60)
+        est_minutes %= 60
+        html_cal = cal.formatmonth(withyear=True, weekonly=True, user=self.request.user.id)
+        context['task_list'] = task_list
+        context['calendar'] = safestring.mark_safe(html_cal)
+        context['tasks_left'] = tasks_left
+        context['est_hours'] = est_hours
+        context['est_minutes'] = est_minutes
+        context['state'] = state
+        return context
 
 # Create your views here.
 class TaskListView(generic.ListView):
@@ -174,13 +212,18 @@ def check_off(request):
     :param request: A request that contains a primary key for the task being completed.
     :return: A redirect to our index page for tasks.
     """
+    url_path_from = 'tasks:list'
     if request.method == 'POST':
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
+        url_path_from = ':'.join(url_path_from)
+        if(url_path_from == 'tasks' or url_path_from == ""):
+            url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
         task.completed = True
         task.date_completed = datetime.datetime.now().date()
         task.save()
-    return HttpResponseRedirect(reverse('tasks:list'))
+    return HttpResponseRedirect(reverse(url_path_from))
 
 
 def uncheck(request):
@@ -189,16 +232,26 @@ def uncheck(request):
     :param request: A request that contains a primary key for the task being unmarked.
     :return: A redirect to our index page for tasks.
     """
+    url_path_from = 'tasks:list'
     if request.method == 'POST':
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
+        url_path_from = ':'.join(url_path_from)
+        if(url_path_from == 'tasks' or url_path_from == ""):
+            url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
         task.completed = False
         task.save()
-    return HttpResponseRedirect(reverse('tasks:list'))
+    return HttpResponseRedirect(reverse(url_path_from))
 
 
 def archive_task(request):
+    url_path_from = 'tasks:list'
     if request.method == 'POST':
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
+        url_path_from = ':'.join(url_path_from)
+        if(url_path_from == 'tasks'):
+            url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
         if task.archived == False:
@@ -206,32 +259,42 @@ def archive_task(request):
         else:
             task.archived = False
         task.save()
-    return HttpResponseRedirect(reverse('tasks:list'))
+    return HttpResponseRedirect(reverse(url_path_from))
 
 
 def checkbox_archived(request):
     """
         This allows a user to see his/her archived tasks.
     """
+    url_path_from = 'tasks:list'
     if request.method == 'POST':
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
+        url_path_from = ':'.join(url_path_from)
+        if(url_path_from == 'tasks'):
+            url_path_from = 'tasks:index'
         ca = ShowArchived.objects.get(user=request.user.id)
         if ca.show_archived == False:
             ca.show_archived = True
         else:
             ca.show_archived = False;
         ca.save()
-    return HttpResponseRedirect(reverse('tasks:list'))
+    return HttpResponseRedirect(reverse(url_path_from))
 
 
 def delete_task(request):
+    url_path_from = 'tasks:list'
     if request.method == 'POST':
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split(b"/"))) 
+        url_path_from = ':'.join(url_path_from)
+        if(url_path_from == 'tasks' or url_path_from == ""):
+            url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         try:
             task = Task.objects.get(pk=task_id)
         except:
-            return HttpResponseRedirect(reverse('tasks:list'))
+            return HttpResponseRedirect(reverse(url_path_from))
         task.delete()
-        return HttpResponseRedirect(reverse('tasks:list'))
+        return HttpResponseRedirect(reverse(url_path_from))
 
 
 def add_category(request):
@@ -253,12 +316,14 @@ def delete_category(request):
 
 @login_required
 def index(request):
-    context = {
-        'tasks': Task.objects.order_by('-date')
-        if request.user.is_authenticated else []
-    }
-
-    return render(request, 'tasks/task_list.html', context)
+    if request.user.is_authenticated:
+        tasks = {
+        'tasks': Task.objects.order_by('-end_time')
+        }
+        context = {**tasks, **progress(request)}
+    else:
+        context = {'tasks':[]}
+    return render(request, 'tasks/landing.html', context)
 
 
 @require_POST
@@ -324,7 +389,7 @@ def filter_tasks(request):
                         **arg_dict)
                 # filtered_tasks = Task.objects.all().filter(**arg_dict)
                 # return HttpResponseRedirect(reverse('tasks:list'))
-                return render(request, 'tasks/task_list.html', {'task_list': filtered_tasks, 'fields': field_names})
+                return render(request, 'tasks/task_list.html', {'task_list': filtered_tasks.order_by('end_time', 'created_at'), 'fields': field_names})
         elif 'reset-button' in request.POST:
             # print('reset filter')
             return HttpResponseRedirect(reverse('tasks:list'))
@@ -506,3 +571,38 @@ def get_date(req_day):
         year, month = (int(x) for x in req_day.split('-'))
         return datetime.date(year, month, day=1)
     return datetime.datetime.today()
+
+
+def progress(request):
+    start_of_week = datetime.datetime.today() - datetime.timedelta(
+        days=datetime.datetime.today().isoweekday() % 7)
+    tasks_left_this_week = Task.objects.filter(user=request.user.id, completed=False,
+                                               end_time__gte=start_of_week,
+                                               end_time__lte=start_of_week + datetime.timedelta(days=6)
+                                               )
+    # print(tasks_left_this_week.values('hours').aggregate(total=Sum('hours')))
+    estimated_hours = tasks_left_this_week.aggregate(total=Sum('hours'))['total']
+    estimated_minutes = tasks_left_this_week.aggregate(total=Sum('minutes'))['total']
+    if estimated_minutes and estimated_hours:
+        estimated_hours += estimated_minutes // 60
+        estimated_minutes %= 60
+    else:
+        estimated_hours = 0
+        estimated_minutes = 0
+    weekly = Task.objects.filter(completed=True).annotate(week=Extract('date_completed', 'week'),
+                                                          year=Extract('date_completed', 'year')).values('year',
+                                                                                                         'week').annotate(
+        per_week=Count('week')).aggregate(avg=Avg('per_week'))
+    tasks_done_this_week = Task.objects.filter(user=request.user.id, completed=True,
+                                               date_completed__gte=start_of_week,
+                                               date_completed__lte=start_of_week + datetime.timedelta(days=6)
+                                               ).count()
+    if weekly['avg'] < tasks_done_this_week:
+        emoji = ':('
+    elif weekly['avg'] == tasks_done_this_week:
+        emoji = ': |'
+    else:
+        emoji = ':)'
+    context = {'state': emoji, 'tasks_left': tasks_left_this_week.count(), 'est_hours': estimated_hours,
+               'est_minutes': estimated_minutes}
+    return context

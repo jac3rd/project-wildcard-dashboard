@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'dashboard/logo.css' %}">
+<hr>
+<div class="container">
+  <!--<style>font-size: 30; font-style: bold;</style>-->
+  <img class="img-fluid rounded" src="{% static 'tasks/Wildcard logo.png' %}" alt="Wildcard" style="width:80%;"></img>
+</div>
+<hr>
+<div class="jumbotron">
+  <h1 class="display-4">Be Productive!</h1>
+  <p class="lead">Welcome to Dashboard, a companion for your browser, dedicated to keeping track of your day.</p>
+  <hr>
+    {% if user.is_authenticated %}
+      <p>Logged as {{ user.username }}</p>
+      <a class="btn btn-primary" href="{% url 'logout' %}">Logout</a>
+    {% else %}
+      <p>Login with your Google Account to get started.</p>
+      <a class="btn btn-primary" href="{% url 'social:begin' 'google-oauth2' %}" role = "button">Login</a>
+    {% endif %}
+</div>
+<hr>
+{% endblock %}

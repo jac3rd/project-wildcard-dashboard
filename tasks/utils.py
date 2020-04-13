@@ -39,12 +39,13 @@ class Calendar(HTMLCalendar):
             week += self.formatday(d, tasks)
         return f'<tr> {week} </tr>'
 
-    def formatmonth(self, withyear=True, user=-1, archived=False):
+    def formatmonth(self, withyear=True, user=-1, archived=False, weekonly=False):
         tasks = Task.objects.filter(end_time__year=self.year, end_time__month=self.month, user=user, archived=archived)
         cal = f'<table class="calendar table table-hover table-bordered table-striped"><tbody>\n'
         cal += f'{self.formatmonthname(self.year, self.month, withyear=withyear)}\n'
         cal += f'{self.formatweekheader()}\n'
         for week in self.monthdays2calendar(self.year, self.month):
-            cal += f'{self.formatweek(week, tasks)}\n'
+            if (not weekonly) or (week[0][0] <= datetime.now().day and week[week.__len__()-1][0] >= datetime.now().day):
+                cal += f'{self.formatweek(week, tasks)}\n'
         cal += f'</tbody></table>'
         return cal
