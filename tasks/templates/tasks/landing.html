@@ -13,44 +13,8 @@
 <div class = "container">
     <h1 align="center">Hello, {{user.username}}! Let's get to work:</h1> 
     <hr>
-    <div class = "task-list">
-            {% if task_list %}
-        <ul>
-            {% for task in task_list %}
-            <li>
-                {% if not task.completed %}
-                <div class="form-check">
-                    <form action="{% url 'tasks:check_off' %}" method='post' id="check">
-                        {% csrf_token %}
-                        <input type="hidden" name="task_id" value='{{task.id}}'>
-                        <input class="form-check-input" type="checkbox" onclick="document.getElementById('check').submit();">
-                    </form>
-                    <label class="form-check-label" for="defaultCheck1">
-                        Completed?
-                    </label>
-                    <b>{{ task.task_name }}</b></br>
-                <p1>{{ task.task_desc }}</p1>
-                </br>
-                End time: {{ task.end_time }}</br>
-                </div>
-                {% else %}
-                    <label class="form-check-label" for="defaultCheck2">
-                        Completed!!!
-                    </label>
-                <br>
-                <strike>
-                <b>{{ task.task_name }}</b></br>
-                <p1>{{ task.task_desc }}</p1>
-                </br>
-                End time: {{ task.end_time }}</br>
-                    </strike>
-                    {% endif %}
-            </li>
-            {% endfor %}
-        </ul>
-        {% else %}
-        <p>You have no tasks!</p>
-        {% endif %}
+    <div class = "tasks">
+        put next 5 tasks here
     </div>
 </div>
 <hr>
