@@ -11,26 +11,26 @@
             <style>.display-5 {align-self: center;}</style>
             Dashboard Progress for {{user.username}}:
         </h3>
-            <div class = "Main Stats">
-                <div class = "boxed">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item lead">
-                            Tasks Completed as a Dashboard User: <b>{{completed}}</b>
-                        </li>
-                        <li class="list-group-item lead">
-                            Percent Tasks Completed On Time: <b>{{ratio_on_time}}%</b>
-                        </li>
-                        <li class="list-group-item lead">
-                            Average Tasks Per Day (<i>Since First Completed Task</i>): <b>{{avg}}</b>
-                        </li>
-                    </ul>
-                    </div>
+        <div class="Main Stats">
+            <div class="boxed">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item lead">
+                        Tasks Completed as a Dashboard User: <b>{{completed}}</b>
+                    </li>
+                    <li class="list-group-item lead">
+                        Percent Tasks Completed On Time: <b>{{ratio_on_time}}%</b>
+                    </li>
+                    <li class="list-group-item lead">
+                        Average Tasks Per Day (<i>Since First Completed Task</i>): <b>{{avg}}</b>
+                    </li>
+                </ul>
             </div>
-        
+        </div>
+
     </div>
-    <hr>   
-        <div class = "flex-container">
-            <style>
+    <hr>
+    <div class="flex-container">
+        <style>
                 .flex-container
                 {
                     display: flex;
@@ -61,46 +61,51 @@
                 {
                     flex-grow: 3;
                 }
-            </style>
 
-            
-            <div class = "box one"> 
-                <form action="{% url 'tasks:stats' %}" method="get">
-                    <div class = "form-row">
-                        <div class="form-group col-md-6">
-                            <label for="category">Category:</label>
-                            <select name="category" id="category" class="custom-select">
-                                <option value="all">All</option>
-                                {% for choice in categories %}
-                                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label for="weeks">Number of Weeks:</label>
-                            <select name="weeks" id="weeks" class="custom-select">
-                                <option value="1">Past Week</option>
-                                <option value="2">Past 2 Weeks</option>
-                                <option value="3">Past 3 Weeks</option>
-                                <option value="4">Past 4 Week</option>
-                            </select>
-                        
-                        </div>
+        </style>
+
+
+        <div class="box one">
+            <form action="{% url 'tasks:stats' %}" method="get">
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="category">Category:</label>
+                        <br>
+                        <select name="category" id="category" class="selectpicker"
+                                data-live-search="true" multiple data-width="200px">
+                            <option value="all">All</option>
+                            {% for choice in categories %}
+                            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                            {% endfor %}
+                        </select>
                     </div>
-                    <button class="btn btn-primary" type="submit">
-                        Submit
-                    </button>
-                </form>
-            </div>
-            <div class = "box three text-center">
-                {{ chart.as_html }}
-            </div>
-           
+                    <div class="form-group col-md-6">
+                        <label for="weeks">Number of Weeks:</label>
+                        <br>
+                        <select name="weeks" id="weeks" class="selectpicker"
+                                data-live-search="true" data-width="200px">
+                            <option value="1">Past Week</option>
+                            <option value="2">Past 2 Weeks</option>
+                            <option value="3">Past 3 Weeks</option>
+                            <option value="4">Past 4 Week</option>
+                        </select>
+
+                    </div>
+                </div>
+                <button class="btn btn-primary" type="submit">
+                    Submit
+                </button>
+            </form>
+        </div>
+        <div class="box three text-center">
+            {{ chart.as_html }}
         </div>
 
-        <hr>  
-        <div class="flex-container">
-            <style>
+    </div>
+
+    <hr>
+    <div class="flex-container">
+        <style>
                 .flex-container
                 {
                     display: flex;
@@ -108,33 +113,34 @@
                     align-items: flex-start;
                     flex-flow: column;
                 }
-            </style>
-            <div class = "box four">
-                <form action="{% url 'tasks:stats' %}" method="get">
-                    <div class="form-group">
-                        <label for="pie_category">Category:</label>
-                        <select name="pie_category" id="pie_category" class="custom-select">
-                            <option value="all">All</option>
-                            {% for choice in categories %}
-                            <option value="{{ choice.0 }}">{{ choice.1 }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <button class="btn btn-primary" type="submit">
-                        Submit
-                    </button>
-    
+
+        </style>
+        <div class="box four">
+            <form action="{% url 'tasks:stats' %}" method="get">
+                <div class="form-group">
+                    <label for="pie_category">Category:</label>
+                    <select name="pie_category" id="pie_category" class="selectpicker"
+                                data-live-search="true" data-width="300px">
+                        <option value="all">All</option>
+                        {% for choice in categories %}
+                        <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button class="btn btn-primary" type="submit">
+                    Submit
+                </button>
+
             </form>
-            <div class = "box five text-center" >
+            <div class="box five text-center">
                 {{pie}}
             </div>
         </div>
-    
 
-    
-</div>
 
-<p {{show_bad_prompt}}>
-    No tasks appear for you in the database.
-</p>
-{%endblock%}
+    </div>
+
+    <p {{show_bad_prompt}}>
+        No tasks appear for you in the database.
+    </p>
+    {%endblock%}

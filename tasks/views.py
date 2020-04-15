@@ -3,12 +3,11 @@ from django.db.models import Count, F, Min, Sum, Avg
 from django.db.models.functions import Cast, Extract
 from django.http import HttpResponse, HttpResponseRedirect, Http404
 from django.shortcuts import render
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse
 from django.views import generic
 from djqscsv import render_to_csv_response
 from django.views.generic import TemplateView, ListView
 from django.core.exceptions import ObjectDoesNotExist
-from django.template import Template
 
 from .forms import TaskForm, FilterForm
 from .models import Task, Category, ShowArchived
@@ -16,7 +15,7 @@ import datetime
 from graphos.renderers.gchart import LineChart, PieChart
 from graphos.sources.model import SimpleDataSource
 from django.db.models import DateField
-from django.utils import timezone, safestring
+from django.utils import safestring
 from .utils import Calendar
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
@@ -220,10 +219,6 @@ def uncheck(request):
 def archive_task(request):
     url_path_from = 'tasks:list'
     if request.method == 'POST':
-        # url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/")))
-        # url_path_from = ':'.join(url_path_from)
-        # if(url_path_from == 'tasks'):
-        #    url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
         if not task.archived:
@@ -256,14 +251,10 @@ def checkbox_archived(request):
 def delete_task(request):
     url_path_from = 'tasks:list'
     if request.method == 'POST':
-        # url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/")))
-        # url_path_from = ':'.join(url_path_from)
-        # if(url_path_from == 'tasks' or url_path_from == ""):
-        #    url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         try:
             task = Task.objects.get(pk=task_id)
-        except:
+        except Http404:
             return HttpResponseRedirect(reverse(url_path_from))
         task.delete()
         return HttpResponseRedirect(reverse(url_path_from))
@@ -404,7 +395,7 @@ def get_pie(request):
                            options={'title': request.GET['pie_category'] + " On-Time Completion Rate",
                                     'width': 400}).as_html()
         else:
-            pie = "No completed tasks to display."
+            pie = "No completed tasks to display for the " + request.GET['pie_category'].lower() + " category."
     return pie
 
 
