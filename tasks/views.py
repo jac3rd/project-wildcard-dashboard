@@ -268,10 +268,13 @@ def checkbox_archived(request):
     """
     url_path_from = 'tasks:list'
     if request.method == 'POST':
-        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/")))
+        print (url_path_from)
         url_path_from = ':'.join(url_path_from)
+        print (url_path_from)
         if(url_path_from == 'tasks'):
             url_path_from = 'tasks:index'
+        print (url_path_from)
         ca = ShowArchived.objects.get(user=request.user.id)
         if ca.show_archived == False:
             ca.show_archived = True
@@ -368,7 +371,9 @@ def sort_tasks(request):
 def filter_tasks(request):
     if (request.method == 'POST'):
         form = FilterForm(request.POST)
+        print("a")
         field_names = remove_omitted_fields()
+        print("b")
         if form.is_valid():
             # print('valid form')
             user_id = request.POST['user']
