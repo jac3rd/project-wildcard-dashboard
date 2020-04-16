@@ -375,9 +375,17 @@ def filter_tasks(request):
             check_values = request.POST.getlist('tag[]')
             filter_key = request.POST['filter_key']
             if (filter_key.strip() == ''):
-                return render(request, 'tasks/task_list.html',
-                              {'task_list': Task.objects.filter(user=user_id, archived=False).all(),
-                               'fields': field_names})
+                if (ShowArchived.objects.get(user=user_id).show_archived == True):
+                    return render(request, 'tasks/task_list.html',
+                                  {'task_list': Task.objects.filter(user=user_id).all(),
+                                   'fields': field_names,
+                                   'sa': ShowArchived.objects.get(user=user_id)})
+
+                else:
+                    return render(request, 'tasks/task_list.html',
+                                  {'task_list': Task.objects.filter(user=user_id, archived=False).all(),
+                                   'fields': field_names,
+                                   'sa': ShowArchived.objects.get(user=user_id)})
             else:
                 arg_dict = {}
                 filtered_tasks = Task.objects.none()
@@ -385,11 +393,15 @@ def filter_tasks(request):
                     # arg_dict[field_names[int(val)]+'__icontains'] = filter_key
                     arg_dict = {field_names[int(val)][1] + '__icontains': filter_key}
                     # print(arg_dict)
-                    filtered_tasks = filtered_tasks | Task.objects.filter(user=user_id, archived=False).all().filter(
-                        **arg_dict)
+                    if (ShowArchived.objects.get(user=user_id).show_archived == True):
+                        filtered_tasks = filtered_tasks | Task.objects.filter(user=user_id).all().filter(**arg_dict)
+                    else:
+                        filtered_tasks = filtered_tasks | Task.objects.filter(user=user_id, archived=False).all().filter(**arg_dict)
                 # filtered_tasks = Task.objects.all().filter(**arg_dict)
                 # return HttpResponseRedirect(reverse('tasks:list'))
-                return render(request, 'tasks/task_list.html', {'task_list': filtered_tasks.order_by('end_time', 'created_at'), 'fields': field_names})
+                return render(request, 'tasks/task_list.html', {'task_list': filtered_tasks.order_by('end_time', 'created_at'),
+                                                                'fields': field_names,
+                                                                'sa': ShowArchived.objects.get(user=user_id)})
         elif 'reset-button' in request.POST:
             # print('reset filter')
             return HttpResponseRedirect(reverse('tasks:list'))
