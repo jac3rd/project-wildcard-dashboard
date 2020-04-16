@@ -239,10 +239,19 @@ def checkbox_archived(request):
     """
     url_path_from = 'tasks:list'
     if request.method == 'POST':
+<<<<<<< HEAD
         url_path_from = list(filter(None, urlparse(request.META.get('HTTP_REFERER')).path.split("/")))
         url_path_from = ':'.join(url_path_from)
         if url_path_from == 'tasks':
+=======
+        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/")))
+        print (url_path_from)
+        url_path_from = ':'.join(url_path_from)
+        print (url_path_from)
+        if(url_path_from == 'tasks'):
+>>>>>>> a9b817f1fb5c8a25f3485f9d4df2f367a2fb3824
             url_path_from = 'tasks:index'
+        print (url_path_from)
         ca = ShowArchived.objects.get(user=request.user.id)
         if not ca.show_archived:
             ca.show_archived = True
@@ -344,18 +353,46 @@ def filter_tasks(request):
             user_id = request.POST['user']
             check_values = request.POST.getlist('tag[]')
             filter_key = request.POST['filter_key']
+<<<<<<< HEAD
             if filter_key.strip() == '':
                 return render(request, 'tasks/task_list.html',
                               {'task_list': Task.objects.filter(user=user_id, archived=False).all(),
                                'fields': field_names})
+=======
+            if (filter_key.strip() == ''):
+                if (ShowArchived.objects.get(user=user_id).show_archived == True):
+                    return render(request, 'tasks/task_list.html',
+                                  {'task_list': Task.objects.filter(user=user_id).all(),
+                                   'fields': field_names,
+                                   'sa': ShowArchived.objects.get(user=user_id)})
+
+                else:
+                    return render(request, 'tasks/task_list.html',
+                                  {'task_list': Task.objects.filter(user=user_id, archived=False).all(),
+                                   'fields': field_names,
+                                   'sa': ShowArchived.objects.get(user=user_id)})
+>>>>>>> a9b817f1fb5c8a25f3485f9d4df2f367a2fb3824
             else:
                 filtered_tasks = Task.objects.none()
                 for val in check_values:
                     arg_dict = {field_names[int(val)][1] + '__icontains': filter_key}
+<<<<<<< HEAD
                     filtered_tasks = filtered_tasks | Task.objects.filter(user=user_id, archived=False).all().filter(
                         **arg_dict)
                 return render(request, 'tasks/task_list.html',
                               {'task_list': filtered_tasks.order_by('end_time', 'created_at'), 'fields': field_names})
+=======
+                    # print(arg_dict)
+                    if (ShowArchived.objects.get(user=user_id).show_archived == True):
+                        filtered_tasks = filtered_tasks | Task.objects.filter(user=user_id).all().filter(**arg_dict)
+                    else:
+                        filtered_tasks = filtered_tasks | Task.objects.filter(user=user_id, archived=False).all().filter(**arg_dict)
+                # filtered_tasks = Task.objects.all().filter(**arg_dict)
+                # return HttpResponseRedirect(reverse('tasks:list'))
+                return render(request, 'tasks/task_list.html', {'task_list': filtered_tasks.order_by('end_time', 'created_at'),
+                                                                'fields': field_names,
+                                                                'sa': ShowArchived.objects.get(user=user_id)})
+>>>>>>> a9b817f1fb5c8a25f3485f9d4df2f367a2fb3824
         elif 'reset-button' in request.POST:
             return HttpResponseRedirect(reverse('tasks:list'))
         else:

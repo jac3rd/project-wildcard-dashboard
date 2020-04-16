@@ -7,25 +7,42 @@ from django.urls import reverse
 from . import models, views
 from django.contrib.auth.models import User, AnonymousUser
 from django.http import HttpResponse, HttpResponseRedirect
-from .views import TaskListView
+from .views import TaskListView, remove_omitted_fields
 from .utils import Calendar
 
-
+'''
+    Methods to quickly create a model in the tests below
+'''
 # creates and saves a task; utility function for tests
 def create_task(user=0, task_name="generic test", task_desc="generic test description", date_completed=None,
-                end_time=timezone.now(), completed=False, category="", hours=2, minutes=0):
+                archived = False, end_time=timezone.now(), completed=False, category="", hours=2, minutes=0):
     task = models.Task()
     task.user = user
     task.task_name = task_name
     task.task_desc = task_desc
     task.end_time = end_time
     task.date_completed = date_completed
+    task.archived = archived
     task.completed = completed
     task.category = category
     task.hours = hours
     task.minutes = minutes
     task.save()
     return task
+
+def create_category(user=0, name="generic category"):
+    category = models.Category()
+    category.user = user
+    category.name = name
+    category.save()
+    return category
+
+def create_show_archived(user=0, show_archived=False):
+    sa = models.ShowArchived()
+    sa.user = user
+    sa.show_archived = show_archived
+    sa.save()
+    return sa
 
 
 class StatsViewTests(TestCase):
@@ -261,10 +278,12 @@ class TaskModelTests(TestCase):
         task3 = create_task(task_name=task_name3, task_desc=task_desc3, category=category3)
         task3.save()
 
+        sa = create_show_archived(user=0)
+
         filter_key = 'task'
         filter_by = ['0']  # just task name
         resp = self.client.post(reverse('tasks:filter_tasks'),
-                                {'tag[]': filter_by, 'filter_key': filter_key, 'user': '0'})
+                                {'tag[]': filter_by, 'filter_key': filter_key, 'user': '0', })
         filtered_context = list(resp.context['task_list'].values())
         self.assertTrue(len(filtered_context) == 1 and filtered_context[0]['task_name'] == task_name1)
 
@@ -290,6 +309,8 @@ class TaskModelTests(TestCase):
         category3 = "Homework"
         task3 = create_task(task_name=task_name3, task_desc=task_desc3, category=category3)
         task3.save()
+
+        sa = create_show_archived(user=0)
 
         filter_key = 'task'
         filter_by = ['1']  # just task name
@@ -320,6 +341,8 @@ class TaskModelTests(TestCase):
         category3 = "Homework"
         task3 = create_task(task_name=task_name3, task_desc=task_desc3, category=category3)
         task3.save()
+
+        sa = create_show_archived(user=0)
 
         filter_key = 'task'
         filter_by = ['0', '1']  # just task name
@@ -352,6 +375,8 @@ class TaskModelTests(TestCase):
         task3 = create_task(task_name=task_name3, task_desc=task_desc3, category=category3)
         task3.save()
 
+        sa = create_show_archived(user=0)
+
         filter_key = 'asdfasdf'
         filter_by = ['1']  # just task name
         resp = self.client.post(reverse('tasks:filter_tasks'),
@@ -382,6 +407,8 @@ class TaskModelTests(TestCase):
         task3 = create_task(task_name=task_name3, task_desc=task_desc3, category=category3)
         task3.save()
 
+        sa = create_show_archived(user=0)
+
         filter_key = ''
         filter_by = []  # just task name
         resp = self.client.post(reverse('tasks:filter_tasks'),
@@ -410,6 +437,8 @@ class TaskModelTests(TestCase):
         category3 = "Homework"
         task3 = create_task(user=1, task_name=task_name3, task_desc=task_desc3, category=category3)
         task3.save()
+
+        sa = create_show_archived(user=0)
 
         filter_key = 'a'
         filter_by = ['0']  # just task name
@@ -532,14 +561,6 @@ class TaskViewTests(TestCase):
         self.assertEqual(task.end_time.replace(tzinfo=None), end_time + datetime.timedelta(days=1))
 
 
-def create_category(user=0, name="generic category"):
-    category = models.Category()
-    category.user = user
-    category.name = name
-    category.save()
-    return category
-
-
 class CategoryModelTests(TestCase):
 
     # unit test asserting that Categories can be saved to database
@@ -646,3 +667,28 @@ class CalendarTests(TestCase):
         for d, weekday in theweek:
             inner_result += calendar.formatday(d, models.Task.objects)
         self.assertEqual(html, f'<tr> ' + inner_result + f' </tr>')
+
+
+class ShowArchivedTests(TestCase):
+
+    # unit test to assert that if show_archived is false, archived tasks do not render
+    def show_archive_is_false(self):
+        task1 = create_task(task_name="Non-archived Task", archived=False)
+        task1.save()
+        task2 = create_task(task_name="Archived Task", archived=True)
+        task2.save()
+        sa = create_show_archived(show_archived=False)
+        sa.save()
+        resp = self.client.post(reverse('tasks:list'), {'fields': remove_omitted_fields(), 'sa': sa})
+        self.assertNotContains(resp, "Archived Task", 200)
+
+    # unit test to assert that if show_archived is true, archived tasks DO render
+    def show_archive_is_true(self):
+        task1 = create_task(task_name="Non-archived Task", archived=False)
+        task1.save()
+        task2 = create_task(task_name="Archived Task", archived=True)
+        task2.save()
+        sa = create_show_archived(show_archived=False)
+        sa.save()
+        resp = self.client.post(reverse('tasks:list'), {'fields': remove_omitted_fields(), 'sa': sa})
+        self.assertContains(resp, "Archived Task", 200)

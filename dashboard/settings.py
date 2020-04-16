@@ -128,6 +128,9 @@ DATABASES = {
     }
 }
 
+NOSE_ARGS = ['--nocapture',
+             '--nologcapture',]
+
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)
 
@@ -160,7 +163,7 @@ USE_I18N = True
 
 USE_L10N = False
 
-DATETIME_FORMAT = "M d, Y; h:i a"
+DATETIME_FORMAT = "D, M d, Y; h:i a"
 
 # originally was TRUE
 USE_TZ = False
