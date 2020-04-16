@@ -27,6 +27,13 @@ def create_task(user=0, task_name="generic test", task_desc="generic test descri
     task.save()
     return task
 
+def create_show_archived(user=0, show_archived=False):
+    sa = models.ShowArchived()
+    sa.user = user
+    sa.show_archived = show_archived
+    sa.save()
+    return sa
+
 
 class StatsViewTests(TestCase):
     def setUp(self):
@@ -261,10 +268,12 @@ class TaskModelTests(TestCase):
         task3 = create_task(task_name=task_name3, task_desc=task_desc3, category=category3)
         task3.save()
 
+        sa = create_show_archived(user=0)
+
         filter_key = 'task'
         filter_by = ['0']  # just task name
         resp = self.client.post(reverse('tasks:filter_tasks'),
-                                {'tag[]': filter_by, 'filter_key': filter_key, 'user': '0'})
+                                {'tag[]': filter_by, 'filter_key': filter_key, 'user': '0', })
         filtered_context = list(resp.context['task_list'].values())
         self.assertTrue(len(filtered_context) == 1 and filtered_context[0]['task_name'] == task_name1)
 
@@ -290,6 +299,8 @@ class TaskModelTests(TestCase):
         category3 = "Homework"
         task3 = create_task(task_name=task_name3, task_desc=task_desc3, category=category3)
         task3.save()
+
+        sa = create_show_archived(user=0)
 
         filter_key = 'task'
         filter_by = ['1']  # just task name
@@ -320,6 +331,8 @@ class TaskModelTests(TestCase):
         category3 = "Homework"
         task3 = create_task(task_name=task_name3, task_desc=task_desc3, category=category3)
         task3.save()
+
+        sa = create_show_archived(user=0)
 
         filter_key = 'task'
         filter_by = ['0', '1']  # just task name
@@ -352,6 +365,8 @@ class TaskModelTests(TestCase):
         task3 = create_task(task_name=task_name3, task_desc=task_desc3, category=category3)
         task3.save()
 
+        sa = create_show_archived(user=0)
+
         filter_key = 'asdfasdf'
         filter_by = ['1']  # just task name
         resp = self.client.post(reverse('tasks:filter_tasks'),
@@ -382,6 +397,8 @@ class TaskModelTests(TestCase):
         task3 = create_task(task_name=task_name3, task_desc=task_desc3, category=category3)
         task3.save()
 
+        sa = create_show_archived(user=0)
+
         filter_key = ''
         filter_by = []  # just task name
         resp = self.client.post(reverse('tasks:filter_tasks'),
@@ -410,6 +427,8 @@ class TaskModelTests(TestCase):
         category3 = "Homework"
         task3 = create_task(user=1, task_name=task_name3, task_desc=task_desc3, category=category3)
         task3.save()
+
+        sa = create_show_archived(user=0)
 
         filter_key = 'a'
         filter_by = ['0']  # just task name

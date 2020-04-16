@@ -371,9 +371,7 @@ def sort_tasks(request):
 def filter_tasks(request):
     if (request.method == 'POST'):
         form = FilterForm(request.POST)
-        print("a")
         field_names = remove_omitted_fields()
-        print("b")
         if form.is_valid():
             # print('valid form')
             user_id = request.POST['user']
