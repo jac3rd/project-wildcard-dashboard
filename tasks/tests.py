@@ -672,23 +672,24 @@ class CalendarTests(TestCase):
 class ShowArchivedTests(TestCase):
 
     # unit test to assert that if show_archived is false, archived tasks do not render
-    def show_archive_is_false(self):
+    def test_show_archive_is_false(self):
         task1 = create_task(task_name="Non-archived Task", archived=False)
         task1.save()
         task2 = create_task(task_name="Archived Task", archived=True)
         task2.save()
-        sa = create_show_archived(show_archived=False)
+        sa = create_show_archived(show_archived=True)
         sa.save()
-        resp = self.client.post(reverse('tasks:list'), {'fields': remove_omitted_fields(), 'sa': sa})
-        self.assertNotContains(resp, "Archived Task", 200)
+        resp = self.client.post(reverse('tasks:check_archived'))
+        print(resp.context)
+        self.assertContains(resp, "widget-content-left")
 
     # unit test to assert that if show_archived is true, archived tasks DO render
-    def show_archive_is_true(self):
+    def test_show_archive_is_true(self):
         task1 = create_task(task_name="Non-archived Task", archived=False)
         task1.save()
         task2 = create_task(task_name="Archived Task", archived=True)
         task2.save()
         sa = create_show_archived(show_archived=False)
         sa.save()
-        resp = self.client.post(reverse('tasks:list'), {'fields': remove_omitted_fields(), 'sa': sa})
-        self.assertContains(resp, "Archived Task", 200)
+        resp = self.client.get(reverse('tasks:list'), {'fields': remove_omitted_fields(), 'sa': sa})
+        self.assertContains(resp, "Archived Task")

@@ -237,20 +237,16 @@ def checkbox_archived(request):
     """
         This allows a user to see his/her archived tasks.
     """
-    url_path_from = 'tasks:list'
+    #url_path_from = 'tasks:list'
     if request.method == 'POST':
-        url_path_from = list(filter(None, urlparse(request.META.get('HTTP_REFERER')).path.split("/")))
-        url_path_from = ':'.join(url_path_from)
-        if url_path_from == 'tasks':
-            url_path_from = 'tasks:index'
-        print (url_path_from)
+        #print (url_path_from)
         ca = ShowArchived.objects.get(user=request.user.id)
         if not ca.show_archived:
             ca.show_archived = True
         else:
             ca.show_archived = False;
         ca.save()
-    return HttpResponseRedirect(reverse(url_path_from))
+    return HttpResponseRedirect(reverse('tasks:list'))
 
 
 def delete_task(request):
