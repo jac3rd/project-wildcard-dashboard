@@ -24,10 +24,12 @@ from math import floor
 
 
 def remove_omitted_fields():
-    omitted_fields = set(['id', 'user', 'created_at', 'completed', 'archived'])
+    omitted_fields = set(['id', 'user', 'created_at', 'completed', 'archived', 'date_completed', 'length', 'end_time', 'hours', 'minutes'])
     l = []
     for field in Task._meta.get_fields():
         val = field.name
+        if(val == 'task_desc'):
+            val = 'task_description'
         if val in omitted_fields:
             continue
         elif '_' in val:
