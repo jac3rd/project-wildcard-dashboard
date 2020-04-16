@@ -256,7 +256,11 @@ def checkbox_archived(request):
 def delete_task(request):
     url_path_from = 'tasks:list'
     if request.method == 'POST':
-        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.decode('utf-8').split("/"))) 
+        parsed_url = urlparse( request.META.get('HTTP_REFERER') ).path
+        if(type(parsed_url) == bytes):
+            url_path_from = list(filter(None, parsed_url.decode('utf-8').split("/")))
+        else:
+            url_path_from = list(filter(None, parsed_url.split("/")))
         url_path_from = ':'.join(url_path_from)
         if(url_path_from == 'tasks' or url_path_from == ""):
             url_path_from = 'tasks:index'
@@ -375,6 +379,12 @@ def filter_tasks(request):
             return HttpResponseRedirect(reverse('tasks:list'))
         else:
             return HttpResponseRedirect(reverse('tasks:list'))
+    # if we get request this somehow, just go back to the list
+    else:
+        #print(request)
+        #print('DOING GET REQUEST ON FILTER_TASKS')
+        return HttpResponseRedirect(reverse('tasks:list'))
+
 
 
 def archive_finished(request):
