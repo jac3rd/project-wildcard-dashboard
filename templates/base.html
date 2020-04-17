@@ -18,8 +18,19 @@
         <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
             <div class="navbar-nav" style="padding-top: 10px; padding-left: 0px;">
             {% if request.user.is_authenticated %}
-                 <a class="nav-item nav-link" href="{% url 'index' %}"><img src="{% static 'tasks/transparent logo.png' %}" style="padding-bottom: 10px; width: 75px; height: auto;"></a>
-                 <div class="navbar-nav" style="padding-top: 6px; padding-left: 5px;">
+                <style>
+                    img {
+                        padding-bottom: 10px;
+                        width: 75px;
+                        height: auto;
+                        opacity: 0.50;
+                    }
+                    img:hover {
+                        opacity: 1;
+                    }
+                </style>
+                 <a class="nav-item nav-link" href="{% url 'index' %}"><img src="{% static 'tasks/transparent logo.png' %}"></a>
+                 <div class="navbar-nav" style="padding-top: 7px; padding-left: 5px;">
                      <a class="nav-item nav-link" href="{% url 'tasks:index' %}">Home</a>
                      <a class="nav-item nav-link" href="{% url 'tasks:list' %}">Task List</a>
                      <a class="nav-item nav-link" href="{% url 'tasks:add_task' %}">Add Task<span class="sr-only"></span></a> <!--change all hrefs-->
