@@ -30,7 +30,11 @@
             <!-- Individual Tasks -->
             {% for task in task_list %}
             {% if task.archived == False %}
-                <li class="list-group-item">
+                {% if not task.completed %}
+                    <li class="list-group-item">
+                {% else %}
+                    <li class="list-group-item" style="background-color: #80ff80;">
+                {% endif %}
                     <div class="d-flex">
                         <div class="widget-content-left">
                             <!-- Checkbox form: Credit to Henry -->
@@ -101,7 +105,7 @@
                                             <div class="badge badge-light ml-2">Category</div>
                                         {% endif %}
                                         </h5>
-                                        <h5 class="widget-heading" style="color:green">COMPLETE!</h5>
+<!--                                        <h5 class="widget-heading" style="color:green">COMPLETE!</h5>-->
                                     </label>
                                 </div>
 
