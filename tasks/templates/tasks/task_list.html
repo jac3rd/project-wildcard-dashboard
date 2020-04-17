@@ -4,25 +4,11 @@
 {% if request.user.is_authenticated %}
 
 <style>
-    .border-0.btn-transition.btn.btn-outline-warning {
+    .border-0.btn-transition.btn {
         height: 26px;
         width: 10px;
     }
-    .border-0.btn-transition.btn.btn-outline-danger {
-        height: 26px;
-        width: 10px;
-    }
-    .border-0.btn-transition.btn.btn-outline-success {
-        height: 26px;
-        width: 10px;
-    }
-    .fa.fa-trash {
-        transform: translate(-50%, -40%);
-    }
-    .fa.fa-level-up {
-        transform: translate(-50%, -40%);
-    }
-    .fa.fa-archive {
+    .fa.fa {
         transform: translate(-50%, -40%);
     }
     .list-group-item {
@@ -50,7 +36,7 @@
                 <option value="{{ forloop.counter0 }}">{{ name }}</option>
             {% endfor %}
         </select>
-        <span class="input-group-btn" style="padding-left: 5px;">
+        <span class="input-group-btn" style="padding-left: 5px; padding-right: 0px;">
             <button type="submit" class="btn btn-primary" type="button" tabindex="-1"><span class="fa fa-filter"></span></button>
         </span>
         <!--new code-->
@@ -78,7 +64,7 @@
         <div class="card">
             <div class="card-header">
                 <div class="d-flex">
-                    <div class="card-header-title lead"><i class="fa fa-tasks"></i>&nbsp;Current Tasks</div>
+                    <div class="card-header-title lead"><i class="fa fa-tasks" style="transform: translate(0%, 0%);"></i>&nbsp;Current Tasks</div>
                     <div class="ml-auto pl-5">
                         {% if sa.show_archived == False %}
                             <form action="{% url 'tasks:check_archived' %}" method='post' id="show_all_archived_not_checked">
@@ -131,7 +117,7 @@
                                                         <input class="custom-control-input" type="checkbox" id="_{{ task.id }}"
                                                                onclick="document.getElementById('check_{{ task.id }}').submit();">
                                                         <label class="custom-control-label" for="_{{ task.id }}">
-                                                            <h5 class="widget-heading">
+                                                            <h5 class="widget-heading" style="max-width: 565px;">
                                                             {% if task.link == '' %}
                                                                 {{ task.task_name }}
                                                             {% else %}
@@ -165,7 +151,7 @@
                                                             <input class="custom-control-input" type="checkbox" id="__{{ task.id }}"
                                                                    onclick="document.getElementById('uncheck_{{ task.id }}').submit();" checked>
                                                             <label class="custom-control-label" for="__{{ task.id }}">
-                                                                <h5 class="widget-heading">
+                                                                <h5 class="widget-heading" style="max-width: 565px;">
                                                                 {% if task.link == '' %}
                                                                     {{ task.task_name }}
                                                                 {% else %}
@@ -209,7 +195,7 @@
                                             </div>
                                             <div class="ml-auto">
                                                 <div class="d-flex">
-                                                    <div class="ml-auto">
+                                                    <div class="ml-auto" style="padding-right: 5px;">
                                                         <small class="pl-2 text-muted">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
                                                     </div>
                                                     <div class="ml-auto">
@@ -269,7 +255,7 @@
                                                         <input class="custom-control-input" type="checkbox" id="{{ task.id }}_"
                                                                onclick="document.getElementById('check__{{ task.id }}').submit();">
                                                         <label class="custom-control-label" for="{{ task.id }}_">
-                                                            <h5 class="widget-heading">
+                                                            <h5 class="widget-heading" style="max-width: 565px;">
                                                             {% if task.link == '' %}
                                                                 {{ task.task_name }}
                                                             {% else %}
@@ -304,7 +290,7 @@
                                                         <input class="custom-control-input" type="checkbox" id="{{ task.id }}__"
                                                                onclick="document.getElementById('uncheck__{{ task.id }}').submit();" checked>
                                                         <label class="custom-control-label" for="{{ task.id }}__">
-                                                            <h5 class="widget-heading">
+                                                            <h5 class="widget-heading" style="max-width: 565px;">
                                                             {% if task.link == '' %}
                                                                 {{ task.task_name }}
                                                             {% else %}
@@ -349,7 +335,7 @@
                                             <div class="ml-auto">
                                                 <div class="d-flex">
                                                     <div class="ml-auto">
-                                                        <small class="pl-2 text-muted">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
+                                                        <small class="pl-2 text-muted" style="padding-right: 4px;">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
                                                     </div>
                                                     <div class="ml-auto">
                                                         <form action="{% url 'tasks:archive_task' %}" method='post' id="archive__{{ task.id }}">
