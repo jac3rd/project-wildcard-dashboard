@@ -273,7 +273,11 @@
 
         </div>
         {% else %}
-            <p>You have no tasks!</p>
+        <div class="container text-center">
+            <strong class="lead">You have no tasks!</strong>
+            <br>
+            <button class="btn btn-primary" href="{% url 'tasks:add_task' %}">Add Task</button>
+        </div>
         {% endif %}
     </div>
 </div>
