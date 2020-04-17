@@ -1,6 +1,14 @@
 {% extends 'base.html' %}
 {% block content %}
 
+{% ifequal valid "hidden" %}
+<div class="container text-center">
+    <strong class="lead">You have no tasks!</strong>
+    <br>
+    <button class="btn btn-primary" href="{% url 'tasks:add_task' %}">Add Task</button>
+</div>
+{% endifequal %}
+
 <div {{valid}}>
     <a href="{% url 'tasks:as_csv' %}" download>Export Data AS CSV</a>
     <hr>
