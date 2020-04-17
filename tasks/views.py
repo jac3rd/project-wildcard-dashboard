@@ -28,8 +28,8 @@ def remove_omitted_fields():
     l = []
     for field in Task._meta.get_fields():
         val = field.name
-        if(val == 'task_desc'):
-            val = 'task_description'
+        # if(val == 'task_desc'):
+        #     val = 'task_description'
         if val in omitted_fields:
             continue
         elif '_' in val:
