@@ -563,6 +563,14 @@ class CalendarView(ListView):
         html_cal_next = cal_next.formatmonth(withyear=True, user=user)
         context['calendar'] = safestring.mark_safe(html_cal)
         context['calendar_next'] = safestring.mark_safe(html_cal_next)
+        if d.month == 1:
+            context['prev'] = safestring.mark_safe(str(d.year-1)+'-12')
+        else:
+            context['prev'] = safestring.mark_safe(str(d.year)+'-'+str(d.month-1))
+        if d.month == 12:
+            context['next'] = safestring.mark_safe(str(d.year+1)+'-1')
+        else:
+            context['next'] = safestring.mark_safe(str(d.year)+'-'+str(d.month+1))
         return context
 
 
