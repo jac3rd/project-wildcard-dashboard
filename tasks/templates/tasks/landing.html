@@ -126,7 +126,7 @@
                         </div>
                         <div class="ml-auto">
                             <div class="d-flex">
-                                <div class="ml-auto" style="padding-right: 5px; padding left: 5px;">
+                                <div class="ml-auto">
                                     <form action="{% url 'tasks:archive_task' %}" method='post' id="archive_{{ task.id }}">
                                         {% csrf_token %}
                                         <input type="hidden" name="task_id" value="{{task.id}}">
@@ -142,6 +142,14 @@
                                         <button class="border-0 btn-transition btn btn-outline-danger" data-toggle="tooltip" title="Delete"
                                                 onclick="document.getElementId('delete_{{ task.id }}').submit();">
                                             <i class="fa fa-trash"></i> </button>
+                                    </form>
+                                </div>
+                                <div class="ml-auto">
+                                    <form action="{% url 'tasks:edit_task' %}" method='get' id="edit_{{ task.id }}">
+                                        <input type="hidden" name="task_id" value="{{task.id}}">
+                                        <button class="border-0 btn-transition btn btn-outline-success" data-toggle="tooltip" title="Edit"
+                                                onclick="document.getElementId('edit_{{ task.id }}').submit();">
+                                            <i class="fa fa-edit"></i> </button>
                                     </form>
                                 </div>
                             </div>
