@@ -7,7 +7,7 @@ from django.urls import reverse
 from . import models, views
 from django.contrib.auth.models import User, AnonymousUser
 from django.http import HttpResponse, HttpResponseRedirect
-from .views import TaskListView, remove_omitted_fields
+from .views import TaskListView, remove_omitted_fields, checkbox_archived
 from .utils import Calendar
 
 '''
@@ -620,7 +620,7 @@ class CalendarTests(TestCase):
     def test_formatday_zero_day(self):
         calendar = Calendar()
         html = calendar.formatday(0, models.Task.objects)
-        self.assertEqual(html, '<td></td>')
+        self.assertEqual(html, '<td class="col-1 p-2"></td>')
 
     # unit test to assert that formatday returns correct HTML when there are no tasks for a given day
     def test_formatday_empty_queryset(self):
@@ -628,7 +628,7 @@ class CalendarTests(TestCase):
         curr_time = datetime.datetime.now()
         html = calendar.formatday(curr_time.day, models.Task.objects)
         self.assertEqual(html,
-                         f'<td><span class=\'date\'><u>{curr_time.day}</u></span><ul class="list-group">  </ul></td>')
+                         f'<td class="col-1 p-2"><span class=\'date\'><u>{curr_time.day}</u></span><ul class="list-group">  </ul></td>')
 
     # unit test to assert that formatday returns correct HTML when there are tasks for a given day
     def test_formatday_tasks_exist(self):
@@ -638,7 +638,7 @@ class CalendarTests(TestCase):
         task.save()
         html = calendar.formatday(curr_time.day, models.Task.objects)
         self.assertNotEqual(html,
-                            f'<td><span class=\'date\'><u>{curr_time.day}</u></span><ul class="list-group"> <li class="list-group-item"> <b>{task.task_name}</b> - <i>{task.end_time.time()}</i> </li> </ul></td>')
+                            f'<td class="col-1 p-2"><span class=\'date\'><u>{curr_time.day}</u></span><ul class="list-group"> <li class="list-group-item"> <b>{task.task_name}</b> - <i>{task.end_time.time()}</i> </li> </ul></td>')
 
     # unit test to assert that formatweek returns correct HTML when week is empty
     def test_formatweek_empty_week(self):
@@ -668,27 +668,36 @@ class CalendarTests(TestCase):
             inner_result += calendar.formatday(d, models.Task.objects)
         self.assertEqual(html, f'<tr> ' + inner_result + f' </tr>')
 
-
+'''
 class ShowArchivedTests(TestCase):
 
     # unit test to assert that if show_archived is false, archived tasks do not render
-    def show_archive_is_false(self):
+    def test_show_archive_is_false(self):
+        self.user = AnonymousUser()
+        self.factory = RequestFactory()
         task1 = create_task(task_name="Non-archived Task", archived=False)
         task1.save()
         task2 = create_task(task_name="Archived Task", archived=True)
         task2.save()
-        sa = create_show_archived(show_archived=False)
+        sa = create_show_archived(user=self.user.id, show_archived=True)
         sa.save()
-        resp = self.client.post(reverse('tasks:list'), {'fields': remove_omitted_fields(), 'sa': sa})
-        self.assertNotContains(resp, "Archived Task", 200)
+
+        req = self.factory.post('tasks/check_archived/')
+        req.user = self.user
+        resp = checkbox_archived(req)
+        #resp = self.client.post(reverse('tasks:check_archived'))
+        #print(resp.context)
+        print(resp.context)
+        self.assertContains(resp, "widget-content-left")
 
     # unit test to assert that if show_archived is true, archived tasks DO render
-    def show_archive_is_true(self):
+    def test_show_archive_is_true(self):
         task1 = create_task(task_name="Non-archived Task", archived=False)
         task1.save()
         task2 = create_task(task_name="Archived Task", archived=True)
         task2.save()
         sa = create_show_archived(show_archived=False)
         sa.save()
-        resp = self.client.post(reverse('tasks:list'), {'fields': remove_omitted_fields(), 'sa': sa})
-        self.assertContains(resp, "Archived Task", 200)
+        resp = self.client.get(reverse('tasks:list'), {'fields': remove_omitted_fields(), 'sa': sa})
+        self.assertContains(resp, "Archived Task")
+    '''

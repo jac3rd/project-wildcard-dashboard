@@ -28,8 +28,8 @@ def remove_omitted_fields():
     l = []
     for field in Task._meta.get_fields():
         val = field.name
-        if(val == 'task_desc'):
-            val = 'task_description'
+        # if(val == 'task_desc'):
+        #     val = 'task_description'
         if val in omitted_fields:
             continue
         elif '_' in val:
@@ -239,20 +239,16 @@ def checkbox_archived(request):
     """
         This allows a user to see his/her archived tasks.
     """
-    url_path_from = 'tasks:list'
+    #url_path_from = 'tasks:list'
     if request.method == 'POST':
-        url_path_from = list(filter(None, urlparse(request.META.get('HTTP_REFERER')).path.split("/")))
-        url_path_from = ':'.join(url_path_from)
-        if url_path_from == 'tasks':
-            url_path_from = 'tasks:index'
-        print (url_path_from)
+        #print (url_path_from)
         ca = ShowArchived.objects.get(user=request.user.id)
         if not ca.show_archived:
             ca.show_archived = True
         else:
             ca.show_archived = False;
         ca.save()
-    return HttpResponseRedirect(reverse(url_path_from))
+    return HttpResponseRedirect(reverse('tasks:list'))
 
 
 def delete_task(request):
@@ -604,6 +600,14 @@ class CalendarView(ListView):
         html_cal_next = cal_next.formatmonth(withyear=True, user=user)
         context['calendar'] = safestring.mark_safe(html_cal)
         context['calendar_next'] = safestring.mark_safe(html_cal_next)
+        if d.month == 1:
+            context['prev'] = safestring.mark_safe(str(d.year-1)+'-12')
+        else:
+            context['prev'] = safestring.mark_safe(str(d.year)+'-'+str(d.month-1))
+        if d.month == 12:
+            context['next'] = safestring.mark_safe(str(d.year+1)+'-1')
+        else:
+            context['next'] = safestring.mark_safe(str(d.year)+'-'+str(d.month+1))
         return context
 
 
