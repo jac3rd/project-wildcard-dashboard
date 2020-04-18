@@ -24,12 +24,15 @@
     <center><h2>Welcome, {{user.username}}! Let's get started: </h2></center>
     <hr>
     <div class = "task-list">
-        <h4>Next 5 (or less) Tasks: </h4>
+        {% if task_list|length >= 5 %}
+            <h4>Next 5 Tasks: </h4>
+        {% else %}
+            <h4>Next {{ task_list|length }} Tasks: </h4>
+        {% endif %}
         {% if task_list %}
         <div class="list-group list-group-flush">
             <!-- Individual Tasks -->
             {% for task in task_list %}
-            {% if task.archived == False %}
                 {% if not task.completed %}
                     <li class="list-group-item">
                 {% else %}
@@ -158,7 +161,6 @@
                     <div class="widget-heading"><b><i>DUE:</i> {{ task.end_time }}</b></div>
                     <div class="todo-indicator bg-warning"></div>
                 </li>
-            {% endif %}
             {% endfor %}
             <!-- End task -->
         </div>
