@@ -275,6 +275,55 @@ def delete_task(request):
         return HttpResponseRedirect(reverse(url_path_from))
 
 
+def edit_task(request):
+    if(request.method == 'POST'):
+        task_id = request.GET.get('task_id')
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            #t = Task()
+            t = Task.objects.get(id=task_id)
+            t.user = request.POST.get('user')
+            t.task_name = request.POST.get('task_name')
+            t.task_desc = request.POST.get('task_desc')
+            t.end_time = request.POST.get('end_time')
+            t.hours = request.POST.get('hours')
+            t.minutes = request.POST.get('minutes')
+            t.category = request.POST.get('category')
+            t.link = request.POST.get('link', "")
+            # Ensure that the start dates are correct
+            if t.end_time < str(datetime.datetime.now()):
+                return render(request, 'tasks/edit_task.html',
+                              {'form': form, 'error_message': "Due date must be later than current time.", })
+            elif int(t.minutes) < 0 or int(t.minutes) >= 60 or int(t.hours) < 0:
+                return render(request, 'tasks/edit_task.html',
+                              {'form': form,
+                               'error_message': "Please enter valid time values! (Hours >= 0 and 0 <= Min <= 59)", })
+            else:
+                t.completed = False
+                t.save()
+                multiplier = 0
+                '''
+                for i in range(1, int(request.POST.get('times')) + 1):
+                    curr_t = Task()
+                    curr_t.task_name = request.POST.get('task_name')
+                    curr_t.task_desc = request.POST.get('task_desc')
+                    curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                        weeks=i * multiplier)
+                    curr_t.hours = request.POST.get('hours')
+                    curr_t.minutes = request.POST.get('minutes')
+                    curr_t.user = request.POST.get('user')
+                    curr_t.completed = False
+                    curr_t.link = request.POST.get('link', "")
+                    curr_t.save()
+                '''
+                return HttpResponseRedirect(reverse('tasks:list'))
+    else:
+        task_id = request.GET.get('task_id')
+        form = TaskForm()
+    task_name = Task.objects.get(id=task_id).task_name
+    return render(request, 'tasks/edit_task.html', {'form': form, 'task_name': task_name, 'task_id' : task_id})
+
+
 def add_category(request):
     if request.method == 'POST':
         category = Category()
