@@ -50,17 +50,28 @@
             <label for="link">Link (Optional)</label>
             <input class="form-control" type="url" id="link" name="link" value="">
         </div>
-        
-        <button class="btn btn-primary" type="submit">
-            Submit
-        </button>
-        <select id="repeat" name="repeat">
-            <option value="once">Add Task</option>
-            <option value="weekly">Add Task Weekly</option>
-            <option value="monthly">Add Task Monthly</option>
-            <option value="annually">Add Task Annually</option>
-        </select>
-        Repeat <input type="number" min="0" max="1000" value="0" name="times" id="times" required> </input> times.
+       
+            <div class = "form-group form-row">
+                <div class="col">
+                     <label for="repeat"> Frequency (Optional)</label>
+                    <select name = "frequency" id="repeat" class="custom-select">
+                        <option value="once">Add Task</option>
+                        <option value="weekly">Add Task Weekly</option>
+                        <option value="monthly">Add Task Monthly</option>
+                        <option value="annually">Add Task Annually</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <label>Repeat Task 'X' Times (Optional): </label>
+                     <input class = "form-control" type="number" min="0" value="0" name="times" id="times" required> </input>
+                </div>
+            </div>
+            <div class = "col">
+                <button class="btn btn-primary" type="submit">
+                    Submit
+                </button>
+            </div>
+
         {% if form.errors %}
         {% for field in form %}
         {% for error in field.errors %}
