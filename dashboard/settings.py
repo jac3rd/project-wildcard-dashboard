@@ -26,7 +26,7 @@ SECRET_KEY = 'a)7d@=xx$5lbmd308_pd=bhlh(hilkk5i3yo^!46e1cs$l(ikx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # Turn off before pushing to master for security reasons.
-DEBUG = True
+DEBUG = False
 
 
 # Authentication Information for Google Login
