@@ -28,8 +28,8 @@ def remove_omitted_fields():
     l = []
     for field in Task._meta.get_fields():
         val = field.name
-        # if(val == 'task_desc'):
-        #     val = 'task_description'
+        #if(val == 'task_desc'):
+        #    val = 'task_description'
         if val in omitted_fields:
             continue
         elif '_' in val:
@@ -178,6 +178,74 @@ def add_task(request):
         form = TaskForm()
     return render(request, 'tasks/add_task.html', {'form': form})
 
+def edit_task(request):
+    if(request.method == 'POST'):
+        try:
+            task_id = request.GET.get('task_id')
+        except:
+            return HttpResponseRedirect(reverse('tasks:list'))
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            #t = Task()
+            t = Task.objects.get(id=task_id)
+            t.user = request.POST.get('user')
+            t.task_name = request.POST.get('task_name')
+            t.task_desc = request.POST.get('task_desc')
+            t.end_time = request.POST.get('end_time')
+            t.hours = request.POST.get('hours')
+            t.minutes = request.POST.get('minutes')
+            t.category = request.POST.get('category')
+            t.link = request.POST.get('link', "")
+            # Ensure that the start dates are correct
+            if t.end_time < str(datetime.datetime.now()):
+                return render(request, 'tasks/edit_task.html',
+                              {'form': form, 'error_message': "Due date must be later than current time.", })
+            elif int(t.minutes) < 0 or int(t.minutes) >= 60 or int(t.hours) < 0:
+                return render(request, 'tasks/edit_task.html',
+                              {'form': form,
+                               'error_message': "Please enter valid time values! (Hours >= 0 and 0 <= Min <= 59)", })
+            else:
+                t.completed = False
+                t.save()
+                multiplier = 0
+                '''
+                for i in range(1, int(request.POST.get('times')) + 1):
+                    curr_t = Task()
+                    curr_t.task_name = request.POST.get('task_name')
+                    curr_t.task_desc = request.POST.get('task_desc')
+                    curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
+                        weeks=i * multiplier)
+                    curr_t.hours = request.POST.get('hours')
+                    curr_t.minutes = request.POST.get('minutes')
+                    curr_t.user = request.POST.get('user')
+                    curr_t.completed = False
+                    curr_t.link = request.POST.get('link', "")
+                    curr_t.save()
+                '''
+                return HttpResponseRedirect(reverse('tasks:list'))
+    else:
+        print('get request on edit_task')
+        try:
+            task_id = request.GET.get('task_id')
+        except:
+            return HttpResponseRedirect(reverse('tasks:list'))
+        form = TaskForm()
+    if(task_id == None):
+        return HttpResponseRedirect(reverse('tasks:list'))    
+    try:
+        task_name = Task.objects.get(id=task_id).task_name
+    except:
+        return HttpResponseRedirect(reverse('tasks:list'))  
+    #url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/")))
+    #url_path_from.pop(0)
+    #url_path_from = '/'.join(url_path_from)
+    #print(url_path_from)
+    return render(request, 'tasks/edit_task.html', {'form': form, 
+        'task_name': task_name, 
+        'task_id' : task_id,}) 
+        #'prev_url': url_path_from})
+
+
 
 def check_off(request):
     """
@@ -239,20 +307,16 @@ def checkbox_archived(request):
     """
         This allows a user to see his/her archived tasks.
     """
-    url_path_from = 'tasks:list'
+    #url_path_from = 'tasks:list'
     if request.method == 'POST':
-        url_path_from = list(filter(None, urlparse(request.META.get('HTTP_REFERER')).path.split("/")))
-        url_path_from = ':'.join(url_path_from)
-        if url_path_from == 'tasks':
-            url_path_from = 'tasks:index'
-        print (url_path_from)
+        #print (url_path_from)
         ca = ShowArchived.objects.get(user=request.user.id)
         if not ca.show_archived:
             ca.show_archived = True
         else:
             ca.show_archived = False;
         ca.save()
-    return HttpResponseRedirect(reverse(url_path_from))
+    return HttpResponseRedirect(reverse('tasks:list'))
 
 
 def delete_task(request):
@@ -273,6 +337,7 @@ def delete_task(request):
             return HttpResponseRedirect(reverse(url_path_from))
         task.delete()
         return HttpResponseRedirect(reverse(url_path_from))
+
 
 
 def add_category(request):

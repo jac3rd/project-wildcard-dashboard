@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+<hr>
+<div class="container-md">
+    <h3 class="display-4">Editing task: {{ task_name }}</h3>
+    {% if error_message %}<p><font color="red"><strong>{{ error_message }}</strong></font></p>{% endif %}
+    <form action="{% url 'tasks:edit_task' %}?task_id={{ task_id }}" method='post'>
+    {% csrf_token %}
+        <input type="hidden" value="{{user.id}}" id="user" name="user">
+        <div class="form-group">
+            <label for="{{ form.task_name.name }}">Task Name</label>
+            <input class="form-control" type="text" id="{{ form.task_name.name }}" name="{{ form.task_name.name }}">
+        </div>
+        <div class="form-group">
+            <label for="{{ form.end_time.name }}">Due Date</label>
+            <input class="form-control" type="datetime-local" id="{{ form.end_time.name }}" name="{{ form.end_time.name }}">
+        </div>
+        <div class="form-group form-row">
+            <div class="col">
+                <label>Estimated Length</label>
+            </div>
+            <div class="col">
+                <input class="form-control" type="number" id="{{ form.hours.name }}" name="{{ form.hours.name }}" placeholder="Hours">
+            </div>
+            <div class="col text-left">
+                <p class="lead">hr</p>
+            </div>
+            <div class="col">
+                <input class="form-control" type="number" id="{{ form.minutes.name }}" name="{{ form.minutes.name }}" placeholder="Minutes">
+            </div>
+            <div class="col text-left">
+                <p class="lead">min</p>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="category">Category</label>
+            <select name="category" id="category" class="custom-select">
+            {% for choice in form.category.choices %}
+                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+            {% endfor %}
+            </select>
+
+        </div>
+        <div class="form-group">
+            <label for="{{ form.task_desc.name }}">Task Description (Optional)</label>
+            <input class="form-control" type="text" id="{{ form.task_desc.name }}" name="{{ form.task_desc.name }}" value="">
+        </div>
+        <div class="form-group">
+            <label for="link">Link (Optional)</label>
+            <input class="form-control" type="url" id="link" name="link" value="">
+        </div>
+        
+        <button class="btn btn-primary" type="submit">
+            Update
+        </button>
+
+        <a href="{% url 'tasks:list' %}">
+            <button type="button" role="button" class="btn btn-danger">
+                Cancel
+            </button>
+        </a>
+        <!--<select id="repeat" name="repeat">
+            <option value="once">Add Task</option>
+            <option value="weekly">Add Task Weekly</option>
+            <option value="monthly">Add Task Monthly</option>
+            <option value="annually">Add Task Annually</option>
+        </select>
+        Repeat <input type="number" min="0" value="0" name="times" id="times" required> </input> times.-->
+        {% if form.errors %}
+        {% for field in form %}
+        {% for error in field.errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+        {% endfor %}
+        {% endfor %}
+        {% for error in form.non_field_errors %}
+        <div class="alert alert-danger">
+            <strong>{{ error|escape }}</strong>
+        </div>
+        {% endfor %}
+        {% endif %}
+    </form>
+</div>
+<hr>
+{% endblock %}
