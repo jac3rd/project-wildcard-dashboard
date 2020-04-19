@@ -11,9 +11,15 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 # EDIT THIS COMMENT TO PERFORM REDUNDANT COMMIT FOR TRIGGERING TRAVIS
+import psycopg2
 import dj_database_url
 import os
+import sys
 
+#import os
+#os.environ.setdefault("DJANGO_SETTINGS_MODULE", __file__)
+#import django
+#django.setup()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -25,11 +31,9 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'a)7d@=xx$5lbmd308_pd=bhlh(hilkk5i3yo^!46e1cs$l(ikx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# Turn off before pushing to master for security reasons.
 DEBUG = True
 
-
-# Authentication Information for Google Login
+#Authentication Information for Google Login
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '759306476125-hi014lcvnmlmirv0pt9hka0k5og0eji3.apps.googleusercontent.com'
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'ENufVEyUrFwKJ7jPP_USNn0n'
 
@@ -37,7 +41,7 @@ LOGIN_URL = '/auth/login/google-oauth2/'
 LOGIN_REDIRECT_URL = '/tasks/'
 LOGOUT_REDIRECT_URL = 'index'
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
-# Allows project to run on heroku
+#Allows project to run on heroku
 ALLOWED_HOSTS = [
     'wildcard-boiz.herokuapp.com',
     '127.0.0.1',
@@ -125,11 +129,8 @@ DATABASES = {
         'USER': 'dashboard_user',
         'PASSWORD': '123',
         'HOST': 'localhost',
-    }
+    }   
 }
-
-NOSE_ARGS = ['--nocapture',
-             '--nologcapture',]
 
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)
@@ -163,10 +164,11 @@ USE_I18N = True
 
 USE_L10N = False
 
-DATETIME_FORMAT = "D, M d, Y; h:i a"
+DATETIME_FORMAT = "M d, Y; h:i a"
 
 # originally was TRUE
 USE_TZ = False
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
@@ -187,7 +189,6 @@ STATICFILES_DIRS = (
 )
 try:
     import django_heroku
-
     django_heroku.settings(locals())
 except ImportError:
     pass
