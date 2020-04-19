@@ -230,7 +230,12 @@ def edit_task(request):
         except:
             return HttpResponseRedirect(reverse('tasks:list'))
         form = TaskForm()
-    task_name = Task.objects.get(id=task_id).task_name
+    if(task_id == None):
+        return HttpResponseRedirect(reverse('tasks:list'))    
+    try:
+        task_name = Task.objects.get(id=task_id).task_name
+    except:
+        return HttpResponseRedirect(reverse('tasks:list'))  
     #url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/")))
     #url_path_from.pop(0)
     #url_path_from = '/'.join(url_path_from)
