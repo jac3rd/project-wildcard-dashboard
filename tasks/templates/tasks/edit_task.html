@@ -9,24 +9,24 @@
         <input type="hidden" value="{{user.id}}" id="user" name="user">
         <div class="form-group">
             <label for="{{ form.task_name.name }}">Task Name</label>
-            <input class="form-control" type="text" id="{{ form.task_name.name }}" name="{{ form.task_name.name }}">
+            <input class="form-control" type="text" id="{{ form.task_name.name }}" name="{{ form.task_name.name }}" value="{{ task_data.task_name }}">
         </div>
         <div class="form-group">
             <label for="{{ form.end_time.name }}">Due Date</label>
-            <input class="form-control" type="datetime-local" id="{{ form.end_time.name }}" name="{{ form.end_time.name }}">
+            <input class="form-control" type="datetime-local" id="{{ form.end_time.name }}" name="{{ form.end_time.name }}" value="{{ task_data.end_time }}">
         </div>
         <div class="form-group form-row">
             <div class="col">
                 <label>Estimated Length</label>
             </div>
             <div class="col">
-                <input class="form-control" type="number" id="{{ form.hours.name }}" name="{{ form.hours.name }}" placeholder="Hours">
+                <input class="form-control" type="number" id="{{ form.hours.name }}" name="{{ form.hours.name }}" placeholder="Hours" value="{{ task_data.hours }}">
             </div>
             <div class="col text-left">
                 <p class="lead">hr</p>
             </div>
             <div class="col">
-                <input class="form-control" type="number" id="{{ form.minutes.name }}" name="{{ form.minutes.name }}" placeholder="Minutes">
+                <input class="form-control" type="number" id="{{ form.minutes.name }}" name="{{ form.minutes.name }}" placeholder="Minutes" value="{{ task_data.minutes }}">
             </div>
             <div class="col text-left">
                 <p class="lead">min</p>
@@ -36,18 +36,23 @@
             <label for="category">Category</label>
             <select name="category" id="category" class="custom-select">
             {% for choice in form.category.choices %}
-                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                {% if task_data.category == choice.1 %}
+                    <option value="{{ choice.0 }}" selected="selected">{{ choice.1 }}</option>
+                {% endif %}
+                {% if task_data.category != choice.1 %}
+                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                {% endif %}
             {% endfor %}
             </select>
 
         </div>
         <div class="form-group">
             <label for="{{ form.task_desc.name }}">Task Description (Optional)</label>
-            <input class="form-control" type="text" id="{{ form.task_desc.name }}" name="{{ form.task_desc.name }}" value="">
+            <input class="form-control" type="text" id="{{ form.task_desc.name }}" name="{{ form.task_desc.name }}" value="{{ task_data.task_desc }}">
         </div>
         <div class="form-group">
             <label for="link">Link (Optional)</label>
-            <input class="form-control" type="url" id="link" name="link" value="">
+            <input class="form-control" type="url" id="link" name="link" value="{{ task_data.link }}">
         </div>
         
         <button class="btn btn-primary" type="submit">

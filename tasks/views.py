@@ -242,7 +242,8 @@ def edit_task(request):
     #print(url_path_from)
     return render(request, 'tasks/edit_task.html', {'form': form, 
         'task_name': task_name, 
-        'task_id' : task_id,}) 
+        'task_id' : task_id,
+        'task_data' : Task.objects.get(id=task_id)}) 
         #'prev_url': url_path_from})
 
 
