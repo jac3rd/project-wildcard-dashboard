@@ -24,11 +24,13 @@ from math import floor
 
 
 def remove_omitted_fields():
-    omitted_fields = set(['id', 'user', 'created_at', 'completed', 'archived', 'date_completed', 'length', 'end_time', 'hours', 'minutes'])
+    omitted_fields = set(
+        ['id', 'user', 'created_at', 'completed', 'archived', 'date_completed', 'length', 'end_time', 'hours',
+         'minutes'])
     l = []
     for field in Task._meta.get_fields():
         val = field.name
-        #if(val == 'task_desc'):
+        # if(val == 'task_desc'):
         #    val = 'task_description'
         if val in omitted_fields:
             continue
@@ -165,6 +167,7 @@ def add_task(request):
                     curr_t = Task()
                     curr_t.task_name = request.POST.get('task_name')
                     curr_t.task_desc = request.POST.get('task_desc')
+                    curr_t.category = request.POST.get('category')
                     curr_t.end_time = datetime.datetime.strptime(t.end_time, '%Y-%m-%dT%H:%M') + datetime.timedelta(
                         weeks=i * multiplier)
                     curr_t.hours = request.POST.get('hours')
@@ -178,15 +181,16 @@ def add_task(request):
         form = TaskForm()
     return render(request, 'tasks/add_task.html', {'form': form})
 
+
 def edit_task(request):
-    if(request.method == 'POST'):
+    if (request.method == 'POST'):
         try:
             task_id = request.GET.get('task_id')
         except:
             return HttpResponseRedirect(reverse('tasks:list'))
         form = TaskForm(request.POST)
         if form.is_valid():
-            #t = Task()
+            # t = Task()
             t = Task.objects.get(id=task_id)
             t.user = request.POST.get('user')
             t.task_name = request.POST.get('task_name')
@@ -230,21 +234,20 @@ def edit_task(request):
         except:
             return HttpResponseRedirect(reverse('tasks:list'))
         form = TaskForm()
-    if(task_id == None):
-        return HttpResponseRedirect(reverse('tasks:list'))    
+    if (task_id == None):
+        return HttpResponseRedirect(reverse('tasks:list'))
     try:
         task_name = Task.objects.get(id=task_id).task_name
     except:
-        return HttpResponseRedirect(reverse('tasks:list'))  
-    #url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/")))
-    #url_path_from.pop(0)
-    #url_path_from = '/'.join(url_path_from)
-    #print(url_path_from)
-    return render(request, 'tasks/edit_task.html', {'form': form, 
-        'task_name': task_name, 
-        'task_id' : task_id,}) 
-        #'prev_url': url_path_from})
-
+        return HttpResponseRedirect(reverse('tasks:list'))
+        # url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/")))
+    # url_path_from.pop(0)
+    # url_path_from = '/'.join(url_path_from)
+    # print(url_path_from)
+    return render(request, 'tasks/edit_task.html', {'form': form,
+                                                    'task_name': task_name,
+                                                    'task_id': task_id, })
+    # 'prev_url': url_path_from})
 
 
 def check_off(request):
@@ -289,9 +292,9 @@ def uncheck(request):
 def archive_task(request):
     url_path_from = 'tasks:list'
     if request.method == 'POST':
-        url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/"))) 
+        url_path_from = list(filter(None, urlparse(request.META.get('HTTP_REFERER')).path.split("/")))
         url_path_from = ':'.join(url_path_from)
-        if(url_path_from == 'tasks'):
+        if (url_path_from == 'tasks'):
             url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         task = Task.objects.get(pk=task_id)
@@ -307,9 +310,9 @@ def checkbox_archived(request):
     """
         This allows a user to see his/her archived tasks.
     """
-    #url_path_from = 'tasks:list'
+    # url_path_from = 'tasks:list'
     if request.method == 'POST':
-        #print (url_path_from)
+        # print (url_path_from)
         ca = ShowArchived.objects.get(user=request.user.id)
         if not ca.show_archived:
             ca.show_archived = True
@@ -322,13 +325,13 @@ def checkbox_archived(request):
 def delete_task(request):
     url_path_from = 'tasks:list'
     if request.method == 'POST':
-        parsed_url = urlparse( request.META.get('HTTP_REFERER') ).path
-        if(type(parsed_url) == bytes):
+        parsed_url = urlparse(request.META.get('HTTP_REFERER')).path
+        if (type(parsed_url) == bytes):
             url_path_from = list(filter(None, parsed_url.decode('utf-8').split("/")))
         else:
             url_path_from = list(filter(None, parsed_url.split("/")))
         url_path_from = ':'.join(url_path_from)
-        if(url_path_from == 'tasks' or url_path_from == ""):
+        if (url_path_from == 'tasks' or url_path_from == ""):
             url_path_from = 'tasks:index'
         task_id = request.POST['task_id']
         try:
@@ -337,7 +340,6 @@ def delete_task(request):
             return HttpResponseRedirect(reverse(url_path_from))
         task.delete()
         return HttpResponseRedirect(reverse(url_path_from))
-
 
 
 def add_category(request):
@@ -433,25 +435,26 @@ def filter_tasks(request):
                 for val in check_values:
                     arg_dict = {field_names[int(val)][1] + '__icontains': filter_key}
                     # print(arg_dict)
-                    if (ShowArchived.objects.get(user=user_id).show_archived == True):
+                    if ShowArchived.objects.get(user=user_id).show_archived == True:
                         filtered_tasks = filtered_tasks | Task.objects.filter(user=user_id).all().filter(**arg_dict)
                     else:
-                        filtered_tasks = filtered_tasks | Task.objects.filter(user=user_id, archived=False).all().filter(**arg_dict)
+                        filtered_tasks = filtered_tasks | Task.objects.filter(user=user_id,
+                                                                              archived=False).all().filter(**arg_dict)
                 # filtered_tasks = Task.objects.all().filter(**arg_dict)
                 # return HttpResponseRedirect(reverse('tasks:list'))
-                return render(request, 'tasks/task_list.html', {'task_list': filtered_tasks.order_by('end_time', 'created_at'),
-                                                                'fields': field_names,
-                                                                'sa': ShowArchived.objects.get(user=user_id)})
+                return render(request, 'tasks/task_list.html',
+                              {'task_list': filtered_tasks.order_by('end_time', 'created_at'),
+                               'fields': field_names,
+                               'sa': ShowArchived.objects.get(user=user_id)})
         elif 'reset-button' in request.POST:
             return HttpResponseRedirect(reverse('tasks:list'))
         else:
             return HttpResponseRedirect(reverse('tasks:list'))
     # if we get request this somehow, just go back to the list
     else:
-        #print(request)
-        #print('DOING GET REQUEST ON FILTER_TASKS')
+        # print(request)
+        # print('DOING GET REQUEST ON FILTER_TASKS')
         return HttpResponseRedirect(reverse('tasks:list'))
-
 
 
 def archive_finished(request):
@@ -621,13 +624,13 @@ class CalendarView(ListView):
         context['calendar'] = safestring.mark_safe(html_cal)
         context['calendar_next'] = safestring.mark_safe(html_cal_next)
         if d.month == 1:
-            context['prev'] = safestring.mark_safe(str(d.year-1)+'-12')
+            context['prev'] = safestring.mark_safe(str(d.year - 1) + '-12')
         else:
-            context['prev'] = safestring.mark_safe(str(d.year)+'-'+str(d.month-1))
+            context['prev'] = safestring.mark_safe(str(d.year) + '-' + str(d.month - 1))
         if d.month == 12:
-            context['next'] = safestring.mark_safe(str(d.year+1)+'-1')
+            context['next'] = safestring.mark_safe(str(d.year + 1) + '-1')
         else:
-            context['next'] = safestring.mark_safe(str(d.year)+'-'+str(d.month+1))
+            context['next'] = safestring.mark_safe(str(d.year) + '-' + str(d.month + 1))
         return context
 
 
