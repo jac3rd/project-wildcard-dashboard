@@ -53,31 +53,34 @@ class SummaryView(generic.ListView):
         task_list = task_list.order_by('end_time')
         d = get_date(self.request.GET.get('day', None))
         cal = Calendar(d.year, d.month)
-        tasks_left = 0
-        est_hours = 0
-        est_minutes = 0
-        state = 0
         for week in cal.monthdayscalendar(cal.year, cal.month):
             if week[0] <= datetime.datetime.now().day <= week[week.__len__() - 1]:
                 curr_week = week
-        for task in task_list:
-            if task.end_time.day in curr_week:
-                if not task.completed:
-                    tasks_left += 1
-                    est_hours += task.hours
-                    est_minutes += task.minutes
-                else:
-                    state += 1
+        start_of_week = datetime.datetime.today() - datetime.timedelta(
+            days=datetime.datetime.today().isoweekday() % 7)
+        tasks_left_this_week = Task.objects.filter(user=self.request.user.id, completed=False,
+                                                            end_time__gte=start_of_week,
+                                                            end_time__lte=start_of_week + datetime.timedelta(days=6)
+                                                            )
+        estimated_hours = tasks_left_this_week.aggregate(total=Sum('hours'))['total']
+        estimated_minutes = tasks_left_this_week.aggregate(total=Sum('minutes'))['total']
+        if estimated_minutes and estimated_hours:
+            estimated_hours += estimated_minutes // 60
+            estimated_minutes %= 60
+        else:
+            estimated_hours = 0
+            estimated_minutes = 0
         task_list = task_list[:5]
-        est_hours += floor(est_minutes / 60)
-        est_minutes %= 60
         html_cal = cal.formatmonth(withyear=True, weekonly=True, user=self.request.user.id)
         context['task_list'] = task_list
         context['calendar'] = safestring.mark_safe(html_cal)
-        context['tasks_left'] = tasks_left
-        context['est_hours'] = est_hours
-        context['est_minutes'] = est_minutes
-        context['state'] = state
+        context['tasks_left'] = tasks_left_this_week.count()
+        context['est_hours'] = estimated_hours
+        context['est_minutes'] = estimated_minutes
+        context['state'] = Task.objects.filter(user=self.request.user.id, completed=True,
+                                               date_completed__gte=start_of_week,
+                                               date_completed__lte=start_of_week + datetime.timedelta(days=6)
+                                               ).count()
         return context
 
 
@@ -644,11 +647,11 @@ def get_date(req_day):
 def progress(request):
     start_of_week = datetime.datetime.today() - datetime.timedelta(
         days=datetime.datetime.today().isoweekday() % 7)
-    tasks_left_this_week = Task.objects.filter(user=request.user.id, completed=False,
-                                               end_time__gte=start_of_week,
-                                               end_time__lte=start_of_week + datetime.timedelta(days=6)
-                                               )
-    # print(tasks_left_this_week.values('hours').aggregate(total=Sum('hours')))
+    tasks_left_this_week = Task.objects.annotate(
+        date_only=Cast('end_time', DateField())).filter(user=request.user.id, completed=False,
+                                                        date__gte=start_of_week,
+                                                        end_time__lte=start_of_week + datetime.timedelta(days=6)
+                                                        )
     estimated_hours = tasks_left_this_week.aggregate(total=Sum('hours'))['total']
     estimated_minutes = tasks_left_this_week.aggregate(total=Sum('minutes'))['total']
     if estimated_minutes and estimated_hours:
