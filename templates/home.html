@@ -1,8 +1,34 @@
-{% load static %}
 <!doctype html>
+{% load static %}
+<!--<style>
+    .cover-container.d-flex.w-100.h-100.p-34.mx-auto.flex-column{
+        background-image: url('/static/tasks/transparent logo.png');
+    }
+</style>-->
+<style>
+    img {
+      margin-left: auto;
+      margin-right: auto;
+      opacity: 0.30;
+    }
+    .centered {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 0px;
+      white-space: nowrap;
+    }
+    .cover-container.d-flex.w-100.h-100.p-34.mx-auto.flex-column {
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 0px;
+      padding-right: 0px;
+    }
+</style>
 <html lang="en">
   <head>
-    <link rel="icon" href="{% static 'tasks/Wildcard logo.png'%}">
+    <link rel="icon" href="{% static 'tasks/transparent logo.png'%}">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="description" content="">
@@ -24,13 +50,17 @@
         <div class="inner">
         </div>
       </header>
-      <div class="jumbotron bg-dark">
-        <h1 class="display-4">Be Productive!</h1>
+      <div class="container-fluid" style="position: relative; padding: 0px;">
+        <img class="img-fluid rounded" src="{% static 'tasks/transparent logo.png' %}" alt="logo">
+        <div class="centered">
+          <h1 class="display-4" style="font-weight: bold;">PROJECT WILDCARD:</h1>
+          <h1>The easy way to get stuff done!</h1>
+        </div>
       </div>
 
-      <main role="main" class="inner cover">
+      <main role="main" class="inner cover" style="padding-top: 8px;" >
         <!--<h1 class="cover-heading">Be Productive!</h1>-->
-        <p class="lead">Welcome to <b><i><font color="#17a2b8">Dashboard</font></i></b>, a companion for your browser, dedicated of keeping track of and organizing your day.</p>
+        <p class="lead">Welcome to <b><i><font color="#17a2b8">Project Wildcard</font></i></b>, a companion for your browser, dedicated to keeping track of and organizing your day.</p>
         <p class="lead">
           <!--<a href="#" class="btn btn-lg btn-danger">Login</a>-->
           {% if user.is_authenticated %}
@@ -38,15 +68,15 @@
             <a class="btn btn-danger btn-lg" href="{% url 'logout' %}">Logout</a>
             <a class="btn btn-primary btn-lg" href="{% url 'tasks:index' %}">Dashboard</a>
           {% else %}
-            <p class="lead">Login with your Google Account to get started.</p>
-            <a class="btn btn-primary btn-lg" href="{% url 'social:begin' 'google-oauth2' %}" role = "button">Login</a>
+            <!--<p class="lead">Login with your Google Account to get started.</p>-->
+            <a class="btn btn-primary btn-lg" href="{% url 'social:begin' 'google-oauth2' %}" role = "button">Login with your Google Account to get started</a>
           {% endif %}
         </p>
       </main>
 
       <footer class="mastfoot mt-auto">
-        <div class="inner">
-          <span class="text-muted font-weight-light">Created by team WILDCARD!: Andrew Boyd, Henry Carscadden, Jimmy Chiou, Ashwin Pathi, Gabriel Simmons</span>
+        <div class="inner"> <!--style="white-space: nowrap;">-->
+          <span class="text-muted font-weight-light">Team WILDCARD!: Andrew Boyd, Henry Carscadden, Jimmy Chiou, Ashwin Pathi, Gabriel Simmons</span>
         </div>
       </footer>
     </div>

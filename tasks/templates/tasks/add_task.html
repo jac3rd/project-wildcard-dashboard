@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% block content %}
 <hr>
+
 <div class="container-md">
-    <h3 class="display-4">Add a Task:</h3>
+    <h3 class="display-4"><u>Add A Task</u></h3>
     {% if error_message %}<p><font color="red"><strong>{{ error_message }}</strong></font></p>{% endif %}
     <form action="{% url 'tasks:add_task' %}" method='post'>
     {% csrf_token %}
@@ -42,24 +43,36 @@
 
         </div>
         <div class="form-group">
-            <label for="{{ form.task_desc.name }}">Task Description (Optional)</label>
+            <label for="{{ form.task_desc.name }}">Task Description (<i>Optional</i>)</label>
             <input class="form-control" type="text" id="{{ form.task_desc.name }}" name="{{ form.task_desc.name }}" value="">
         </div>
         <div class="form-group">
-            <label for="link">Link (Optional)</label>
+            <label for="link">Link (<i>Optional</i>)</label>
             <input class="form-control" type="url" id="link" name="link" value="">
         </div>
-        
-        <button class="btn btn-primary" type="submit">
-            Submit
-        </button>
-        <select id="repeat" name="repeat">
-            <option value="once">Add Task</option>
-            <option value="weekly">Add Task Weekly</option>
-            <option value="monthly">Add Task Monthly</option>
-            <option value="annually">Add Task Annually</option>
-        </select>
-        Repeat <input type="number" min="0" value="0" name="times" id="times" required> </input> times.
+
+        <div class = "form-group form-row">
+            <div class="col">
+                <label>Repeat Task 'X' Times (<i>Optional</i>) </label>
+                 <input class = "form-control" type="number" min="0" value="0" name="times" id="times" required> </input>
+            </div>
+            <div class="col">
+                 <label for="repeat"> With The Below Frequency (<i>Optional</i>)</label>
+                <select name = "frequency" id="repeat" class="custom-select">
+                    <option value="once">Add Task</option>
+                    <option value="weekly">Add Task Weekly</option>
+                    <option value="monthly">Add Task Monthly</option>
+                    <option value="annually">Add Task Annually</option>
+                </select>
+            </div>
+        </div>
+
+        <div class = "row row-centered" style="padding-left: 15px;">
+            <button class="btn btn-primary" type="submit">
+                Submit
+            </button>
+        </div>
+
         {% if form.errors %}
         {% for field in form %}
         {% for error in field.errors %}
