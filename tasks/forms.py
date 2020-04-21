@@ -1,9 +1,16 @@
 from django import forms
 from .models import Task
-
+from bootstrap_datepicker_plus import DateTimePickerInput
 
 
 class TaskForm(forms.Form):
+    class Meta:
+        model = Task
+        fields = ['end_time']
+        widgets = {
+            'end_time': DateTimePickerInput()
+        }
+
     # Reformats the html input to work with the django datetime field
     attempt = ['%Y-%m-%d %H:%M:%S',  # '2006-10-25 14:30:59'
                '%Y-%m-%d %H:%M',  # '2006-10-25 14:30'
