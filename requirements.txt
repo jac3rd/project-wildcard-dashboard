@@ -30,4 +30,5 @@ whitenoise==5.0.1
 wrapt==1.11.2
 dj-config-url==0.1.1
 django-queryset-csv==1.1.0
+django-bootstrap-datepicker-plus
 git+https://github.com/hcars/django-graphos.git@master
