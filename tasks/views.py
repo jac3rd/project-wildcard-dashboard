@@ -231,7 +231,7 @@ def edit_task(request):
                 '''
                 return HttpResponseRedirect(reverse('tasks:list'))
     else:
-        print('get request on edit_task')
+        # print('get request on edit_task')
         try:
             task_id = request.GET.get('task_id')
         except:
