@@ -437,16 +437,16 @@
             <div class="modal-body">
                 <input type="hidden" value="{{user.id}}" id="user1" name="user1">
                 <div class="form-group">
-                    <label for="{{ form.task_name.name }}">Task Name</label>
+                    <label for="{{ form.task_name.name }}"><b>Task Name</b></label>
                     <input class="form-control" type="text" id="{{ form.task_name.name }}" name="{{ form.task_name.name }}">
                 </div>
                 <div class="form-group">
-                    <label for="{{ form.end_time.name }}">Due Date</label>
+                    <label for="{{ form.end_time.name }}"><b>Due Date</b></label>
                     <input class="form-control" type="datetime-local" id="{{ form.end_time.name }}" name="{{ form.end_time.name }}">
                 </div>
                 <div class="form-group form-row">
                     <div class="col">
-                        <label>Estimated Length</label>
+                        <label><b>Estimated Length</b></label>
                     </div>
                     <div class="col">
                         <input class="form-control" type="number" id="{{ form.hours.name }}" name="{{ form.hours.name }}" placeholder="Hours">
