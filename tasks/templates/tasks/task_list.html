@@ -8,8 +8,17 @@
         height: 26px;
         width: 10px;
     }
-    .fa.fa {
+    .fa.fa-trash {
         transform: translate(-50%, -40%);
+    }
+    .fa.fa-archive {
+        transform: translate(-50%, -40%);
+    }
+    .fa.fa-level-up {
+        transform: translate(-50%, -35%);
+    }
+    .fa.fa-edit {
+        transform: translate(-50%, -35%);
     }
     .list-group-item {
         width: 800px;
@@ -197,6 +206,15 @@
                                                     <div class="ml-auto" style="padding-right: 5px;">
                                                         <small class="pl-2 text-muted">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
                                                     </div>
+                                                    <!-- edit button -->
+                                                    <div class="ml-auto">
+                                                        <form action="{% url 'tasks:edit_task' %}" method='get' id="edit_{{ task.id }}">
+                                                            <input type="hidden" name="task_id" value="{{task.id}}">
+                                                            <button class="border-0 btn-transition btn btn-outline-success" data-toggle="tooltip" title="Edit"
+                                                                    onclick="document.getElementId('edit_{{ task.id }}').submit();">
+                                                                <i class="fa fa-edit"></i> </button>
+                                                        </form>
+                                                    </div>
                                                     <div class="ml-auto">
                                                         <form action="{% url 'tasks:archive_task' %}" method='post' id="archive_{{ task.id }}">
                                                             {% csrf_token %}
@@ -215,16 +233,6 @@
                                                                 <i class="fa fa-trash"></i> </button>
                                                         </form>
                                                     </div>
-                                                    <!-- edit button -->
-                                                    <div class="ml-auto">
-                                                        <form action="{% url 'tasks:edit_task' %}" method='get' id="edit_{{ task.id }}">
-                                                            <input type="hidden" name="task_id" value="{{task.id}}">
-                                                            <button class="border-0 btn-transition btn btn-outline-success" data-toggle="tooltip" title="Edit"
-                                                                    onclick="document.getElementId('edit_{{ task.id }}').submit();">
-                                                                <i class="fa fa-edit"></i> </button>
-                                                        </form>
-                                                    </div>
-                                                    
                                                 </div>
                                             </div>
                                         </div>
@@ -346,11 +354,20 @@
                                                     <div class="ml-auto">
                                                         <small class="pl-2 text-muted" style="padding-right: 4px;">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
                                                     </div>
+                                                    <!-- edit button -->
+                                                    <div class="ml-auto">
+                                                        <form action="{% url 'tasks:edit_task' %}" method='get' id="edit_{{ task.id }}">
+                                                            <input type="hidden" name="task_id" value="{{task.id}}">
+                                                            <button class="border-0 btn-transition btn btn-outline-success" data-toggle="tooltip" title="Edit"
+                                                                    onclick="document.getElementId('edit_{{ task.id }}').submit();">
+                                                                <i class="fa fa-edit"></i> </button>
+                                                        </form>
+                                                    </div>
                                                     <div class="ml-auto">
                                                         <form action="{% url 'tasks:archive_task' %}" method='post' id="archive__{{ task.id }}">
                                                             {% csrf_token %}
                                                             <input type="hidden" name="task_id" value="{{task.id}}">
-                                                            <button class="border-0 btn-transition btn btn-outline-success" data-toggle="tooltip" title="Un-archive"
+                                                            <button class="border-0 btn-transition btn btn-outline-warning" data-toggle="tooltip" title="Un-archive"
                                                                     onclick="document.getElementId('archive__{{ task.id }}').submit();">
                                                                 <i class="fa fa-level-up"></i> </button>
                                                         </form>
@@ -362,15 +379,6 @@
                                                             <button class="border-0 btn-transition btn btn-outline-danger" data-toggle="tooltip" title="Delete"
                                                                     onclick="document.getElementId('delete__{{ task.id }}').submit();">
                                                                 <i class="fa fa-trash"></i> </button>
-                                                        </form>
-                                                    </div>
-                                                    <!-- edit button -->
-                                                    <div class="ml-auto">
-                                                        <form action="{% url 'tasks:edit_task' %}" method='get' id="edit_{{ task.id }}">
-                                                            <input type="hidden" name="task_id" value="{{task.id}}">
-                                                            <button class="border-0 btn-transition btn btn-outline-success" data-toggle="tooltip" title="Edit"
-                                                                    onclick="document.getElementId('edit_{{ task.id }}').submit();">
-                                                                <i class="fa fa-edit"></i> </button>
                                                         </form>
                                                     </div>
                                                 </div>
