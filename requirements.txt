@@ -31,4 +31,6 @@ wrapt==1.11.2
 dj-config-url==0.1.1
 django-queryset-csv==1.1.0
 django-bootstrap-datepicker-plus
+django-bootstrap4
+django-jquery
 git+https://github.com/hcars/django-graphos.git@master

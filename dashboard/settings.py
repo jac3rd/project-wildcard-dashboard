@@ -68,6 +68,8 @@ INSTALLED_APPS = [
     'social_django',
     'graphos',
     'bootstrap_datepicker_plus',
+    'bootstrap4',
+    'jquery',
 ]
 
 BOOTSTRAP4 = {
