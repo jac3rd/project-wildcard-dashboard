@@ -203,9 +203,15 @@
                                                 </div>
                                                 <div class="ml-auto">
                                                     <div class="d-flex">
-                                                        <div class="ml-auto" style="padding-right: 5px;">
-                                                            <small class="pl-2 text-muted">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
-                                                        </div>
+                                                        {% if not task.completed %}
+                                                            <div class="ml-auto" style="padding-right: 5px;">
+                                                                <small class="pl-2 text-muted">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
+                                                            </div>
+                                                        {% else %}
+                                                            <div class="ml-auto" style="padding-right: 5px; text-decoration: line-through;">
+                                                                <small class="pl-2 text-muted">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
+                                                            </div>
+                                                        {% endif %}
                                                         <!-- edit button -->
                                                         <div class="ml-auto">
                                                             <form action="{% url 'tasks:edit_task' %}" method='get' id="edit1_{{ task.id }}">
@@ -356,9 +362,15 @@
                                                 </div>
                                                 <div class="ml-auto">
                                                     <div class="d-flex">
-                                                        <div class="ml-auto">
-                                                            <small class="pl-2 text-muted" style="padding-right: 4px;">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
-                                                        </div>
+                                                        {% if not task.completed %}
+                                                            <div class="ml-auto" style="padding-right: 5px;">
+                                                                <small class="pl-2 text-muted">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
+                                                            </div>
+                                                        {% else %}
+                                                            <div class="ml-auto" style="padding-right: 5px; text-decoration: line-through;">
+                                                                <small class="pl-2 text-muted">Est Time: {{task.hours}}hr {{task.minutes}}min</small>
+                                                            </div>
+                                                        {% endif %}
                                                         <!-- edit button -->
                                                         <div class="ml-auto">
                                                             <form action="{% url 'tasks:edit_task' %}" method='get' id="edit2_{{ task.id }}">
