@@ -67,7 +67,15 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'social_django',
     'graphos',
+    'bootstrap_datepicker_plus',
+    'bootstrap4',
+    'jquery',
 ]
+
+BOOTSTRAP4 = {
+    'include_jquery': True,
+}
+
 # Social auth settings
 SOCIAL_AUTH_POSTGRES_JSONFIELD = True
 SOCIAL_AUTH_PIPELINE = (
