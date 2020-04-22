@@ -1,25 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<style>
-    .flex-container
-    {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        flex-flow: column;
-    }
-    .list-group-item {
-        min-width: 810px;
-    }
-    .border-0.btn-transition.btn {
-        height: 26px;
-        width: 10px;
-    }
-    .fa.fa {
-        transform: translate(-50%, -40%);
-    }
-</style>
+
 <div class = "flex-container">
     <center><h2>Welcome, {{user.username}}! Let's get started: </h2></center>
     <hr>
@@ -189,8 +171,9 @@
         </div>
 
     </div>
-
-    <div class = "calendar container">
+</div>
+<div class="row justify-content-center">
+    <div class = "container col-md-8">
         {{ calendar }}
     </div>
 </div>
