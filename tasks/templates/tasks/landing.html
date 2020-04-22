@@ -33,8 +33,12 @@
     <div class = "task-list">
         {% if task_list|length >= 5 %}
             <h4>Next 5 Tasks: </h4>
-        {% else %}
+        {% elif task_list|length > 1 %}
             <h4>Next {{ task_list|length }} Tasks: </h4>
+        {% elif task_list|length == 1 %}
+            <h4>Last Future Task: </h4>
+        {% else %}
+            <h4>You have 0 future tasks.</h4>
         {% endif %}
         {% if task_list %}
         <div class="list-group list-group-flush">
@@ -176,7 +180,7 @@
             <!-- End task -->
         </div>
         {% else %}
-            <p>You have no tasks!</p>
+            <p><a href="{% url 'tasks:add_task' %}">Click here to add a new one!</a></p>
         {% endif %}
     </div>
 </div>
