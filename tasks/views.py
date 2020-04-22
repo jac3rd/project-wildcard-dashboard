@@ -48,7 +48,7 @@ class SummaryView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        task_list = Task.objects.filter(user=self.request.user.id, archived=False,
+        task_list = Task.objects.filter(user=self.request.user.id, completed=False, archived=False,
                                         end_time__gte=datetime.datetime.now())
         task_list = task_list.order_by('end_time')
         d = get_date(self.request.GET.get('day', None))
@@ -242,15 +242,18 @@ def edit_task(request):
     try:
         task_name = Task.objects.get(id=task_id).task_name
     except:
-        return HttpResponseRedirect(reverse('tasks:list'))
-        # url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/")))
-    # url_path_from.pop(0)
-    # url_path_from = '/'.join(url_path_from)
-    # print(url_path_from)
-    return render(request, 'tasks/edit_task.html', {'form': form,
-                                                    'task_name': task_name,
-                                                    'task_id': task_id, })
-    # 'prev_url': url_path_from})
+        return HttpResponseRedirect(reverse('tasks:list'))  
+    #url_path_from = list(filter(None, urlparse( request.META.get('HTTP_REFERER') ).path.split("/")))
+    #url_path_from.pop(0)
+    #url_path_from = '/'.join(url_path_from)
+    #print(url_path_from)
+    form.fields['end_time'].initial = Task.objects.get(id=task_id).end_time
+    return render(request, 'tasks/edit_task.html', {'form': form, 
+        'task_name': task_name, 
+        'task_id' : task_id,
+        'task_data' : Task.objects.get(id=task_id)}) 
+        #'prev_url': url_path_from})
+
 
 
 def check_off(request):
