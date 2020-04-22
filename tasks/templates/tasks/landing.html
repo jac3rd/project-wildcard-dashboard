@@ -25,6 +25,7 @@
     .fa.fa-edit {
         transform: translate(-50%, -35%);
     }
+
 </style>
 <div class = "flex-container">
     <center><h2>Welcome, {{user.username}}! Let's get started: </h2></center>
@@ -48,77 +49,77 @@
                         <div class="widget-content-left">
                             <!-- Checkbox form: Credit to Henry -->
                             {% if not task.completed %}
-                            <form action="{% url 'tasks:check_off' %}" method='post' id="check_{{ task.id }}">
-                                {% csrf_token %}
-                                <input type="hidden" name="task_id" value='{{task.id}}'>
-                                <!--<input class="form-check-input" type="checkbox"
-                                onclick="document.getElementById('check_{{ task.id }}').submit();">-->
-                                <div class="custom-checkbox custom-control">
-                                    <input class="custom-control-input" type="checkbox" id="_{{ task.id }}"
-                                           onclick="document.getElementById('check_{{ task.id }}').submit();">
-                                    <label class="custom-control-label" for="_{{ task.id }}">
-                                        <h5 class="widget-heading" style="padding-right: 10px;">
-                                        {% if task.link == '' %}
-                                            {{ task.task_name }}
-                                        {% else %}
-                                            <a href="{{ task.link }}">{{ task.task_name }}</a>
-                                        {% endif %}
+                                <form action="{% url 'tasks:check_off' %}" method='post' id="check_{{ task.id }}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="task_id" value='{{task.id}}'>
+                                    <!--<input class="form-check-input" type="checkbox"
+                                    onclick="document.getElementById('check_{{ task.id }}').submit();">-->
+                                    <div class="custom-checkbox custom-control">
+                                        <input class="custom-control-input" type="checkbox" id="_{{ task.id }}"
+                                               onclick="document.getElementById('check_{{ task.id }}').submit();">
+                                        <label class="custom-control-label" for="_{{ task.id }}">
+                                            <h5 class="widget-heading" style="padding-right: 10px;">
+                                            {% if task.link == '' %}
+                                                {{ task.task_name }}
+                                            {% else %}
+                                                <a href="{{ task.link }}">{{ task.task_name }}</a>
+                                            {% endif %}
 
-                                        {% if task.category == 'Homework' %}
-                                            <div class="badge badge-primary ml-2">{{ task.category }}</div>
-                                        {% elif task.category == 'Chore' %}
-                                            <div class="badge badge-warning ml-2">{{ task.category }}</div>
-                                        {% elif task.category == 'Work' %}
-                                            <div class="badge badge-danger ml-2">{{ task.category }}</div>
-                                        {% elif task.category == 'Errand' %}
-                                           <div class="badge badge-info ml-2">{{ task.category }}</div>
-                                        {% elif task.category == 'Life' %}
-                                            <div class="badge badge-success ml-2">{{ task.category }}</div>
-                                        {% elif task.category == 'Other' %}
-                                            <div class="badge badge-secondary ml-2">{{ task.category }}</div>
-                                        {% else %}
-                                            <div class="badge badge-light ml-2">Category</div>
-                                        {% endif %}
-                                        </h5>
-                                    </label>
-                                </div>
-                            </form>
+                                            {% if task.category == 'Homework' %}
+                                                <div class="badge badge-primary ml-2">{{ task.category }}</div>
+                                            {% elif task.category == 'Chore' %}
+                                                <div class="badge badge-warning ml-2">{{ task.category }}</div>
+                                            {% elif task.category == 'Work' %}
+                                                <div class="badge badge-danger ml-2">{{ task.category }}</div>
+                                            {% elif task.category == 'Errand' %}
+                                               <div class="badge badge-info ml-2">{{ task.category }}</div>
+                                            {% elif task.category == 'Life' %}
+                                                <div class="badge badge-success ml-2">{{ task.category }}</div>
+                                            {% elif task.category == 'Other' %}
+                                                <div class="badge badge-secondary ml-2">{{ task.category }}</div>
+                                            {% else %}
+                                                <div class="badge badge-light ml-2">Category</div>
+                                            {% endif %}
+                                            </h5>
+                                        </label>
+                                    </div>
+                                </form>
                             {% else %}
-                            <form action="{% url 'tasks:uncheck' %}" method='post' id="uncheck_{{ task.id }}">
-                                {% csrf_token %}
-                                <input type="hidden" name="task_id" value='{{task.id}}'>
-                                <div class="custom-checkbox custom-control">
-                                    <input class="custom-control-input" type="checkbox" id="__{{ task.id }}"
-                                           onclick="document.getElementById('uncheck_{{ task.id }}').submit();" checked>
-                                    <label class="custom-control-label" for="__{{ task.id }}">
-                                        <h5 class="widget-heading">
-                                        {% if task.link == '' %}
-                                            {{ task.task_name }}
-                                        {% else %}
-                                            <a href="{{ task.link }}">{{ task.task_name }}</a>
-                                        {% endif %}
+                                <form action="{% url 'tasks:uncheck' %}" method='post' id="uncheck_{{ task.id }}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="task_id" value='{{task.id}}'>
+                                    <div class="custom-checkbox custom-control">
+                                        <input class="custom-control-input" type="checkbox" id="__{{ task.id }}"
+                                               onclick="document.getElementById('uncheck_{{ task.id }}').submit();" checked>
+                                        <label class="custom-control-label" for="__{{ task.id }}">
+                                            <h5 class="widget-heading" style="text-decoration: line-through;">
+                                            {% if task.link == '' %}
+                                                {{ task.task_name }}
+                                            {% else %}
+                                                <a href="{{ task.link }}">{{ task.task_name }}</a>
+                                            {% endif %}
 
-                                        {% if task.category == 'Homework' %}
-                                            <div class="badge badge-primary ml-2">{{ task.category }}</div>
-                                        {% elif task.category == 'Chore' %}
-                                            <div class="badge badge-warning ml-2">{{ task.category }}</div>
-                                        {% elif task.category == 'Work' %}
-                                            <div class="badge badge-danger ml-2">{{ task.category }}</div>
-                                        {% elif task.category == 'Errand' %}
-                                           <div class="badge badge-info ml-2">{{ task.category }}</div>
-                                        {% elif task.category == 'Life' %}
-                                            <div class="badge badge-success ml-2">{{ task.category }}</div>
-                                        {% elif task.category == 'Other' %}
-                                            <div class="badge badge-secondary ml-2">{{ task.category }}</div>
-                                        {% else %}
-                                            <div class="badge badge-light ml-2">Category</div>
-                                        {% endif %}
-                                        </h5>
-<!--                                        <h5 class="widget-heading" style="color:green">COMPLETE!</h5>-->
-                                    </label>
-                                </div>
+                                            {% if task.category == 'Homework' %}
+                                                <div class="badge badge-primary ml-2" style="text-decoration: line-through;">{{ task.category }}</div>
+                                            {% elif task.category == 'Chore' %}
+                                                <div class="badge badge-warning ml-2" style="text-decoration: line-through;">{{ task.category }}</div>
+                                            {% elif task.category == 'Work' %}
+                                                <div class="badge badge-danger ml-2" style="text-decoration: line-through;">{{ task.category }}</div>
+                                            {% elif task.category == 'Errand' %}
+                                               <div class="badge badge-info ml-2" style="text-decoration: line-through;">{{ task.category }}</div>
+                                            {% elif task.category == 'Life' %}
+                                                <div class="badge badge-success ml-2" style="text-decoration: line-through;">{{ task.category }}</div>
+                                            {% elif task.category == 'Other' %}
+                                                <div class="badge badge-secondary ml-2" style="text-decoration: line-through;">{{ task.category }}</div>
+                                            {% else %}
+                                                <div class="badge badge-light ml-2" style="text-decoration: line-through;">Category</div>
+                                            {% endif %}
+                                            </h5>
+    <!--                                        <h5 class="widget-heading" style="color:green">COMPLETE!</h5>-->
+                                        </label>
+                                    </div>
 
-                            </form>
+                                </form>
                             <script>
                                 function undoButton(button) {
                                     document.getElementById(button.id).innerHTML = "Undo?";
@@ -164,7 +165,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="widget-heading"><b><i>DUE:</i> {{ task.end_time }}</b></div>
+                    {% if not task.completed %}
+                        <div class="widget-heading"><b><i>DUE:</i> {{ task.end_time }}</b></div>
+                    {% else %}
+                        <div class="widget-heading" style="text-decoration: line-through;"><b><i>DUE:</i> {{ task.end_time }}</b></div>
+                    {% endif %}
                     <div class="todo-indicator bg-warning"></div>
                 </li>
             {% endfor %}
