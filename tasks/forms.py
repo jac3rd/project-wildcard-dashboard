@@ -15,11 +15,11 @@ class TaskForm(forms.Form):
                '%m/%d/%y %H:%M',  # '10/25/06 14:30'
                '%m/%d/%y',
                '%Y-%m-%dT%H:%M']  # '10/25/06'
-    task_name = forms.CharField(label='Task Name', max_length=100)
+    task_name = forms.CharField(label='Task Name', max_length=100, required=False)
     task_desc = forms.CharField(label='Task Description', max_length=200, required=False)
-    end_time = forms.DateTimeField(label='End Time', input_formats=attempt, widget=bootstrap_datepicker_plus.DateTimePickerInput(format=attempt[1]))
-    hours = forms.IntegerField(label='Estimated Length (Hours)')
-    minutes = forms.IntegerField(label='Estimated Length (Minutes)')
+    end_time = forms.DateTimeField(label='End Time', input_formats=attempt, widget=bootstrap_datepicker_plus.DateTimePickerInput(format=attempt[1]), required=False)
+    hours = forms.IntegerField(label='Estimated Length (Hours)', required=False)
+    minutes = forms.IntegerField(label='Estimated Length (Minutes)', required=False)
     category = forms.Select(choices=Task.CATEGORIES)
 
 
