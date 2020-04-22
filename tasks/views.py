@@ -220,11 +220,23 @@ def edit_task(request):
             t.category = request.POST.get('category')
             t.link = request.POST.get('link', "")
             # Ensure that the start dates are correct
-            if t.end_time < str(datetime.datetime.now()):
-                return render(request, 'tasks/edit_task.html',
+            if not t.task_name:
+                return render(request, 'tasks/add_task.html',
+                              {'form': form,
+                               'error_message': "Task name is required!", })
+            elif not t.end_time:
+                return render(request, 'tasks/add_task.html',
+                              {'form': form,
+                               'error_message': "Due Date is required!", })
+            elif t.end_time < str(datetime.datetime.now()):
+                return render(request, 'tasks/add_task.html',
                               {'form': form, 'error_message': "Due date must be later than current time.", })
+            elif not t.hours or not t.minutes:
+                return render(request, 'tasks/add_task.html',
+                              {'form': form,
+                               'error_message': "Estimated time is required! Please enter valid time values: (Hours >= 0 and 0 <= Min <= 59)", })
             elif int(t.minutes) < 0 or int(t.minutes) >= 60 or int(t.hours) < 0:
-                return render(request, 'tasks/edit_task.html',
+                return render(request, 'tasks/add_task.html',
                               {'form': form,
                                'error_message': "Please enter valid time values! (Hours >= 0 and 0 <= Min <= 59)", })
             else:
@@ -246,6 +258,10 @@ def edit_task(request):
                     curr_t.save()
                 '''
                 return HttpResponseRedirect(reverse('tasks:list'))
+        else:
+            return render(request, 'tasks/add_task.html',
+                          {'form': form,
+                           'error_message': "An unknown error has occurred. Try again", })
     else:
         # print('get request on edit_task')
         try:
