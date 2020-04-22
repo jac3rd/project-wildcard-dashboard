@@ -247,6 +247,7 @@ def edit_task(request):
     #url_path_from.pop(0)
     #url_path_from = '/'.join(url_path_from)
     #print(url_path_from)
+    form.fields['end_time'].initial = Task.objects.get(id=task_id).end_time
     return render(request, 'tasks/edit_task.html', {'form': form, 
         'task_name': task_name, 
         'task_id' : task_id,
