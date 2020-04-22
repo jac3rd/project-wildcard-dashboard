@@ -7,7 +7,7 @@
 <hr>
 
 <div class="container-md">
-    <h3 class="display-4"><u>Add A Task</u></h3>
+    <h3 class="display-4"><u><b>Add New Task</b></u></h3>
     {% if error_message %}<p><font color="red"><strong>{{ error_message }}</strong></font></p>{% endif %}
     <form action="{% url 'tasks:add_task' %}" method='post'>
     {% csrf_token %}

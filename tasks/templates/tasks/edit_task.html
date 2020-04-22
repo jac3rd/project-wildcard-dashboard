@@ -6,7 +6,7 @@
 {{ form.media }}
 <hr>
 <div class="container-md">
-    <h3 class="display-4"><u><b>Edit task:</b> {{ task_name }}</u></h3>
+    <h3 class="display-4"><u><b>Edit task: </b> "{{ task_name }}"</u></h3>
     {% if error_message %}<p><font color="red"><strong>{{ error_message }}</strong></font></p>{% endif %}
     <form action="{% url 'tasks:edit_task' %}?task_id={{ task_id }}" method='post'>
     {% csrf_token %}
