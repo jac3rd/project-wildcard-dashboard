@@ -46,7 +46,7 @@ class SummaryView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        task_list = Task.objects.filter(user=self.request.user.id, archived=False,
+        task_list = Task.objects.filter(user=self.request.user.id, completed=False, archived=False,
                                         end_time__gte=datetime.datetime.now())
         task_list = task_list.order_by('end_time')
         d = get_date(self.request.GET.get('day', None))
