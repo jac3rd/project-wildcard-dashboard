@@ -628,7 +628,7 @@ class CalendarTests(TestCase):
         curr_time = datetime.datetime.now()
         html = calendar.formatday(curr_time.day, models.Task.objects)
         self.assertEqual(html,
-                         f'<td class="col-1 p-2"><span class=\'date\'><u>{curr_time.day}</u></span><ul class="list-group">  </ul></td>')
+                         f'<td class="col-1 p-2"><span class=\'date\'><b>{curr_time.day}</b></span><ul class="list-group">  </ul></td>')
 
     # unit test to assert that formatday returns correct HTML when there are tasks for a given day
     def test_formatday_tasks_exist(self):
