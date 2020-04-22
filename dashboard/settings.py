@@ -164,7 +164,7 @@ USE_I18N = True
 
 USE_L10N = False
 
-DATETIME_FORMAT = "M d, Y; h:i a"
+DATETIME_FORMAT = "D, M d, Y; h:i a"
 
 # originally was TRUE
 USE_TZ = False
