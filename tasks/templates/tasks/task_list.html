@@ -31,7 +31,7 @@
 <form action="{% url 'tasks:filter_tasks' %}" method="post" style="margin-bottom:10px;">
     {% csrf_token %}
     <div class="input-group">
-        <input type="hidden" value="{{user.id}}" id="user" name="user">
+        <input type="hidden" value="{{user.id}}" id="user2" name="user2">
         <button type="submit" class="btn btn-danger" name="reset-button" style="margin-right:10px">
             Reset Filters
         </button>
@@ -208,10 +208,10 @@
                                                     </div>
                                                     <!-- edit button -->
                                                     <div class="ml-auto">
-                                                        <form action="{% url 'tasks:edit_task' %}" method='get' id="edit_{{ task.id }}">
+                                                        <form action="{% url 'tasks:edit_task' %}" method='get' id="edit1_{{ task.id }}">
                                                             <input type="hidden" name="task_id" value="{{task.id}}">
                                                             <button class="border-0 btn-transition btn btn-outline-success" data-toggle="tooltip" title="Edit"
-                                                                    onclick="document.getElementId('edit_{{ task.id }}').submit();">
+                                                                    onclick="document.getElementId('edit1_{{ task.id }}').submit();">
                                                                 <i class="fa fa-edit"></i> </button>
                                                         </form>
                                                     </div>
@@ -361,10 +361,10 @@
                                                     </div>
                                                     <!-- edit button -->
                                                     <div class="ml-auto">
-                                                        <form action="{% url 'tasks:edit_task' %}" method='get' id="edit_{{ task.id }}">
+                                                        <form action="{% url 'tasks:edit_task' %}" method='get' id="edit2_{{ task.id }}">
                                                             <input type="hidden" name="task_id" value="{{task.id}}">
                                                             <button class="border-0 btn-transition btn btn-outline-success" data-toggle="tooltip" title="Edit"
-                                                                    onclick="document.getElementId('edit_{{ task.id }}').submit();">
+                                                                    onclick="document.getElementId('edit2_{{ task.id }}').submit();">
                                                                 <i class="fa fa-edit"></i> </button>
                                                         </form>
                                                     </div>
@@ -426,7 +426,7 @@
                 {% if error_message %}<p><font color="red"><strong>{{ error_message }}</strong></font></p>{% endif %}
             </div>
             <div class="modal-body">
-                <input type="hidden" value="{{user.id}}" id="user" name="user">
+                <input type="hidden" value="{{user.id}}" id="user1" name="user1">
                 <div class="form-group">
                     <label for="{{ form.task_name.name }}">Task Name</label>
                     <input class="form-control" type="text" id="{{ form.task_name.name }}" name="{{ form.task_name.name }}">
