@@ -58,16 +58,17 @@
             <label for="link">Link (Optional)</label>
             <input class="form-control" type="url" id="link" name="link" value="{{ task_data.link }}">
         </div>
-        
-        <button class="btn btn-primary" type="submit">
-            Update
-        </button>
+        <div class="form-group" style="text-align: right;">
+            <a href="{% url 'tasks:list' %}">
+                <button type="button" role="button" class="btn btn-danger">
+                    Cancel
+                </button>
+            </a>
 
-        <a href="{% url 'tasks:list' %}">
-            <button type="button" role="button" class="btn btn-danger">
-                Cancel
+            <button class="btn btn-primary" type="submit">
+                Update
             </button>
-        </a>
+        </div>
         <!--<select id="repeat" name="repeat">
             <option value="once">Add Task</option>
             <option value="weekly">Add Task Weekly</option>
