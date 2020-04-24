@@ -32,8 +32,8 @@
                  <a class="nav-item nav-link" href="{% url 'index' %}"><img src="{% static 'tasks/transparent logo.png' %}"></a>
                  <div class="navbar-nav" style="padding-top: 7px; padding-left: 5px;">
                      <a class="nav-item nav-link" href="{% url 'tasks:index' %}">Home</a>
-                     <a class="nav-item nav-link" href="{% url 'tasks:list' %}">Task List</a>
                      <a class="nav-item nav-link" href="{% url 'tasks:add_task' %}">Add Task<span class="sr-only"></span></a> <!--change all hrefs-->
+                     <a class="nav-item nav-link" href="{% url 'tasks:list' %}">Task List</a>
                      <a class="nav-item nav-link" href="{% url 'tasks:stats' %}">Statistics</a>
                      <a class="nav-item nav-link" href="{% url 'tasks:calendar' %}">Calendar</a>
                  </div>
