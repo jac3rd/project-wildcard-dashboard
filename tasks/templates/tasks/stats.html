@@ -47,7 +47,7 @@
                 }
                 .one
                 {
-                    flex-grow: 3;
+                    flex-grow: 1;
                 }
 
                 .two
@@ -59,12 +59,21 @@
 
                 .three
                 {
-                    flex-grow: 3;
+                    flex-grow: 1;
                 }
 
         </style>
 
-
+         <div class="box-a">
+            <style>
+                .box-a
+                {
+                    width: 100px;
+                    height: 20px;
+                    color: white;
+                }
+            </style>
+        </div>
         <div class="box one">
             <form action="{% url 'tasks:stats' %}" method="get">
                 <div class="form-row">
@@ -97,6 +106,7 @@
                 </button>
             </form>
         </div>
+
         <div class="box three text-center">
             {{ chart.as_html }}
         </div>

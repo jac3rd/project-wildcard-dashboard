@@ -568,7 +568,7 @@ def stats(request):
                 cntr += 1
         pie = get_pie(request)
         recently_finished = SimpleDataSource(data)
-        recently_finished_chart = LineChart(recently_finished, options={'title': 'Daily Tasks Completed', 'width': 600,
+        recently_finished_chart = LineChart(recently_finished, options={'title': 'Daily Tasks Completed', 'width': 800,
                                                                         'legend': {'position': 'bottom'},
                                                                         'vAxis': {'viewWindow': {'min': 0, 'max': 25},
                                                                                   'ticks': [i for i in
