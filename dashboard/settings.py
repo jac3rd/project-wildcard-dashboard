@@ -31,7 +31,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'a)7d@=xx$5lbmd308_pd=bhlh(hilkk5i3yo^!46e1cs$l(ikx'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 #Authentication Information for Google Login
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '759306476125-hi014lcvnmlmirv0pt9hka0k5og0eji3.apps.googleusercontent.com'
