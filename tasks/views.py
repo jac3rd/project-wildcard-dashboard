@@ -494,10 +494,10 @@ def get_pie(request):
                                 category=request.GET['pie_category']))
         uncompleted_late = len(Task.objects.filter(user=request.user.id, end_time__lt=datetime.datetime.now(),
                                                    date_completed__isnull=True, category=request.GET['pie_category']))
-        pie_data.append(['Completed On-time', num_completed - completed_late])
-        pie_data.append(['Completed Late', completed_late])
-        pie_data.append(['Uncompleted & On-time', num_uncompleted - uncompleted_late])
-        pie_data.append(['Uncompleted & Late', uncompleted_late])
+        pie_data.append(['Completed: On-time', num_completed - completed_late])
+        pie_data.append(['Completed: Late', completed_late])
+        pie_data.append(['Not completed: Not Yet Late', num_uncompleted - uncompleted_late])
+        pie_data.append(['Not completed: Late', uncompleted_late])
         non_zero = (num_completed > 0) or (num_uncompleted > 0) or (completed_late > 0) or (uncompleted_late > 0)
         if non_zero:
             pie = PieChart(SimpleDataSource(pie_data),
