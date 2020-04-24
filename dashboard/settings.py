@@ -43,8 +43,10 @@ LOGOUT_REDIRECT_URL = 'index'
 SOCIAL_AUTH_URL_NAMESPACE = 'social'
 #Allows project to run on heroku
 ALLOWED_HOSTS = [
+    '*',
     'wildcard-boiz.herokuapp.com',
     '127.0.0.1',
+    '127.0.0.1:8000',
     'localhost',
 ]
 
