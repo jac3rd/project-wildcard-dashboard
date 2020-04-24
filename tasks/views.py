@@ -510,7 +510,7 @@ def get_pie(request):
             non_zero = (num_completed > 0) or non_zero
         if non_zero:
             pie = PieChart(SimpleDataSource(pie_data),
-                           options={'title': 'Tasks Completed by Category', 'width': 400}).as_html()
+                           options={'title': 'Tasks Completed by Category', 'width': 1050}).as_html()
         else:
             pie = "No completed tasks to display."
     else:
@@ -524,15 +524,15 @@ def get_pie(request):
                                 category=request.GET['pie_category']))
         uncompleted_late = len(Task.objects.filter(user=request.user.id, end_time__lt=datetime.datetime.now(),
                                                    date_completed__isnull=True, category=request.GET['pie_category']))
-        pie_data.append(['Completed On-time', num_completed - completed_late])
-        pie_data.append(['Completed Late', completed_late])
-        pie_data.append(['Uncompleted & On-time', num_uncompleted - uncompleted_late])
-        pie_data.append(['Uncompleted & Late', uncompleted_late])
+        pie_data.append(['Completed: On-time', num_completed - completed_late])
+        pie_data.append(['Completed: Late', completed_late])
+        pie_data.append(['Not completed: Not Yet Late', num_uncompleted - uncompleted_late])
+        pie_data.append(['Not completed: Late', uncompleted_late])
         non_zero = (num_completed > 0) or (num_uncompleted > 0) or (completed_late > 0) or (uncompleted_late > 0)
         if non_zero:
             pie = PieChart(SimpleDataSource(pie_data),
                            options={'title': request.GET['pie_category'] + " On-Time Completion Rate",
-                                    'width': 400}).as_html()
+                                    'width': 1050}).as_html()
         else:
             pie = "No completed tasks to display for the " + request.GET['pie_category'].lower() + " category."
     return pie
@@ -598,7 +598,7 @@ def stats(request):
                 cntr += 1
         pie = get_pie(request)
         recently_finished = SimpleDataSource(data)
-        recently_finished_chart = LineChart(recently_finished, options={'title': 'Daily Tasks Completed', 'width': 600,
+        recently_finished_chart = LineChart(recently_finished, options={'title': 'Daily Tasks Completed', 'width': 800,
                                                                         'legend': {'position': 'bottom'},
                                                                         'vAxis': {'viewWindow': {'min': 0, 'max': 25},
                                                                                   'ticks': [i for i in
