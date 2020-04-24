@@ -6,22 +6,22 @@
 {{ form.media }}
 <hr>
 <div class="container-md">
-    <h3 class="display-4"><u>Editing task:</u> {{ task_name }}</h3>
+    <h3 class="display-4"><u><b>Edit task: </b> "{{ task_name }}"</u></h3>
     {% if error_message %}<p><font color="red"><strong>{{ error_message }}</strong></font></p>{% endif %}
     <form action="{% url 'tasks:edit_task' %}?task_id={{ task_id }}" method='post'>
     {% csrf_token %}
         <input type="hidden" value="{{user.id}}" id="user" name="user">
         <div class="form-group">
-            <label for="{{ form.task_name.name }}">Task Name</label>
+            <label for="{{ form.task_name.name }}"><b>Task Name</b></label>
             <input class="form-control" type="text" id="{{ form.task_name.name }}" name="{{ form.task_name.name }}" value="{{ task_data.task_name }}">
         </div>
         <div class="form-group">
-            <label for="{{ form.end_time.name }}">Due Date</label>
+            <label><b>Due Date</b></label>
             {{ form.end_time }}
         </div>
         <div class="form-group form-row">
             <div class="col">
-                <label>Estimated Length</label>
+                <label><b>Estimated Length</b></label>
             </div>
             <div class="col">
                 <input class="form-control" type="number" id="{{ form.hours.name }}" name="{{ form.hours.name }}" placeholder="Hours" value="{{ task_data.hours }}">
@@ -37,7 +37,7 @@
             </div>
         </div>
         <div class="form-group">
-            <label for="category">Category</label>
+            <label for="category"><b>Category</b></label>
             <select name="category" id="category" class="custom-select">
             {% for choice in form.category.choices %}
                 {% if task_data.category == choice.1 %}
@@ -51,11 +51,11 @@
 
         </div>
         <div class="form-group">
-            <label for="{{ form.task_desc.name }}">Task Description (Optional)</label>
+            <label for="{{ form.task_desc.name }}"><b>Task Description</b> (<i>*Optional*</i>)</label>
             <input class="form-control" type="text" id="{{ form.task_desc.name }}" name="{{ form.task_desc.name }}" value="{{ task_data.task_desc }}">
         </div>
         <div class="form-group">
-            <label for="link">Link (Optional)</label>
+            <label for="link"><b>Link</b> (<i>*Optional*</i>)</label>
             <input class="form-control" type="url" id="link" name="link" value="{{ task_data.link }}">
         </div>
         <div class="form-group" style="text-align: right;">
