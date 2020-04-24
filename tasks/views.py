@@ -436,7 +436,6 @@ def move_date_forward(request):
         task.save()
     return HttpResponseRedirect(request.META.get('HTTP_REFERER'))
 
-
 '''
 def sort_tasks(request):
     if(request.method == 'GET'):
@@ -446,7 +445,6 @@ def sort_tasks(request):
         #return HttpResponseRedirect(reverse('tasks:index', kwargs={'task_list':ordered_tasks, 'fields':[field.name for field in Task._meta.get_fields()]}))
     return HttpResponseRedirect(reverse('tasks:index'))
 '''
-
 
 def filter_tasks(request):
     if (request.method == 'POST'):
