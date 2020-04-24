@@ -1,36 +1,36 @@
-asgiref==3.2.3
-astroid==2.3.3
-certifi==2019.11.28
-chardet==3.0.4
-defusedxml==0.6.0
-dj-database-url==0.5.0
-Django==3.0.3
-gunicorn==20.0.4
-heroku==0.1.4
-idna==2.8
-isort==4.3.21
-lazy-object-proxy==1.4.3
-MarkupSafe==1.1.1
-mccabe==0.6.1
-oauthlib==3.1.0
-psycopg2==2.8.4
-PyJWT==1.7.1
-pylint==2.4.4
-python-dateutil==1.5
-python3-openid==3.1.0
-pytz==2019.3
-requests==2.22.0
-requests-oauthlib==1.3.0
-six==1.14.0
-social-auth-app-django==3.1.0
-social-auth-core==3.2.0
-sqlparse==0.3.0
-urllib3==1.25.8
-whitenoise==5.0.1
-wrapt==1.11.2
-dj-config-url==0.1.1
-django-queryset-csv==1.1.0
-django-bootstrap-datepicker-plus
-django-bootstrap4
-django-jquery
-git+https://github.com/hcars/django-graphos.git@master
+asgiref==3.2.3 # BSD License (BSD)
+astroid==2.3.3 # LGPL
+certifi==2019.11.28 #  Mozilla Public License 2.0 (MPL 2.0) (MPL-2.0)
+chardet==3.0.4 # GNU Library or Lesser General Public License (LGPL) (LGPL)
+defusedxml==0.6.0 # Python Software Foundation License (PSFL)
+dj-database-url==0.5.0 # BSD License (BSD)
+Django==3.0.3 # BSD License (BSD)
+gunicorn==20.0.4 # MIT License (MIT)
+heroku==0.1.4 # MIT License (MIT)
+idna==2.8 # BSD License (BSD-like)
+isort==4.3.21 # MIT License (MIT)
+lazy-object-proxy==1.4.3 # BSD License (BSD-2-Clause)
+MarkupSafe==1.1.1 # BSD License (BSD-3-Clause)
+mccabe==0.6.1 # MIT License (Expat license)
+oauthlib==3.1.0 # OSI Approved, BSD License (BSD)
+psycopg2==2.8.4 # GNU Library or Lesser General Public License (LGPL), Zope Public License (LGPL with exceptions)
+PyJWT==1.7.1 # MIT License (MIT)
+pylint==2.4.4 # GNU General Public License (GPL) (GPL)
+python-dateutil==1.5 # Apache Software License, BSD License (Dual License)
+python3-openid==3.1.0 # Apache Software License
+pytz==2019.3 # MIT License (MIT)
+requests==2.22.0 # Apache Software License (Apache 2.0)
+requests-oauthlib==1.3.0 # BSD License (ISC)
+six==1.14.0 # MIT License (MIT)
+social-auth-app-django==3.1.0 # BSD License (BSD)
+social-auth-core==3.2.0 # BSD License (BSD)
+sqlparse==0.3.0 # BSD License (BSD)
+urllib3==1.25.8 # MIT License (MIT)
+whitenoise==5.0.1 # MIT License (MIT)
+wrapt==1.11.2 # BSD License (BSD)
+dj-config-url==0.1.1 # BSD License (BSD)
+django-queryset-csv==1.1.0 # GNU General Public License (GPL)
+django-bootstrap-datepicker-plus # Apache Software License (Apache License 2.0)
+django-bootstrap4 # BSD License (BSD-3-Clause)
+django-jquery # MIT License (MIT)
+git+https://github.com/hcars/django-graphos.git@master # BSD License (BSD)
